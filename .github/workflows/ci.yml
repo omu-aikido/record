@@ -17,15 +17,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup mise
-        uses: jdx/mise-action@v3
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v27
         with:
-          cache: true
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Cache Nix Store
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -36,10 +39,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Format
-        run: pnpm run format
+        run: nix develop -c pnpm run format
 
   lint:
     runs-on: ubuntu-latest
@@ -48,15 +51,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup mise
-        uses: jdx/mise-action@v3
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v27
         with:
-          cache: true
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Cache Nix Store
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -67,10 +73,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Lint
-        run: pnpm run lint
+        run: nix develop -c pnpm run lint
 
   knip:
     runs-on: ubuntu-latest
@@ -79,15 +85,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup mise
-        uses: jdx/mise-action@v3
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v27
         with:
-          cache: true
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Cache Nix Store
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -98,10 +107,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Knip
-        run: pnpm run knip
+        run: nix develop -c pnpm run knip
 
   type-check:
     runs-on: ubuntu-latest
@@ -110,15 +119,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup mise
-        uses: jdx/mise-action@v3
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v27
         with:
-          cache: true
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Cache Nix Store
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -129,7 +141,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Generate Env File for Cloudflare Types
         run: |
@@ -142,10 +154,10 @@ jobs:
           echo "TURSO_DATABASE_URL=''" >> .env
 
       - name: Type Generation
-        run: pnpm run cf-typegen
+        run: nix develop -c pnpm run cf-typegen
 
       - name: Type Check
-        run: pnpm run type-check
+        run: nix develop -c pnpm run type-check
 
   build:
     runs-on: ubuntu-latest
@@ -154,15 +166,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup mise
-        uses: jdx/mise-action@v3
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v27
         with:
-          cache: true
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Cache Nix Store
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -173,10 +188,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm run build-only
+        run: nix develop -c pnpm run build-only
 
   test:
     runs-on: ubuntu-latest
@@ -185,15 +200,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup mise
-        uses: jdx/mise-action@v3
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v27
         with:
-          cache: true
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Cache Nix Store
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -204,7 +222,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Test
-        run: pnpm run test
+        run: nix develop -c pnpm run test

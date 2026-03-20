@@ -20,15 +20,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup mise
-        uses: jdx/mise-action@v3
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v27
         with:
-          cache: true
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Cache Nix Store
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm -- config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -39,11 +42,11 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: nix develop -c pnpm -- install --frozen-lockfile
 
       - name: Get Playwright version
         id: playwright-version
-        run: echo "version=$(pnpm list @playwright/test --depth=0 --json | jq -r '.[0].dependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
+        run: echo "version=$(nix develop -c pnpm -- list @playwright/test --depth=0 --json | jq -r '.[0].dependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
 
       - name: Cache Playwright browsers
         id: playwright-cache
@@ -54,11 +57,11 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps
+        run: nix develop -c pnpm -- exec playwright install --with-deps
 
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: pnpm exec playwright install-deps
+        run: nix develop -c pnpm -- exec playwright install-deps
 
       - name: Run E2E tests
         env:
@@ -71,7 +74,7 @@ jobs:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-        run: pnpm test:e2e
+        run: nix develop -c pnpm -- test:e2e
 
       - name: Upload Playwright report
         if: always()

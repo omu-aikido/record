@@ -30,8 +30,8 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "@clerk/backend": "^3.2.1",
-    "@clerk/vue": "^2.0.5",
+    "@clerk/backend": "^3.2.2",
+    "@clerk/vue": "^2.0.6",
     "@headlessui/vue": "^1.7.23",
     "@hono/arktype-validator": "^2.0.1",
     "@hono/clerk-auth": "^3.1.0",
@@ -46,13 +46,13 @@
     "vue-router": "^5.0.4"
   },
   "devDependencies": {
-    "@clerk/shared": "^4.3.1",
-    "@clerk/testing": "^2.0.5",
-    "@cloudflare/vite-plugin": "^1.29.1",
+    "@clerk/shared": "^4.3.2",
+    "@clerk/testing": "^2.0.6",
+    "@cloudflare/vite-plugin": "^1.30.0",
     "@iconify-json/lucide": "^1.2.98",
     "@playwright/test": "^1.58.2",
     "@testing-library/vue": "^8.1.0",
-    "@types/node": "^24.12.0",
+    "@types/node": "^25.5.0",
     "@unocss/reset": "^66.6.7",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vitest/coverage-v8": "^4.1.0",
@@ -72,7 +72,7 @@
     "vite-plugin-vue-devtools": "^8.1.0",
     "vitest": "^4.1.0",
     "vue-tsc": "^3.2.6",
-    "wrangler": "^4.75.0"
+    "wrangler": "^4.76.0"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
@@ -81,7 +81,8 @@
   "pnpm": {
     "overrides": {
       "esbuild": "^0.27.1",
-      "undici": "^7.18.2"
+      "undici": "^7.18.2",
+      "flatted": "^3.4.2"
     },
     "onlyBuiltDependencies": [
       "@clerk/shared",

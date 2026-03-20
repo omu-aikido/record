@@ -4,6 +4,17 @@
   "compatibility_date": "2025-12-10",
   "main": "server/index.ts",
   "assets": { "not_found_handling": "single-page-application" },
-  "observability": { "enabled": true },
+  "placement": {
+    "mode": "smart",
+  },
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+    },
+    "traces": {
+      "enabled": false,
+    },
+  },
   "kv_namespaces": [{ "binding": "KV", "id": "96b9a7a8f5574a8eabf9472fe1ca05db" }],
 }

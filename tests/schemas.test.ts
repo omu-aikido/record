@@ -1,6 +1,5 @@
 import { ArkErrors } from 'arktype';
 import { describe, it, expect } from 'vitest';
-
 import { AccountMetadata, AccountInfo } from '../share/types/account';
 import { updateAccountSchema } from '../share/types/clerkClient';
 import { recordQuerySchema, rankingQuerySchema } from '../share/types/records';

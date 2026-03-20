@@ -1,9 +1,8 @@
-import type { UserResource } from "@clerk/shared/types";
-import { useClerk, useAuth as useClerkAuth, useUser } from '@clerk/vue';
-import type { Ref } from 'vue';
-import { computed, ref } from 'vue';
-
 import hc from '@/src/lib/honoClient';
+import type { Ref } from 'vue';
+import type { UserResource } from '@clerk/shared/types';
+import { computed, ref } from 'vue';
+import { useClerk, useAuth as useClerkAuth, useUser } from '@clerk/vue';
 
 // サーバーからの認証状態をキャッシュ
 const serverAuthState = ref<{

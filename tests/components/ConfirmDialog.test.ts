@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
-
 import ConfirmDialog from '@/src/components/ui/ConfirmDialog.vue';
 
 // Mock Headless UI components

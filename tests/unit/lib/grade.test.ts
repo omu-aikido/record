@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-
 import { translateGrade, timeForNextGrade } from '../../../share/lib/grade';
 
 describe('share/lib/grade', () => {

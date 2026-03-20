@@ -1,6 +1,5 @@
-import { type } from 'arktype';
-
 import { Role } from './role';
+import { type } from 'arktype';
 
 export const AccountMetadata = type({
   role: Role.type,

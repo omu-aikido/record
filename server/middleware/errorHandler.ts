@@ -1,7 +1,6 @@
-import type { Context, Next } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-
 import { notify } from '@/server/lib/observability';
+import type { Context, Next } from 'hono';
 
 export async function errorHandler(c: Context, next: Next): Promise<Response> {
   try {

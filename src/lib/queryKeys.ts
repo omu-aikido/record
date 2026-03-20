@@ -1,6 +1,5 @@
+import type hc from './honoClient';
 import { type InferRequestType } from 'hono/client';
-
-import hc from './honoClient';
 
 type Client = typeof hc;
 

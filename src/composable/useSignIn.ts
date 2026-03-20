@@ -1,6 +1,123 @@
-import type { ClerkAPIError } from "@clerk/shared/types";
+import type { ClerkAPIError } from '@clerk/shared/types';
 import { useClerk } from '@clerk/vue';
-import { ref } from 'vue';
+import { type Ref, ref } from 'vue';
+
+function extractClerkError(err: unknown): string {
+  const clerkError = (err as { errors?: ClerkAPIError[] }).errors?.[0];
+  return clerkError?.longMessage || clerkError?.message || 'An error occurred.';
+}
+
+function checkClerkLoaded(clerk: ReturnType<typeof useClerk>, error: Ref<string | null>): boolean {
+  if (!clerk.value?.loaded) {
+    error.value = 'Authentication service is not available.';
+    return false;
+  }
+  return true;
+}
+
+async function signIn(
+  clerk: ReturnType<typeof useClerk>,
+  email: Ref<string>,
+  password: Ref<string>,
+  isLoading: Ref<boolean>,
+  error: Ref<string | null>,
+  needsVerification: Ref<boolean>
+): Promise<boolean> {
+  if (!checkClerkLoaded(clerk, error)) return false;
+
+  isLoading.value = true;
+  error.value = null;
+
+  try {
+    const signInAttempt = await clerk.value?.client?.signIn.create({
+      identifier: email.value,
+      password: password.value,
+    });
+
+    if (!signInAttempt) throw new Error('Sign in failed.');
+
+    if (signInAttempt.status === 'complete') {
+      await clerk.value?.setActive({ session: signInAttempt.createdSessionId });
+      return true;
+    }
+
+    if (signInAttempt.status === 'needs_second_factor') {
+      needsVerification.value = true;
+      return false;
+    }
+  } catch (err: unknown) {
+    error.value = extractClerkError(err) || 'Sign in failed.';
+  } finally {
+    isLoading.value = false;
+  }
+  return false;
+}
+
+async function verifyCode(
+  clerk: ReturnType<typeof useClerk>,
+  code: Ref<string>,
+  isLoading: Ref<boolean>,
+  error: Ref<string | null>
+): Promise<boolean> {
+  if (!checkClerkLoaded(clerk, error)) return false;
+
+  isLoading.value = true;
+  error.value = null;
+
+  try {
+    const signInAttempt = await clerk.value?.client?.signIn.attemptSecondFactor({
+      strategy: 'email_code',
+      code: code.value,
+    });
+
+    if (!signInAttempt) throw new Error('Verification failed.');
+
+    if (signInAttempt.status === 'complete') {
+      await clerk.value?.setActive({ session: signInAttempt.createdSessionId });
+      return true;
+    }
+  } catch (err: unknown) {
+    error.value = extractClerkError(err) || 'Verification failed.';
+  } finally {
+    isLoading.value = false;
+  }
+  return false;
+}
+
+async function signInWithDiscord(
+  clerk: ReturnType<typeof useClerk>,
+  isLoading: Ref<boolean>,
+  error: Ref<string | null>
+): Promise<void> {
+  if (!checkClerkLoaded(clerk, error)) return;
+  isLoading.value = true;
+  error.value = null;
+  try {
+    await clerk.value?.client?.signIn.authenticateWithRedirect({
+      strategy: 'oauth_discord',
+      redirectUrl: '/',
+      redirectUrlComplete: '/',
+    });
+  } catch (err: unknown) {
+    error.value = extractClerkError(err) || 'Discord authentication failed.';
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+function reset(
+  email: Ref<string>,
+  password: Ref<string>,
+  code: Ref<string>,
+  error: Ref<string | null>,
+  needsVerification: Ref<boolean>
+): void {
+  email.value = '';
+  password.value = '';
+  code.value = '';
+  error.value = null;
+  needsVerification.value = false;
+}
 
 export function useSignIn() {
   const clerk = useClerk();
@@ -11,107 +128,10 @@ export function useSignIn() {
   const error = ref<string | null>(null);
   const needsVerification = ref(false);
 
-  const signIn = async () => {
-    const loaded = clerk.value?.loaded;
-
-    if (!loaded) {
-      error.value = 'Authentication service is not available.';
-      return false;
-    }
-
-    isLoading.value = true;
-    error.value = null;
-
-    try {
-      const signInAttempt = await clerk.value?.client?.signIn.create({
-        identifier: email.value,
-        password: password.value,
-      });
-
-      if (!signInAttempt) throw new Error('Sign in failed. Please check your credentials.');
-
-      if (signInAttempt.status === 'complete') {
-        await clerk.value?.setActive({
-          session: signInAttempt.createdSessionId,
-        });
-        return true;
-      }
-
-      if (signInAttempt.status === 'needs_second_factor') {
-        needsVerification.value = true;
-        return false;
-      }
-    } catch (err: unknown) {
-      const clerkError = (err as { errors?: ClerkAPIError[] }).errors?.[0];
-      error.value = clerkError?.longMessage || clerkError?.message || 'Sign in failed. Please check your credentials.';
-    } finally {
-      isLoading.value = false;
-    }
-    return false;
-  };
-
-  const verifyCode = async () => {
-    const isLoaded = clerk.value?.loaded;
-    if (!isLoaded) {
-      error.value = 'Authentication service is not available.';
-      return false;
-    }
-
-    isLoading.value = true;
-    error.value = null;
-
-    try {
-      const signInAttempt = await clerk.value?.client?.signIn.attemptSecondFactor({
-        strategy: 'email_code',
-        code: code.value,
-      });
-
-      if (!signInAttempt) throw new Error('Sign in failed. Please check your credentials.');
-
-      if (signInAttempt.status === 'complete') {
-        await clerk.value?.setActive({
-          session: signInAttempt.createdSessionId,
-        });
-        return true;
-      }
-    } catch (err: unknown) {
-      const clerkError = (err as { errors?: ClerkAPIError[] }).errors?.[0];
-      error.value = clerkError?.longMessage || clerkError?.message || 'Verification failed.';
-    } finally {
-      isLoading.value = false;
-    }
-    return false;
-  };
-
-  const signInWithDiscord = async () => {
-    const isLoaded = clerk.value?.loaded;
-    if (!isLoaded) {
-      error.value = 'Authentication service is not available.';
-      return;
-    }
-    isLoading.value = true;
-    error.value = null;
-    try {
-      await clerk.value?.client?.signIn.authenticateWithRedirect({
-        strategy: 'oauth_discord',
-        redirectUrl: '/',
-        redirectUrlComplete: '/',
-      });
-    } catch (err: unknown) {
-      const clerkError = (err as { errors?: ClerkAPIError[] }).errors?.[0];
-      error.value = clerkError?.longMessage || clerkError?.message || 'Discord authentication failed.';
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  const reset = () => {
-    email.value = '';
-    password.value = '';
-    code.value = '';
-    error.value = null;
-    needsVerification.value = false;
-  };
+  const signInFn = () => signIn(clerk, email, password, isLoading, error, needsVerification);
+  const verifyCodeFn = () => verifyCode(clerk, code, isLoading, error);
+  const signInWithDiscordFn = () => signInWithDiscord(clerk, isLoading, error);
+  const resetFn = () => reset(email, password, code, error, needsVerification);
 
   return {
     email,
@@ -120,9 +140,9 @@ export function useSignIn() {
     isLoading,
     error,
     needsVerification,
-    signIn,
-    verifyCode,
-    signInWithDiscord,
-    reset,
+    signIn: signInFn,
+    verifyCode: verifyCodeFn,
+    signInWithDiscord: signInWithDiscordFn,
+    reset: resetFn,
   };
 }

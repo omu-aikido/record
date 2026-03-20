@@ -1,7 +1,6 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ref } from 'vue';
-
 import ProfileCard from '@/src/components/account/ProfileCard.vue';
 
 // Mock Hono Client

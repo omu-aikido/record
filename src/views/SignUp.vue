@@ -1,6 +1,6 @@
 <template>
-  <div class="flex items-center justify-center p-4">
-    <div class="card w-full h-full mx-auto max-w-md">
+  <div class="p-4 flex items-center justify-center">
+    <div class="card max-w-md mx-auto h-full w-full">
       <div class="p-4 pt-2">
         <h1 class="heading-1">サインアップ</h1>
       </div>
@@ -36,7 +36,7 @@
               @update:form-value="setFormValue" />
           </div>
 
-          <div class="col-span-3 my-4">
+          <div class="my-4 col-span-3">
             <div id="clerk-captcha" />
           </div>
         </form>
@@ -51,9 +51,9 @@
         </div>
 
         <hr class="my-6" />
-        <div class="mt-2 text-center text-base text-subtext">
+        <div class="mt-2 text-base text-subtext text-center">
           既にアカウントをお持ちですか？<br />
-          <RouterLink to="/sign-in" class="text-blue-500 underline hover:text-blue-600"> こちら </RouterLink>
+          <RouterLink to="/sign-in" class="text-blue-500 hover:text-blue-600 underline"> こちら </RouterLink>
           からサインインしてください。
         </div>
       </div>
@@ -63,12 +63,12 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useSignUpForm } from '@/src/composable/useSignUpForm';
 import ProgressIndicator from '@/src/components/signup/ProgressIndicator.vue';
 import SignUpStepBasic from '@/src/components/signup/SignUpStepBasic.vue';
 import SignUpStepPersonal from '@/src/components/signup/SignUpStepPersonal.vue';
 import SignUpStepProfile from '@/src/components/signup/SignUpStepProfile.vue';
+import { useRouter } from 'vue-router';
+import { useSignUpForm } from '@/src/composable/useSignUpForm';
 
 const router = useRouter();
 const currentYear = new Date().getFullYear();

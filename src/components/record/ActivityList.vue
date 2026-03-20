@@ -1,17 +1,8 @@
 <script setup lang="ts">
 import type { Activity } from '@/share/types/records';
-import {
-  addMonths,
-  eachDayOfInterval,
-  endOfMonth,
-  format,
-  isSameDay,
-  parseISO,
-  startOfMonth,
-  subMonths,
-} from 'date-fns';
-import { ja } from 'date-fns/locale';
 import { computed } from 'vue';
+import { ja } from 'date-fns/locale';
+import * as dateFns from 'date-fns';
 
 interface Props {
   activities: readonly Activity[];
@@ -31,37 +22,37 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>();
 
 const daysInMonth = computed(() => {
-  const start = startOfMonth(props.currentMonth);
-  const end = endOfMonth(props.currentMonth);
-  return eachDayOfInterval({ start, end });
+  const start = dateFns.startOfMonth(props.currentMonth);
+  const end = dateFns.endOfMonth(props.currentMonth);
+  return dateFns.eachDayOfInterval({ start, end });
 });
 
 const getActivitiesForDay = (date: Date) => {
-  return props.activities.filter((a) => isSameDay(parseISO(a.date), date));
+  return props.activities.filter((a) => dateFns.isSameDay(dateFns.parseISO(a.date), date));
 };
 
 const handlePrevMonth = () => {
-  emit('changeMonth', subMonths(props.currentMonth, 1));
+  emit('changeMonth', dateFns.subMonths(props.currentMonth, 1));
 };
 
 const handleNextMonth = () => {
-  emit('changeMonth', addMonths(props.currentMonth, 1));
+  emit('changeMonth', dateFns.addMonths(props.currentMonth, 1));
 };
 
 const handleDateClick = (date: Date) => {
-  emit('selectDate', format(date, 'yyyy-MM-dd'));
+  emit('selectDate', dateFns.format(date, 'yyyy-MM-dd'));
 };
 
 const formatHeader = (date: Date) => {
-  return format(date, 'yyyy年 M月', { locale: ja });
+  return dateFns.format(date, 'yyyy年 M月', { locale: ja });
 };
 
 const getDay = (date: Date) => {
-  return format(date, 'd');
+  return dateFns.format(date, 'd');
 };
 
 const getWeekday = (date: Date) => {
-  return format(date, 'E', { locale: ja });
+  return dateFns.format(date, 'E', { locale: ja });
 };
 
 const isSunday = (date: Date) => {
@@ -73,14 +64,14 @@ const isSaturday = (date: Date) => {
 };
 
 const isToday = (date: Date) => {
-  return isSameDay(date, new Date());
+  return dateFns.isSameDay(date, new Date());
 };
 </script>
 
 <template>
-  <div class="sticky top-0 z-20 flex-between p-3 px-4 bg-base">
+  <div class="top-0 flex-between p-3 px-4 bg-base sticky z-20">
     <button
-      class="p-1 rounded-full bg-transparent border-none text-subtext cursor-pointer transition-colors hover:bg-overlay11-active"
+      class="p-1 text-subtext hover:bg-overlay11-active cursor-pointer rounded-full border-none bg-transparent transition-colors"
       data-testid="prev-month-btn"
       @click="handlePrevMonth">
       <div class="i-lucide:chevron-left" />
@@ -91,18 +82,18 @@ const isToday = (date: Date) => {
     </h2>
 
     <button
-      class="p-1 rounded-full bg-transparent border-none text-subtext cursor-pointer transition-colors hover:bg-overlay11-active"
+      class="p-1 text-subtext hover:bg-overlay11-active cursor-pointer rounded-full border-none bg-transparent transition-colors"
       data-testid="next-month-btn"
       @click="handleNextMonth">
       <div class="i-lucide:chevron-right" />
     </button>
   </div>
 
-  <div class="p-0 overflow-hidden flex flex-col h-full flex-1 overflow-y-auto" data-testid="activity-list">
+  <div class="p-0 flex h-full flex-1 flex-col overflow-hidden overflow-y-auto" data-testid="activity-list">
     <div v-if="loading && activities.length === 0" class="p-4 stack">
-      <div v-for="i in 28" :key="i" class="flex items-center gap-4 animate-pulse">
-        <div class="w-12 h-12 rounded-lg flex-shrink-0 bg-overlay1" />
-        <div class="h-4 w-1/3 rounded-md bg-overlay1" />
+      <div v-for="i in 28" :key="i" class="gap-4 animate-pulse flex items-center">
+        <div class="w-12 h-12 rounded-lg bg-overlay1 flex-shrink-0" />
+        <div class="h-4 rounded-md bg-overlay1 w-1/3" />
       </div>
     </div>
 
@@ -111,31 +102,31 @@ const isToday = (date: Date) => {
         v-for="day in daysInMonth"
         :key="day.toISOString()"
         :class="[
-          'flex items-stretch min-h-16 cursor-pointer transition-colors relative border-b border-overlay0',
+          'min-h-16 border-overlay0 relative flex cursor-pointer items-stretch border-b transition-colors',
           isToday(day) ? 'bg-blue-50/10' : 'hover:bg-surface0',
         ]"
         data-testid="day-item"
         @click="handleDateClick(day)">
-        <div class="stack items-center justify-center w-12 flex-shrink-0 p-2 transition-colors">
+        <div class="stack w-12 p-2 flex-shrink-0 items-center justify-center transition-colors">
           <span
             :class="[
-              'text-lg font-bold leading-none text',
+              'text-lg font-bold text leading-none',
               isSunday(day) ? 'text-red-500' : isSaturday(day) ? 'text-blue-500' : '',
             ]">
             {{ getDay(day) }}
           </span>
           <span
             :class="[
-              'text-xs font-medium leading-none mt-1 text-subtext',
+              'text-xs font-medium mt-1 text-subtext leading-none',
               isSunday(day) ? 'text-red-500' : isSaturday(day) ? 'text-blue-500' : '',
             ]">
             {{ getWeekday(day) }}
           </span>
         </div>
 
-        <div class="flex-1 flex flex-col justify-center p-2">
+        <div class="p-2 flex flex-1 flex-col justify-center">
           <div v-if="getActivitiesForDay(day).length > 0" class="flex-between">
-            <div class="flex items-baseline gap-2">
+            <div class="gap-2 flex items-baseline">
               <span class="text-sub">合計</span>
               <span class="text-xl font-bold text">
                 {{ getActivitiesForDay(day).reduce((sum, a) => sum + a.period, 0) }}
@@ -145,8 +136,8 @@ const isToday = (date: Date) => {
             <span class="text-sm text-subtext"> {{ getActivitiesForDay(day).length }}件の記録 </span>
           </div>
 
-          <div v-else class="h-full flex items-center opacity-0 hover:opacity-100">
-            <span class="inline-flex items-center gap-1 text-overlay0 transition-opacity day-row:hover:opacity-100">
+          <div v-else class="flex h-full items-center opacity-0 hover:opacity-100">
+            <span class="gap-1 text-overlay0 day-row:hover:opacity-100 inline-flex items-center transition-opacity">
               <div class="i-lucide:plus" />
               記録を追加
             </span>

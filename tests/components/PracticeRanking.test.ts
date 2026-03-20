@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
-
 import PracticeRanking from '@/src/components/home/PracticeRanking.vue';
 
 describe('PracticeRanking.vue', () => {

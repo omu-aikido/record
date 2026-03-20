@@ -1,6 +1,5 @@
-import path from 'node:path';
-
 import vue from '@vitejs/plugin-vue';
+import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 const __dirname = path.resolve();

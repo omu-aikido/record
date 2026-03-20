@@ -1,13 +1,12 @@
+import { AccountMetadata } from '@/share/types/account';
+import { ArkErrors } from 'arktype';
 import { arktypeValidator } from '@hono/arktype-validator';
 import { getAuth } from '@hono/clerk-auth';
-import { ArkErrors } from 'arktype';
 import { Hono } from 'hono';
-
-import { getProfile, getUser, patchProfile } from '@/server/clerk/profile';
 import { notify } from '@/server/lib/observability';
-import { AccountMetadata } from '@/share/types/account';
-import { updateAccountSchema } from '@/share/types/clerkClient';
 import { Role } from '@/share/types/role';
+import { updateAccountSchema } from '@/share/types/clerkClient';
+import { getProfile, getUser, patchProfile } from '@/server/clerk/profile';
 
 export const clerk = new Hono<{ Bindings: Env }>() //
   .get('/account', async (c) => {

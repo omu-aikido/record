@@ -1,11 +1,10 @@
-import { clerkPlugin } from '@clerk/vue';
-import { VueQueryPlugin, QueryClient } from '@tanstack/vue-query';
-import { createApp } from 'vue';
-
 import App from './App.vue';
+import { clerkPlugin } from '@clerk/vue';
+import { createApp } from 'vue';
 import { initAuthState } from './composable/useAuth';
 import router from './router';
-
+import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
+// oxlint-disable import/no-unassigned-import
 import './assets/main.css';
 import '@unocss/reset/tailwind-compat.css';
 import 'virtual:uno.css';
@@ -38,7 +37,7 @@ app.use(VueQueryPlugin, { queryClient });
 app.use(router);
 (async () => {
   try {
-    initAuthState();
+    await initAuthState();
     app.mount('#app');
   } catch {
     console.error(new Date().toLocaleTimeString(), 'Failed to initialize app');

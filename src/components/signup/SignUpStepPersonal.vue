@@ -1,6 +1,6 @@
 <template>
   <div class="stack">
-    <div class="grid grid-cols-2 gap-4">
+    <div class="gap-4 grid grid-cols-2">
       <Input
         id="lastName"
         name="lastName"
@@ -35,7 +35,7 @@
       :error="formErrors.username"
       @update:model-value="onUpdate('username', $event)" />
 
-    <div class="flex justify-between pt-2">
+    <div class="pt-2 flex justify-between">
       <button type="button" class="btn-secondary" :disabled="isSignUpCreated" @click="prevStep">戻る</button>
       <button type="button" class="btn-primary" :disabled="isSignUpCreated" @click="handleNext">次へ</button>
     </div>
@@ -53,11 +53,9 @@ defineProps<{
   handleNext: () => void;
   prevStep: () => void;
 }>();
-
 const emit = defineEmits<{
   (e: 'update:formValue', key: keyof SignUpFormData, value: string | number): void;
 }>();
-
 const onUpdate = (key: keyof SignUpFormData, value: string | number) => {
   emit('update:formValue', key, value);
 };

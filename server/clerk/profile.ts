@@ -1,10 +1,8 @@
-import { createClerkClient } from '@clerk/backend';
-import { getAuth } from '@hono/clerk-auth';
+import { AccountMetadata } from '@/share/types/account';
 import { ArkErrors } from 'arktype';
 import type { Context } from 'hono';
-
-import { AccountMetadata } from '@/share/types/account';
-
+import { createClerkClient } from '@clerk/backend';
+import { getAuth } from '@hono/clerk-auth';
 import { notify } from '../lib/observability';
 
 export const getProfile = async (c: Context) => {

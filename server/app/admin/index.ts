@@ -1,7 +1,5 @@
-import { Hono } from 'hono';
-
 import { ensureAdmin } from '@/server/middleware/admin';
-
+import { Hono } from 'hono';
 import statsApp from './stats';
 import usersApp from './users';
 

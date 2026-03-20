@@ -1,6 +1,5 @@
 import { QueryClient } from '@tanstack/vue-query';
 import { describe, it, expect } from 'vitest';
-
 import { AccountMetadata } from '@/share/types/account';
 import { queryKeys } from '@/src/lib/queryKeys';
 
@@ -8,25 +7,30 @@ import { queryKeys } from '@/src/lib/queryKeys';
 // We can import queryKeys from src, but need to mock hc type dependencies if they are complex
 // For now, let's use the actual queryKeys since it's a pure function object
 
+const mockProfileData = {
+  id: 'user_123',
+  role: 'member',
+  grade: 1,
+  getGradeAt: '2024-01-01',
+  joinedAt: 2024,
+  year: 'b1',
+};
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
+const updatedProfile = {
+  ...mockProfileData,
+  grade: 2, // Promoted
+};
+
 describe('Profile Cache Consistency Integration', () => {
   it('enforces { profile: ... } shape for shared profile cache', async () => {
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-        },
-      },
-    });
-
-    const mockProfileData = {
-      id: 'user_123',
-      role: 'member',
-      grade: 1,
-      getGradeAt: '2024-01-01',
-      joinedAt: 2024,
-      year: 'b1',
-    };
-
     const cacheKey = queryKeys.user.clerk.profile();
 
     // 1. Simulate Home.vue fetching data
@@ -57,13 +61,8 @@ describe('Profile Cache Consistency Integration', () => {
 
     // 3. Simulate ProfileCard.vue UPDATING the cache (e.g. after edit)
     // It should maintain the { profile: ... } wrapper
-    const updatedProfile = {
-      ...mockProfileData,
-      grade: 2, // Promoted
-    };
 
     const validatedProfile = AccountMetadata(updatedProfile);
-    // @ts-ignore - ArkType validation check simulation
     if (validatedProfile instanceof Error) throw new Error('Validation failed');
 
     // This replicates the fixed setQueryData in ProfileCard.vue:

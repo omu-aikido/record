@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-
 import { login } from './auth-helper';
 
 test('redirects to sign-in after sign out when accessing protected route', async ({ page }) => {

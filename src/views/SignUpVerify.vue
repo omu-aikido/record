@@ -1,6 +1,6 @@
 <template>
-  <div class="flex items-center justify-center p-4">
-    <div class="card w-full h-full mx-auto max-w-md">
+  <div class="p-4 flex items-center justify-center">
+    <div class="card max-w-md mx-auto h-full w-full">
       <div class="p-6 pb-4">
         <h1 class="heading-1">認証コードの確認</h1>
         <p class="mt-2 text-base text-subtext">メールアドレスに送信された認証コードを入力してください。</p>
@@ -30,11 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { useClerk } from '@clerk/vue';
-import { useSignUpVerify } from '@/src/composable/useSignUpVerify';
 import Input from '@/src/components/ui/UiInput.vue';
+import { useClerk } from '@clerk/vue';
+import { useRouter } from 'vue-router';
+import { useSignUpVerify } from '@/src/composable/useSignUpVerify';
+import { onMounted, watch } from 'vue';
 
 const router = useRouter();
 const clerk = useClerk();

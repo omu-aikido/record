@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
-
 import AdminMenu from '@/src/components/admin/AdminMenu.vue';
 
 // Override vue-router mock specifically for this test file

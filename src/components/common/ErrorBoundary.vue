@@ -1,26 +1,26 @@
 <template>
-  <div v-if="hasError" class="min-h-screen flex items-center justify-center bg-base p-4" data-testid="error-boundary">
-    <div class="text-center w-full max-w-lg">
-      <img src="/500%20InternalServerError.png" alt="500 Internal Server Error" class="w-full h-auto mb-8 mx-auto" />
+  <div v-if="hasError" class="bg-base p-4 flex min-h-screen items-center justify-center" data-testid="error-boundary">
+    <div class="max-w-lg w-full text-center">
+      <img src="/500%20InternalServerError.png" alt="500 Internal Server Error" class="mb-8 mx-auto h-auto w-full" />
       <p class="text-subtext mb-8">予期せぬエラーが発生しました。しばらく時間を置いてから再度お試しください。</p>
       <div
         v-if="errorMessage"
-        class="mb-6 p-4 bg-red-500/10 border border-red-500 rounded-lg"
+        class="mb-6 p-4 bg-red-500/10 border-red-500 rounded-lg border"
         data-testid="error-content">
         <p class="text-sm text-red-500 font-mono text-left break-words">
           {{ errorMessage }}
         </p>
       </div>
 
-      <div class="flex flex-col gap-3">
+      <div class="gap-3 flex flex-col">
         <button
-          class="w-full px-6 py-3 bg-blue-500 text-white font-medium border-none rounded-lg cursor-pointer transition-colors hover:bg-blue-600"
+          class="px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 w-full cursor-pointer border-none transition-colors"
           data-testid="reload-btn"
           @click="handleReload">
           ページを再読み込み
         </button>
         <button
-          class="w-full px-6 py-3 bg-overlay1 text font-medium border-none rounded-lg cursor-pointer transition-colors hover:bg-overlay0"
+          class="px-6 py-3 bg-overlay1 text font-medium rounded-lg hover:bg-overlay0 w-full cursor-pointer border-none transition-colors"
           data-testid="home-btn"
           @click="handleGoHome">
           ホームに戻る
@@ -32,8 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import { onErrorCaptured, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { onErrorCaptured, onMounted, onUnmounted, ref } from 'vue';
 
 const router = useRouter();
 

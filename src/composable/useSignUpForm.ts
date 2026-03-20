@@ -1,9 +1,8 @@
-import type { ClerkAPIError } from "@clerk/shared/types";
+import type { ClerkAPIError } from '@clerk/shared/types';
 import { useClerk } from '@clerk/vue';
 import { ArkErrors, type } from 'arktype';
 import { reactive, readonly, ref } from 'vue';
 
-// Schema for form data validation using ArkType
 const formDataSchema = type({
   email: /.+@.+\..+/,
   newPassword: '10<=string<=100',
@@ -17,11 +16,131 @@ const formDataSchema = type({
   legalAccepted: 'boolean',
 });
 
-// Type inference from the schema
 export type SignUpFormData = typeof formDataSchema.infer;
 export type FormErrors = Record<keyof SignUpFormData | 'general', string>;
 
 type SignUpStep = 'basic' | 'personal' | 'profile';
+
+const getValidationSchema = (currentStep: SignUpStep) => {
+  switch (currentStep) {
+    case 'basic':
+      return type({ email: /.+@.+\..+/, newPassword: '10<=string<=100' });
+    case 'personal':
+      return type({
+        firstName: '2<=string<=50',
+        lastName: '2<=string<=50',
+        username: "6<=string<=50 | '' | undefined",
+      });
+    case 'profile':
+      return type({
+        year: 'string',
+        grade: 'number',
+        joinedAt: 'number',
+        getGradeAt: 'string | null',
+        legalAccepted: 'true',
+      });
+    default:
+      return null;
+  }
+};
+
+const stepOrder: SignUpStep[] = ['basic', 'personal', 'profile'];
+
+const getNextStep = (currentStep: SignUpStep): SignUpStep | null => {
+  const idx = stepOrder.indexOf(currentStep);
+  return idx < stepOrder.length - 1 ? (stepOrder[idx + 1] ?? null) : null;
+};
+
+const getPrevStep = (currentStep: SignUpStep): SignUpStep | null => {
+  const idx = stepOrder.indexOf(currentStep);
+  return idx > 0 ? (stepOrder[idx - 1] ?? null) : null;
+};
+
+const validateStep = (
+  currentStep: SignUpStep,
+  formValues: SignUpFormData,
+  formErrors: Partial<FormErrors>
+): boolean => {
+  Object.keys(formErrors).forEach((key) => delete formErrors[key as keyof FormErrors]);
+
+  const schema = getValidationSchema(currentStep);
+  if (!schema) return false;
+
+  const result = schema(formValues);
+
+  if (result instanceof ArkErrors) {
+    for (const error of result) {
+      formErrors[error.path[0] as keyof FormErrors] = error.message;
+    }
+    return false;
+  }
+  return true;
+};
+
+const createSignUpParams = (formValues: SignUpFormData) => ({
+  emailAddress: formValues.email,
+  password: formValues.newPassword,
+  firstName: formValues.firstName,
+  lastName: formValues.lastName,
+  ...(formValues.username !== undefined && {
+    username: formValues.username,
+  }),
+  legalAccepted: formValues.legalAccepted,
+  unsafeMetadata: {
+    year: formValues.year,
+    grade: formValues.grade,
+    joinedAt: formValues.joinedAt,
+    getGradeAt: formValues.getGradeAt,
+  },
+});
+
+const handleClerkSignUp = async (
+  clerk: ReturnType<typeof useClerk>,
+  formValues: SignUpFormData,
+  formErrors: Partial<FormErrors>,
+  clerkErrors: ReturnType<typeof ref<ClerkAPIError[]>>,
+  isSignUpCreated: ReturnType<typeof ref<boolean>>
+): Promise<boolean> => {
+  if (!clerk.value?.loaded || isSignUpCreated.value) {
+    if (!isSignUpCreated.value) {
+      formErrors.general = 'Authentication service is not available';
+    }
+    return false;
+  }
+
+  const fullValidation = formDataSchema(formValues);
+  if (fullValidation instanceof ArkErrors) {
+    formErrors.general = 'Form is invalid.';
+    return false;
+  }
+
+  isSignUpCreated.value = true;
+  clerkErrors.value = [];
+  delete formErrors.general;
+
+  try {
+    if (!clerk.value.client) {
+      throw new Error('Clerk client not available');
+    }
+    const signUpParams = createSignUpParams(formValues);
+
+    await clerk.value.client.signUp.create(signUpParams);
+    await clerk.value.client.signUp.prepareEmailAddressVerification({
+      strategy: 'email_code',
+    });
+
+    return true;
+  } catch (err: unknown) {
+    isSignUpCreated.value = false;
+    const errorMsg = 'User registration failed';
+    if (err && typeof err === 'object' && 'errors' in err) {
+      clerkErrors.value = (err as { errors: ClerkAPIError[] }).errors;
+    } else {
+      formErrors.general = errorMsg;
+    }
+    return false;
+  }
+};
 
 export function useSignUpForm(currentYear: number) {
   const clerk = useClerk();
@@ -45,121 +164,28 @@ export function useSignUpForm(currentYear: number) {
   const clerkErrors = ref<ClerkAPIError[]>([]);
   const isSignUpCreated = ref(false);
 
-  const validateStep = (currentStep: SignUpStep): boolean => {
-    // Clear previous errors
-    Object.keys(formErrors).forEach((key) => delete formErrors[key as keyof FormErrors]);
-
-    let schema;
-    switch (currentStep) {
-      case 'basic':
-        schema = type({ email: /.+@.+\..+/, newPassword: '10<=string<=100' });
-        break;
-      case 'personal':
-        schema = type({
-          firstName: '2<=string<=50',
-          lastName: '2<=string<=50',
-          username: "6<=string<=50 | '' | undefined",
-        });
-        break;
-      case 'profile':
-        schema = type({
-          year: 'string',
-          grade: 'number',
-          joinedAt: 'number',
-          getGradeAt: 'string | null',
-          legalAccepted: 'true',
-        });
-        break;
-      default:
-        return false;
-    }
-
-    const result = schema(formValues);
-
-    if (result instanceof ArkErrors) {
-      for (const error of result) {
-        formErrors[error.path[0] as keyof FormErrors] = error.message;
-      }
-      return false;
-    }
-    return true;
+  const validateStepFn = (currentStep?: SignUpStep) => {
+    return validateStep(currentStep ?? step.value, formValues, formErrors);
   };
 
   const nextStep = () => {
-    if (step.value === 'basic') step.value = 'personal';
-    else if (step.value === 'personal') step.value = 'profile';
+    const next = getNextStep(step.value);
+    if (next) step.value = next;
   };
 
   const prevStep = () => {
-    if (step.value === 'profile') step.value = 'personal';
-    else if (step.value === 'personal') step.value = 'basic';
+    const prev = getPrevStep(step.value);
+    if (prev) step.value = prev;
   };
 
   const setFormValue = <K extends keyof SignUpFormData>(key: K, value: SignUpFormData[K]) => {
     formValues[key] = value;
-    // Clear error on change
     if (key in formErrors) {
       delete formErrors[key as keyof FormErrors];
     }
   };
 
-  // This function will be moved to useSignUp.ts and adapted
-  const handleClerkSignUp = async () => {
-    if (!clerk.value?.loaded || isSignUpCreated.value) {
-      if (!isSignUpCreated.value) {
-        formErrors.general = 'Authentication service is not available';
-      }
-      return false;
-    }
-
-    const fullValidation = formDataSchema(formValues);
-    if (fullValidation instanceof ArkErrors) {
-      formErrors.general = 'Form is invalid.';
-      return false;
-    }
-
-    isSignUpCreated.value = true;
-    clerkErrors.value = [];
-    delete formErrors.general;
-
-    try {
-      if (!clerk.value.client) {
-        throw new Error('Clerk client not available');
-      }
-      const signUpParams = {
-        emailAddress: formValues.email,
-        password: formValues.newPassword,
-        firstName: formValues.firstName,
-        lastName: formValues.lastName,
-        ...(formValues.username !== undefined && {
-          username: formValues.username,
-        }),
-        legalAccepted: formValues.legalAccepted,
-        unsafeMetadata: {
-          year: formValues.year,
-          grade: formValues.grade,
-          joinedAt: formValues.joinedAt,
-          getGradeAt: formValues.getGradeAt,
-        },
-      };
-
-      await clerk.value.client.signUp.create(signUpParams);
-      await clerk.value.client.signUp.prepareEmailAddressVerification({
-        strategy: 'email_code',
-      });
-
-      return true;
-    } catch (err: unknown) {
-      isSignUpCreated.value = false; // Reset on error
-      const errorMsg = 'User registration failed';
-      if (err && typeof err === 'object' && 'errors' in err) {
-        clerkErrors.value = (err as { errors: ClerkAPIError[] }).errors;
-      } else {
-        formErrors.general = errorMsg;
-      }
-      return false;
-    }
-  };
+  const signUp = () => handleClerkSignUp(clerk, formValues, formErrors, clerkErrors, isSignUpCreated);
 
   return {
     step: readonly(step),
@@ -167,10 +193,10 @@ export function useSignUpForm(currentYear: number) {
     formErrors: readonly(formErrors),
     clerkErrors: readonly(clerkErrors),
     isSignUpCreated: readonly(isSignUpCreated),
-    validateStep,
+    validateStep: validateStepFn,
     nextStep,
     prevStep,
     setFormValue,
-    handleClerkSignUp,
+    handleClerkSignUp: signUp,
   };
 }

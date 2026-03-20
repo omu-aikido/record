@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Input from '@/src/components/ui/UiInput.vue';
 import { format } from 'date-fns';
+import Input from '@/src/components/ui/UiInput.vue';
 import { ref, watch } from 'vue';
 
 interface Props {

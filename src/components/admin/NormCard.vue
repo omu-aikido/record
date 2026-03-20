@@ -1,11 +1,11 @@
 <template>
   <a v-bind:href="'/admin/users/' + user.id" class="card stack md:p-6 cursor-pointer" data-testid="norm-card">
-    <div class="flex items-start justify-between gap-3">
-      <div class="flex items-center gap-3">
+    <div class="gap-3 flex items-start justify-between">
+      <div class="gap-3 flex items-center">
         <img :src="user.imageUrl" alt="" class="avatar-md" />
         <div>
           <div class="font-medium text">{{ user.lastName }} {{ user.firstName }}</div>
-          <div class="text-sub flex flex-wrap gap-x-2 gap-y-0">
+          <div class="text-sub gap-x-2 gap-y-0 flex flex-wrap">
             <span>{{ norm.gradeLabel }}</span>
             <span v-if="norm.lastPromotionDate" class="text-subtext">•</span>
             <span v-if="norm.lastPromotionDate">昇級: {{ norm.lastPromotionDate }}</span>
@@ -19,15 +19,15 @@
       </div>
     </div>
 
-    <div class="flex-1 flex flex-col justify-end gap-2">
-      <div class="flex flex-col gap-1">
-        <div class="flex justify-between text-sub">
+    <div class="gap-2 flex flex-1 flex-col justify-end">
+      <div class="gap-1 flex flex-col">
+        <div class="text-sub flex justify-between">
           <span>進捗率 {{ Math.min(100, Math.round(progress)) }}%</span>
           <span class="font-medium text-subtext">{{ norm.current }} / {{ norm.required }} 回</span>
         </div>
-        <div class="h-1.5 w-full bg-overlay1 rounded-full overflow-hidden">
+        <div class="h-1.5 bg-overlay1 w-full overflow-hidden rounded-full">
           <div
-            class="h-full bg-blue-500 rounded-full transition-[width] duration-500 ease-out"
+            class="bg-blue-500 ease-out h-full rounded-full transition-[width] duration-500"
             :style="{ width: `${Math.min(100, progress)}%` }"
             data-testid="norm-progress" />
         </div>

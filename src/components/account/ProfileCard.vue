@@ -5,22 +5,22 @@
         <h3 class="text-lg font-bold text">プロフィール</h3>
         <div class="h-8 w-12 rounded-md bg-overlay-active" />
       </div>
-      <div class="flex flex-col gap-3">
-        <div class="flex justify-between items-center py-1">
+      <div class="gap-3 flex flex-col">
+        <div class="py-1 flex items-center justify-between">
           <span class="text text-subtext">級段位</span>
-          <span class="text font-medium text-transparent bg-overlay-active rounded-md">五段</span>
+          <span class="text font-medium bg-overlay-active rounded-md text-transparent">五段</span>
         </div>
-        <div class="flex justify-between items-center py-1">
+        <div class="py-1 flex items-center justify-between">
           <span class="text text-subtext">取得日</span>
-          <span class="text font-medium text-transparent bg-overlay-active rounded-md">2024/01/01</span>
+          <span class="text font-medium bg-overlay-active rounded-md text-transparent">2024/01/01</span>
         </div>
-        <div class="flex justify-between items-center py-1">
+        <div class="py-1 flex items-center justify-between">
           <span class="text text-subtext">入部年</span>
-          <span class="text font-medium text-transparent bg-overlay-active rounded-md">2024</span>
+          <span class="text font-medium bg-overlay-active rounded-md text-transparent">2024</span>
         </div>
-        <div class="flex justify-between items-center py-1">
+        <div class="py-1 flex items-center justify-between">
           <span class="text text-subtext">学年</span>
-          <span class="text font-medium text-transparent bg-overlay-active rounded-md">学部4年</span>
+          <span class="text font-medium bg-overlay-active rounded-md text-transparent">学部4年</span>
         </div>
       </div>
     </div>
@@ -30,22 +30,22 @@
         <h3 class="text-lg font-bold text">プロフィール</h3>
         <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="isEditing = true">編集</button>
       </div>
-      <div class="flex flex-col gap-3 text-subtext">
-        <div class="flex justify-between items-center py-1">
+      <div class="gap-3 text-subtext flex flex-col">
+        <div class="py-1 flex items-center justify-between">
           <span class="text-subtext">級段位</span>
           <span class="font-medium text">{{ translateGrade(profile?.grade ?? '') || '-' }}</span>
         </div>
-        <div class="flex justify-between items-center py-1">
+        <div class="py-1 flex items-center justify-between">
           <span class="text-subtext">取得日</span>
           <span class="font-medium text">
             {{ profile?.getGradeAt ? new Date(profile.getGradeAt).toLocaleDateString() : '-' }}
           </span>
         </div>
-        <div class="flex justify-between items-center py-1">
+        <div class="py-1 flex items-center justify-between">
           <span class="text-subtext">入部年</span>
           <span class="font-medium text">{{ profile?.joinedAt || '-' }}</span>
         </div>
-        <div class="flex justify-between items-center py-1">
+        <div class="py-1 flex items-center justify-between">
           <span class="text-subtext">学年</span>
           <span class="font-medium text">{{ translateYear(profile?.year ?? '') || '-' }}</span>
         </div>
@@ -53,16 +53,16 @@
     </div>
 
     <form v-else class="stack" @submit.prevent="handleSubmit">
-      <div class="flex flex-col gap-1.5">
-        <label class="block form-label">級段位</label>
+      <div class="gap-1.5 flex flex-col">
+        <label class="form-label block">級段位</label>
         <Listbox v-model="formData.grade">
-          <div class="relative mt-1">
+          <div class="mt-1 relative">
             <ListboxButton
-              class="relative w-full cursor-default rounded-md bg-surface0 border border-overlay0 px-3 py-2 pr-10 text-left text text focus:outline-none focus:ring-2 focus:ring-blue-500">
+              class="rounded-md bg-surface0 border-overlay0 px-3 py-2 pr-10 text text focus:ring-blue-500 relative w-full cursor-default border text-left focus:ring-2 focus:outline-none">
               <span class="block overflow-hidden text-ellipsis whitespace-nowrap">{{
                 translateGrade(formData.grade)
               }}</span>
-              <span class="pointer-events-none absolute inset-0 right-0 flex items-center pr-2 justify-end">
+              <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
                 <ChevronsUpDownIcon class="w-4 h-4 text-subtext" aria-hidden="true" />
               </span>
             </ListboxButton>
@@ -71,18 +71,18 @@
               leave-from-class="opacity-100"
               leave-to-class="opacity-0">
               <ListboxOptions
-                class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-surface0 p-1 shadow-md border border-overlay0">
+                class="mt-1 max-h-60 rounded-md bg-surface0 p-1 shadow-md border-overlay0 absolute z-10 w-full overflow-auto border">
                 <ListboxOption
                   v-for="gradeOption in gradeOptions"
                   :key="gradeOption.grade"
                   v-slot="{ active, selected }"
                   :value="gradeOption.grade">
-                  <li :class="['relative cursor-default select-none py-2 px-4 pr-10 text', active ? 'bg-overlay' : '']">
+                  <li :class="['py-2 px-4 pr-10 text relative cursor-default select-none', active ? 'bg-overlay' : '']">
                     <span
                       :class="['block overflow-hidden text-ellipsis whitespace-nowrap', selected ? 'font-medium' : '']">
                       {{ gradeOption.name }}
                     </span>
-                    <span v-if="selected" class="absolute inset-0 left-0 flex items-center pl-3 text-blue-500">
+                    <span v-if="selected" class="inset-0 left-0 pl-3 text-blue-500 absolute flex items-center">
                       <CheckIcon class="w-4 h-4" aria-hidden="true" />
                     </span>
                   </li>
@@ -97,16 +97,16 @@
 
       <Input v-model="formData.joinedAt" type="number" label="入部年" min="2020" max="9999" />
 
-      <div class="flex flex-col gap-1.5">
-        <label class="block text-sm font-medium text-subtext">学年</label>
+      <div class="gap-1.5 flex flex-col">
+        <label class="text-sm font-medium text-subtext block">学年</label>
         <Listbox v-model="formData.year">
-          <div class="relative mt-1">
+          <div class="mt-1 relative">
             <ListboxButton
-              class="relative w-full cursor-default rounded-md bg-surface0 border border-overlay0 px-3 py-2 pr-10 text-left text text focus:outline-none focus:ring-2 focus:ring-blue-500">
+              class="rounded-md bg-surface0 border-overlay0 px-3 py-2 pr-10 text text focus:ring-blue-500 relative w-full cursor-default border text-left focus:ring-2 focus:outline-none">
               <span class="block overflow-hidden text-ellipsis whitespace-nowrap">{{
                 translateYear(formData.year)
               }}</span>
-              <span class="pointer-events-none absolute inset-0 right-0 flex items-center pr-2 justify-end">
+              <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
                 <ChevronsUpDownIcon class="w-4 h-4 text-subtext" aria-hidden="true" />
               </span>
             </ListboxButton>
@@ -115,18 +115,18 @@
               leave-from-class="opacity-100"
               leave-to-class="opacity-0">
               <ListboxOptions
-                class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-surface0 p-1 shadow-md border border-overlay0">
+                class="mt-1 max-h-60 rounded-md bg-surface0 p-1 shadow-md border-overlay0 absolute z-10 w-full overflow-auto border">
                 <ListboxOption
                   v-for="yearOption in yearOptions"
                   :key="yearOption.year"
                   v-slot="{ active, selected }"
                   :value="yearOption.year">
-                  <li :class="['relative cursor-default select-none py-2 px-4 pr-10 text', active ? 'bg-overlay' : '']">
+                  <li :class="['py-2 px-4 pr-10 text relative cursor-default select-none', active ? 'bg-overlay' : '']">
                     <span
                       :class="['block overflow-hidden text-ellipsis whitespace-nowrap', selected ? 'font-medium' : '']">
                       {{ yearOption.name }}
                     </span>
-                    <span v-if="selected" class="absolute inset-0 left-0 flex items-center pl-3 text-blue-500">
+                    <span v-if="selected" class="inset-0 left-0 pl-3 text-blue-500 absolute flex items-center">
                       <CheckIcon class="w-4 h-4" aria-hidden="true" />
                     </span>
                   </li>
@@ -141,7 +141,7 @@
         {{ message }}
       </p>
 
-      <div class="flex gap-3 pt-2">
+      <div class="gap-3 pt-2 flex">
         <button type="submit" class="btn-primary w-full" :disabled="isSubmitting">
           {{ isSubmitting ? '保存中...' : '保存' }}
         </button>
@@ -152,16 +152,16 @@
 </template>
 
 <script setup lang="ts">
-import { grade, translateGrade } from '@/share/lib/grade';
-import { translateYear, year } from '@/share/lib/year';
 import { AccountMetadata } from '@/share/types/account';
-import Input from '@/src/components/ui/UiInput.vue';
-import hc from '@/src/lib/honoClient';
-import { queryKeys } from '@/src/lib/queryKeys';
-import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { ArkErrors } from 'arktype';
+import hc from '@/src/lib/honoClient';
+import Input from '@/src/components/ui/UiInput.vue';
+import { queryKeys } from '@/src/lib/queryKeys';
 import { computed, reactive, ref, watch } from 'vue';
+import { grade, translateGrade } from '@/share/lib/grade';
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue';
+import { translateYear, year } from '@/share/lib/year';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 
 interface FormData {
   grade: number;

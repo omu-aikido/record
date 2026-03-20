@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-col gap-6 px-3 py-4 md:px-6">
+  <div class="gap-6 px-3 py-4 md:px-6 flex flex-col">
     <AdminMenu />
-    <div class="flex items-center gap-2 text-sub">
-      <router-link to="/admin/accounts" class="hover:underline hover:text-blue-500"> アカウント一覧 </router-link>
+    <div class="gap-2 text-sub flex items-center">
+      <router-link to="/admin/accounts" class="hover:text-blue-500 hover:underline"> アカウント一覧 </router-link>
       <span class="text-subtext">/</span>
       <span class="font-medium text">ユーザー詳細</span>
     </div>
@@ -16,16 +16,16 @@
       {{ error }}
     </div>
 
-    <div v-else-if="user" class="flex flex-col gap-6">
+    <div v-else-if="user" class="gap-6 flex flex-col">
       <div class="flex flex-col">
         <div class="stack">
-          <div class="flex justify-between items-start gap-4">
-            <div class="flex items-center gap-4">
+          <div class="gap-4 flex items-start justify-between">
+            <div class="gap-4 flex items-center">
               <img :src="user.imageUrl" alt="" class="avatar-lg" />
               <div class="flex flex-col">
-                <div class="flex items-center gap-2 flex-wrap">
+                <div class="gap-2 flex flex-wrap items-center">
                   <h1 class="heading-2">{{ user.lastName }} {{ user.firstName }}</h1>
-                  <div v-if="!isEditing" class="flex items-center gap-1.5">
+                  <div v-if="!isEditing" class="gap-1.5 flex items-center">
                     <span class="badge-gray">
                       {{ roleLabels[user.profile?.role as string] || '部員' }}
                     </span>
@@ -34,12 +34,12 @@
                     </span>
                   </div>
                 </div>
-                <div class="flex items-center flex-wrap gap-2 text-sub mt-1">
+                <div class="gap-2 text-sub mt-1 flex flex-wrap items-center">
                   <span>{{ user.emailAddress }}</span>
                   <template v-if="!isEditing">
-                    <span class="sq-1 rounded-full bg-subtext" />
+                    <span class="sq-1 bg-subtext rounded-full" />
                     <span>{{ yearLabels[user.profile?.year as string] || user.profile?.year }}</span>
-                    <span class="sq-1 rounded-full bg-subtext" />
+                    <span class="sq-1 bg-subtext rounded-full" />
                     <span>{{ user.profile?.joinedAt }}年度入部</span>
                   </template>
                 </div>
@@ -48,7 +48,7 @@
 
             <button
               v-if="!isEditing"
-              class="p-2 rounded-full bg-transparent text-subtext border-none cursor-pointer transition-all hover:bg-overlay1 hover:text-blue-500"
+              class="p-2 text-subtext hover:bg-overlay1 hover:text-blue-500 cursor-pointer rounded-full border-none bg-transparent transition-all"
               title="編集"
               @click="startEditing">
               <svg
@@ -67,8 +67,8 @@
           </div>
 
           <form v-if="isEditing" class="stack card" @submit.prevent="handleUpdateProfile">
-            <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
-              <div class="flex flex-col gap-1">
+            <div class="gap-4 md:grid-cols-2 grid grid-cols-1">
+              <div class="gap-1 flex flex-col">
                 <label class="form-label">役職</label>
                 <select v-model="formData.role" class="input-base h-fit">
                   <option v-for="(label, key) in roleLabels" :key="key" :value="key">
@@ -76,7 +76,7 @@
                   </option>
                 </select>
               </div>
-              <div class="flex flex-col gap-1">
+              <div class="gap-1 flex flex-col">
                 <label class="form-label">級段位</label>
                 <select v-model.number="formData.grade" class="input-base h-fit">
                   <option v-for="(label, key) in gradeLabels" :key="key" :value="key">
@@ -84,7 +84,7 @@
                   </option>
                 </select>
               </div>
-              <div class="flex flex-col gap-1">
+              <div class="gap-1 flex flex-col">
                 <label class="form-label">学年</label>
                 <select v-model="formData.year" class="input-base h-fit">
                   <option v-for="(label, key) in yearLabels" :key="key" :value="key">
@@ -101,7 +101,7 @@
               <Input v-model="formData.getGradeAt" type="date" label="級段位取得日" />
             </div>
 
-            <div class="flex justify-end gap-2 mt-2">
+            <div class="gap-2 mt-2 flex justify-end">
               <button type="button" class="btn-secondary" @click="cancelEditing">キャンセル</button>
               <button type="submit" class="btn-primary" :disabled="updating">
                 {{ updating ? '更新中...' : '更新' }}
@@ -113,9 +113,9 @@
         </div>
       </div>
 
-      <div v-if="stats" class="grid grid-cols-2 border border-overlay0 rounded-lg overflow-hidden">
-        <div class="flex flex-col border-r border-overlay0">
-          <div class="p-4 text-center border-b border-overlay0">
+      <div v-if="stats" class="border-overlay0 rounded-lg grid grid-cols-2 overflow-hidden border">
+        <div class="border-overlay0 flex flex-col border-r">
+          <div class="p-4 border-overlay0 border-b text-center">
             <p class="heading-1">
               {{ stats.trainCount }}
             </p>
@@ -129,7 +129,7 @@
           </div>
         </div>
         <div class="flex flex-col">
-          <div class="p-4 text-center border-b border-overlay0">
+          <div class="p-4 border-overlay0 border-b text-center">
             <p class="heading-1">
               {{ stats.totalDays }}
             </p>
@@ -150,14 +150,14 @@
         <div v-if="activities.length > 0">
           <div class="overflow-x-auto">
             <table class="table-base">
-              <thead class="border-b border-overlay0">
+              <thead class="border-overlay0 border-b">
                 <tr>
                   <th class="th-base">日時</th>
                   <th class="th-base">時間 (h)</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="activity in activities" :key="activity.id" class="border-b border-overlay0">
+                <tr v-for="activity in activities" :key="activity.id" class="border-overlay0 border-b">
                   <td class="td-base whitespace-nowrap">{{ new Date(activity.date).toLocaleDateString() }}</td>
                   <td class="td-base whitespace-nowrap">{{ activity.period }}</td>
                 </tr>
@@ -165,36 +165,36 @@
             </table>
           </div>
 
-          <div class="flex justify-between items-center py-4 border-t border-overlay0">
+          <div class="py-4 border-overlay0 flex items-center justify-between border-t">
             <button
               :disabled="page <= 1"
-              class="px-3 py-1 text-sm border border-overlay0 bg-transparent rounded-md text cursor-pointer transition-colors hover:bg-overlay0 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-1 text-sm border-overlay0 rounded-md text hover:bg-overlay0 cursor-pointer border bg-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               @click="page > 1 && changePage(page - 1)">
               前へ
             </button>
             <span class="text-sub">{{ page }} ページ目</span>
             <button
               :disabled="activities.length < limit"
-              class="px-3 py-1 text-sm border border-overlay0 bg-transparent rounded-md text cursor-pointer transition-colors hover:bg-overlay1 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-1 text-sm border-overlay0 rounded-md text hover:bg-overlay1 cursor-pointer border bg-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               @click="changePage(page + 1)">
               次へ
             </button>
           </div>
         </div>
 
-        <div v-else class="text-center p-8 text-sub">履歴はありません</div>
+        <div v-else class="p-8 text-sub text-center">履歴はありません</div>
       </div>
 
-      <div class="mt-8 border border-red-500/30 rounded-lg overflow-hidden">
-        <div class="px-4 py-3 bg-red-500/10 border-b border-red-500/20">
+      <div class="mt-8 border-red-500/30 rounded-lg overflow-hidden border">
+        <div class="px-4 py-3 bg-red-500/10 border-red-500/20 border-b">
           <h3 class="text-sm font-medium text-red-500">危険な操作</h3>
         </div>
         <div class="p-4 stack">
-          <div class="flex justify-between items-center">
+          <div class="flex items-center justify-between">
             <p class="text-sm font-medium text">ユーザーを削除</p>
             <button
               v-if="!showDeleteConfirm"
-              class="px-4 py-1.5 text-sm font-medium text-red-500 border border-red-500 bg-transparent rounded-md cursor-pointer transition-all hover:bg-red-500/10"
+              class="px-4 py-1.5 text-sm font-medium text-red-500 border-red-500 rounded-md hover:bg-red-500/10 cursor-pointer border bg-transparent transition-all"
               @click="showDeleteConfirm = true">
               削除
             </button>
@@ -203,7 +203,7 @@
             このユーザーとそのすべてのデータを完全に削除します。<strong>この操作は取り消せません。</strong>
           </p>
 
-          <div v-if="showDeleteConfirm && !showFinalConfirm" class="p-4 bg-red-500/5 rounded-md flex flex-col gap-3">
+          <div v-if="showDeleteConfirm && !showFinalConfirm" class="p-4 bg-red-500/5 rounded-md gap-3 flex flex-col">
             <p class="text-sm text-red-500">
               削除操作を続行するには、以下に
               <strong>{{ user?.lastName }}{{ user?.firstName }}</strong>
@@ -213,10 +213,10 @@
               v-model="deleteConfirmName"
               type="text"
               placeholder="ユーザー名を入力"
-              class="w-full px-3 py-2 border border-red-500/30 rounded-md text-base bg-base text focus:outline-none focus:ring-2 focus:ring-red-500" />
-            <div class="flex gap-2">
+              class="px-3 py-2 border-red-500/30 rounded-md text-base bg-base text focus:ring-red-500 w-full border focus:ring-2 focus:outline-none" />
+            <div class="gap-2 flex">
               <button
-                class="btn bg-transparent text-subtext hover:bg-base-overlay hover:text"
+                class="btn text-subtext hover:bg-base-overlay hover:text bg-transparent"
                 @click="
                   showDeleteConfirm = false;
                   deleteConfirmName = '';
@@ -234,10 +234,10 @@
 
           <div
             v-if="showFinalConfirm"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[4px]">
-            <div class="w-full max-w-md bg-base rounded-lg shadow-xl p-6 stack m-4">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
+            class="inset-0 bg-black/50 fixed z-50 flex items-center justify-center backdrop-blur-[4px]">
+            <div class="max-w-md bg-base rounded-lg shadow-xl p-6 stack m-4 w-full">
+              <div class="gap-3 flex items-center">
+                <div class="w-10 h-10 bg-red-500/10 flex items-center justify-center rounded-full">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="sq-5 text-red-500"
@@ -257,7 +257,7 @@
                 <strong>{{ user?.lastName }} {{ user?.firstName }}</strong>
                 さんのアカウントとすべての活動記録が削除されます。この操作は元に戻せません。
               </p>
-              <div class="flex justify-end gap-3">
+              <div class="gap-3 flex justify-end">
                 <button
                   class="btn-secondary"
                   @click="
@@ -284,11 +284,11 @@
 
 <script setup lang="ts">
 import AdminMenu from '@/src/components/admin/AdminMenu.vue';
-import Input from '@/src/components/ui/UiInput.vue';
 import hc from '@/src/lib/honoClient';
+import Input from '@/src/components/ui/UiInput.vue';
 import { queryKeys } from '@/src/lib/queryKeys';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { computed, ref, watch } from 'vue';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();

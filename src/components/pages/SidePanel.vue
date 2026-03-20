@@ -22,7 +22,7 @@
       leave-from-class="drawer-enter-to"
       leave-to-class="drawer-enter-from">
       <div v-if="isOpen" class="drawer" role="dialog" aria-modal="true" aria-label="サイドメニュー">
-        <div class="drawer-header flex justify-end mt-4 mr-4">
+        <div class="drawer-header mt-4 mr-4 flex justify-end">
           <button class="close-btn" aria-label="メニューを閉じる" @click="close">
             <div class="i-lucide:panel-right-close" />
           </button>
@@ -30,16 +30,16 @@
 
         <div class="mx-5">
           <Show when="signed-in">
-            <nav class="mt-6 flex flex-col gap-5">
-              <RouterLink to="/" class="flex-inline items-center gap-2 text" @click="close">
+            <nav class="mt-6 gap-5 flex flex-col">
+              <RouterLink to="/" class="flex-inline gap-2 text items-center" @click="close">
                 <div class="i-lucide:layout-dashboard" />
                 トップ
               </RouterLink>
-              <RouterLink to="/record" class="flex-inline items-center gap-2 text" @click="close">
+              <RouterLink to="/record" class="flex-inline gap-2 text items-center" @click="close">
                 <div class="i-lucide:clipboard-list" />
                 活動記録
               </RouterLink>
-              <RouterLink to="/account" class="flex-inline items-center gap-2 text" @click="close">
+              <RouterLink to="/account" class="flex-inline gap-2 text items-center" @click="close">
                 <UserAvatar alt="User Avatar" rounded />
                 アカウント設定
               </RouterLink>
@@ -50,7 +50,7 @@
         <Show when="signed-in">
           <hr class="my-5 mx-2" />
           <SignOutButton>
-            <button class="flex gap-2 mx-5 items-center w-full text">
+            <button class="gap-2 mx-5 text flex w-full items-center">
               <div class="i-lucide:log-out" />
               ログアウト
             </button>
@@ -62,9 +62,9 @@
 </template>
 
 <script setup lang="ts">
-import { Show, SignOutButton, UserAvatar } from '@clerk/vue';
-import { ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
+import { ref, watch } from 'vue';
+import { Show, SignOutButton, UserAvatar } from '@clerk/vue';
 
 // State
 const isOpen = ref(false);

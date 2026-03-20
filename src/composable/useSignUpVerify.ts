@@ -1,6 +1,6 @@
-import type { ClerkAPIError } from "@clerk/shared/types";
-import { useClerk } from '@clerk/vue';
+import type { ClerkAPIError } from '@clerk/shared/types';
 import { ref } from 'vue';
+import { useClerk } from '@clerk/vue';
 
 export function useSignUpVerify() {
   const clerk = useClerk();

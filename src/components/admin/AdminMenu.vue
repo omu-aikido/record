@@ -3,7 +3,7 @@
   <TabGroup
     :selected-index="selectedIndex"
     as="div"
-    class="border-b border-overlay1"
+    class="border-overlay1 border-b"
     data-testid="admin-menu"
     @change="handleTabChange">
     <TabList class="tab-list">
@@ -27,26 +27,23 @@
 </template>
 
 <script setup lang="ts">
-import { Tab, TabGroup, TabList } from '@headlessui/vue';
 import { computed } from 'vue';
+import { Tab, TabGroup, TabList } from '@headlessui/vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
-
 const tabs = [
   { name: 'ダッシュボード', path: '/admin' },
   { name: 'アカウント管理', path: '/admin/accounts' },
   { name: 'ノルマ管理', path: '/admin/norms' },
 ];
-
 const selectedIndex = computed(() => {
   const currentPath = route.path;
   if (currentPath.startsWith('/admin/users/')) return 1;
   const index = tabs.findIndex((tab) => tab.path === currentPath);
-  return index !== -1 ? index : 0;
+  return index === -1 ? 0 : index;
 });
-
 const handleTabChange = (index: number) => {
   const tab = tabs[index];
   if (tab) {

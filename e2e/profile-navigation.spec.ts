@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-
 import { login } from './auth-helper';
 
 test('profile data persists across navigation (Home <-> Account)', async ({ page }) => {

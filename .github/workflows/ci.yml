@@ -28,7 +28,7 @@ jobs:
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm -- config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -39,10 +39,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm -- install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Format
-        run: nix develop -c pnpm -- run format
+        run: nix develop -c pnpm run format
 
   lint:
     runs-on: ubuntu-latest
@@ -62,7 +62,7 @@ jobs:
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm -- config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -73,10 +73,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm -- install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Lint
-        run: nix develop -c pnpm -- run lint
+        run: nix develop -c pnpm run lint
 
   knip:
     runs-on: ubuntu-latest
@@ -96,7 +96,7 @@ jobs:
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm -- config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -107,10 +107,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm -- install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Knip
-        run: nix develop -c pnpm -- run knip
+        run: nix develop -c pnpm run knip
 
   type-check:
     runs-on: ubuntu-latest
@@ -130,7 +130,7 @@ jobs:
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm -- config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -141,7 +141,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm -- install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Generate Env File for Cloudflare Types
         run: |
@@ -154,10 +154,10 @@ jobs:
           echo "TURSO_DATABASE_URL=''" >> .env
 
       - name: Type Generation
-        run: nix develop -c pnpm -- run cf-typegen
+        run: nix develop -c pnpm run cf-typegen
 
       - name: Type Check
-        run: nix develop -c pnpm -- run type-check
+        run: nix develop -c pnpm run type-check
 
   build:
     runs-on: ubuntu-latest
@@ -177,7 +177,7 @@ jobs:
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm -- config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -188,10 +188,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm -- install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Build
-        run: nix develop -c pnpm -- run build-only
+        run: nix develop -c pnpm run build-only
 
   test:
     runs-on: ubuntu-latest
@@ -211,7 +211,7 @@ jobs:
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm -- config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v5
@@ -222,7 +222,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm -- install --frozen-lockfile
+        run: nix develop -c pnpm install --frozen-lockfile
 
       - name: Test
-        run: nix develop -c pnpm -- run test
+        run: nix develop -c pnpm run test

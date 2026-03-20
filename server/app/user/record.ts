@@ -1,13 +1,11 @@
-import { arktypeValidator } from '@hono/arktype-validator';
-import { getAuth } from '@hono/clerk-auth';
-import * as drizzleOrm from 'drizzle-orm';
-import { Hono } from 'hono';
-
-import { dbClient } from '@/server/db/drizzle';
 import { activity } from '@/server/db/schema';
-import * as records from '@/share/types/records';
-
+import { arktypeValidator } from '@hono/arktype-validator';
+import { dbClient } from '@/server/db/drizzle';
+import { getAuth } from '@hono/clerk-auth';
+import { Hono } from 'hono';
 import { calculatePeriodRange, getRankingData, invalidateRankingCache, maskRankingData } from './ranking';
+import * as drizzleOrm from 'drizzle-orm';
+import * as records from '@/share/types/records';
 
 export const record = new Hono<{ Bindings: Env }>()
   // GET /api/user/record - 活動記録一覧取得

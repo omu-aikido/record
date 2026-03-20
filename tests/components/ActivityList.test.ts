@@ -1,7 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { format } from 'date-fns';
 import { describe, it, expect } from 'vitest';
-
 import ActivityList from '@/src/components/record/ActivityList.vue';
 
 describe('ActivityList.vue', () => {

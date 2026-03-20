@@ -1,13 +1,12 @@
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
-import { Hono } from 'hono';
-import { secureHeaders } from 'hono/secure-headers';
-
 import adminApp from './app/admin';
-import userApp from './app/user';
-import { webhooks } from './app/webhooks/clerk';
 import { edgeCacheMiddleware } from './middleware/cache';
 import { errorHandler } from './middleware/errorHandler';
+import { Hono } from 'hono';
 import { requestLogger } from './middleware/requestLogger';
+import { secureHeaders } from 'hono/secure-headers';
+import userApp from './app/user';
+import { webhooks } from './app/webhooks/clerk';
+import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 
 const app = new Hono<{ Bindings: Env }>();
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { timeForNextGrade, translateGrade } from '@/share/lib/grade';
-import type { PracticeCountData } from '@/share/types/records';
 import { computed } from 'vue';
+import type { PracticeCountData } from '@/share/types/records';
+import { timeForNextGrade, translateGrade } from '@/share/lib/grade';
 
 interface Props {
   practiceData: PracticeCountData | null;
@@ -78,35 +78,35 @@ const progressComment = computed(() => {
 <template>
   <div class="w-full" data-testid="practice-count-graph">
     <div v-if="loading" class="card animate-pulse rounded" data-testid="skeleton">
-      <div class="flex flex-col justify-center items-center">
-        <div class="flex justify-center bg-overlay1 rounded">
+      <div class="flex flex-col items-center justify-center">
+        <div class="bg-overlay1 rounded flex justify-center">
           <span class="text-transparent"> &nbsp;&nbsp; </span>
         </div>
-        <div class="w-full max-w-96 py-4">
-          <div class="rounded-md h-2 w-full bg-overlay0">
-            <div class="h-full max-w-full rounded-md bg-text" style="width: 0" />
+        <div class="max-w-96 py-4 w-full">
+          <div class="rounded-md h-2 bg-overlay0 w-full">
+            <div class="rounded-md bg-text h-full max-w-full" style="width: 0" />
           </div>
         </div>
       </div>
     </div>
 
-    <div v-else-if="error" class="text-center py-8">
+    <div v-else-if="error" class="py-8 text-center">
       <div class="text-sm text-red-500">エラー: {{ error }}</div>
     </div>
 
     <details v-else-if="practiceData" class="card select-none">
-      <summary class="cursor-pointer list-none rounded-lg [&::-webkit-details-marker]:hidden">
-        <div class="w-full cursor-pointer flex flex-col justify-center items-center">
+      <summary class="rounded-lg cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <div class="flex w-full cursor-pointer flex-col items-center justify-center">
           <div class="text-lg">
             {{ translateGrade(targetGrade) }}{{ promotionType }}まで
             <span class="text font-bold text-3xl">{{ needToNextGrade }}</span>
             日
           </div>
 
-          <div class="w-full max-w-96 py-4">
-            <div class="rounded-md h-2 w-full bg-surface1">
+          <div class="max-w-96 py-4 w-full">
+            <div class="rounded-md h-2 bg-surface1 w-full">
               <div
-                class="h-full max-w-full rounded-md bg-text"
+                class="rounded-md bg-text h-full max-w-full"
                 :style="{ width: `${progressPercentage}%` }"
                 data-testid="progress-bar" />
             </div>
@@ -114,7 +114,7 @@ const progressComment = computed(() => {
         </div>
       </summary>
 
-      <div class="p-4 border-t border-overlay1">
+      <div class="p-4 border-overlay1 border-t">
         <div class="space-y-3">
           <p class="text">
             {{ progressComment }}

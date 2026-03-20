@@ -1,10 +1,9 @@
-import type { User } from '@clerk/backend';
-import { ArkErrors, type } from 'arktype';
-
+import { Role } from '@/share/types/role';
 import { translateGrade } from '@/share/lib/grade';
 import { translateYear } from '@/share/lib/year';
+import type { User } from '@clerk/backend';
 import { AdminUser, type AdminUserType } from '@/share/types/admin';
-import { Role } from '@/share/types/role';
+import { ArkErrors, type } from 'arktype';
 
 // ============================================================
 // Schemas

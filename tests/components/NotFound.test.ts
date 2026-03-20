@@ -1,6 +1,5 @@
 import { mount, RouterLinkStub } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
-
 import NotFound from '@/src/views/NotFound.vue';
 
 describe('NotFound.vue', () => {

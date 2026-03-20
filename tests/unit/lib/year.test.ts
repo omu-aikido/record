@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-
 import { translateYear } from '../../../share/lib/year';
 
 describe('share/lib/year', () => {

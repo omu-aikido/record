@@ -1,5 +1,6 @@
 import { clerk } from '@clerk/testing/playwright';
-import { Page, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 interface RecordRange {
   startDate: string;

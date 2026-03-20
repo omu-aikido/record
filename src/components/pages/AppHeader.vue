@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import SidePanel from './SidePanel.vue';
 import { Show } from '@clerk/vue';
+import SidePanel from './SidePanel.vue';
 </script>
 
 <template>

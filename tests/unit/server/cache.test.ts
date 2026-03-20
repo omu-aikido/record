@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-
 import { CACHED_ROUTES } from '@/server/middleware/cache';
 
 // [basePath, hasSubRoutes] - keep in sync with actual routes

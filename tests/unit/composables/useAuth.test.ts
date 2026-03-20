@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ref } from 'vue';
-
 import { useAuth, initAuthState } from '@/src/composable/useAuth';
 
 // Mock Hono Client

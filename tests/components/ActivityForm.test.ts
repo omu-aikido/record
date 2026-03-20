@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
-
 import ActivityForm from '@/src/components/record/ActivityForm.vue';
 
 describe('ActivityForm.vue', () => {

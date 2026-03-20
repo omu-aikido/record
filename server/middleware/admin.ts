@@ -1,8 +1,7 @@
 import { getAuth } from '@hono/clerk-auth';
-import type { Context, Next } from 'hono';
-
 import { getProfile } from '@/server/clerk/profile';
 import { Role } from '@/share/types/role';
+import type { Context, Next } from 'hono';
 
 export const ensureAdmin = async (c: Context, next: Next): Promise<Response | void> => {
   const auth = getAuth(c);

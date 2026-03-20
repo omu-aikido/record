@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
-
 import ProgressIndicator from '@/src/components/signup/ProgressIndicator.vue';
 
 describe('ProgressIndicator.vue', () => {

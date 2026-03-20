@@ -1,15 +1,13 @@
-import { createClerkClient } from '@clerk/backend';
-import { arktypeValidator } from '@hono/arktype-validator';
-import { getAuth } from '@hono/clerk-auth';
-import { type } from 'arktype';
-import * as drizzleOrm from 'drizzle-orm';
-import { Hono } from 'hono';
-
-import { dbClient } from '@/server/db/drizzle';
 import { activity } from '@/server/db/schema';
+import { arktypeValidator } from '@hono/arktype-validator';
+import { createClerkClient } from '@clerk/backend';
+import { dbClient } from '@/server/db/drizzle';
+import { getAuth } from '@hono/clerk-auth';
+import { Hono } from 'hono';
 import { notify } from '@/server/lib/observability';
 import { Role } from '@/share/types/role';
-
+import { type } from 'arktype';
+import * as drizzleOrm from 'drizzle-orm';
 import * as helpers from './helpers';
 
 // ============================================================

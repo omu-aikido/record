@@ -1,19 +1,19 @@
 <template>
-  <div class="max-w-7xl mx-auto p-4 stack gap-6">
-    <div class="bg-surface0 rounded-xl shadow-sm border border-overlay0 p-6">
+  <div class="max-w-7xl p-4 stack gap-6 mx-auto">
+    <div class="bg-surface0 rounded-xl shadow-sm border-overlay0 p-6 border">
       <UserHeader :user="user" @updated="fetchUser" />
 
-      <hr class="my-6 border-none border-t border-overlay0" />
+      <hr class="my-6 border-overlay0 border-t border-none" />
 
       <ProfileCard />
 
       <div v-if="errorMessage" class="alert-error">{{ errorMessage }}</div>
       <div v-if="successMessage" class="alert-success">{{ successMessage }}</div>
-      <div class="mt-4 pt-4 border-t border-overlay0">
+      <div class="mt-4 pt-4 border-overlay0 border-t">
         <p class="text-sub">
           メールアドレス・パスワード変更などは
           <a
-            class="text-blue-500 inline-flex items-center font-medium no-underline break-all hover:underline"
+            class="text-blue-500 font-medium inline-flex items-center break-all no-underline hover:underline"
             href="https://accounts.omu-aikido.com/user"
             target="_blank"
             rel="noopener noreferrer"
@@ -28,11 +28,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useQuery } from '@tanstack/vue-query';
-import { queryKeys } from '@/src/lib/queryKeys';
 import hc from '@/src/lib/honoClient';
-import UserHeader from '@/src/components/account/UserHeader.vue';
 import ProfileCard from '@/src/components/account/ProfileCard.vue';
+import { queryKeys } from '@/src/lib/queryKeys';
+import { useQuery } from '@tanstack/vue-query';
+import UserHeader from '@/src/components/account/UserHeader.vue';
 
 // Queries
 const {

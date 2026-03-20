@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ref } from 'vue';
-
 import { type ActivityType } from '../../../server/db/schema';
 import { useActivities, useAddActivity, useDeleteActivity } from '../../../src/composable/useActivity';
 

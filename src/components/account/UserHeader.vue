@@ -1,49 +1,49 @@
 <template>
   <div class="stack">
     <div v-if="!user" class="animate-pulse flex-between gap-4">
-      <div class="flex items-center gap-4 min-w-0">
+      <div class="gap-4 min-w-0 flex items-center">
         <div class="avatar-lg bg-overlay1" />
-        <div class="min-w-0 flex flex-col gap-1">
+        <div class="min-w-0 gap-1 flex flex-col">
           <div class="h-7 w-32 bg-overlay1 rounded-md text-lg font-bold text-transparent">User Name</div>
           <div class="h-5 w-24 bg-overlay1 rounded-md text-base text-transparent">@username</div>
         </div>
       </div>
-      <div class="h-8 w-14 shrink-0 rounded-md bg-overlay1" />
+      <div class="h-8 w-14 rounded-md bg-overlay1 shrink-0" />
     </div>
 
     <div v-else-if="!isEditing" class="flex-between gap-4">
-      <div class="flex items-center gap-4 min-w-0">
-        <div class="relative w-14 h-14 shrink-0 overflow-hidden rounded-full shadow-[0_0_0_2px_var(--color-overlay0)]">
+      <div class="gap-4 min-w-0 flex items-center">
+        <div class="w-14 h-14 relative shrink-0 overflow-hidden rounded-full shadow-[0_0_0_2px_var(--color-overlay0)]">
           <img :src="safeImageUrl" :alt="user?.firstName || 'Profile'" uno-rounded-img />
         </div>
         <div class="min-w-0">
-          <h2 class="text-lg font-bold text truncate my-0">{{ user?.lastName }} {{ user?.firstName }}</h2>
-          <p class="text-base text-subtext truncate my-0">@{{ user?.username }}</p>
+          <h2 class="text-lg font-bold text my-0 truncate">{{ user?.lastName }} {{ user?.firstName }}</h2>
+          <p class="text-base text-subtext my-0 truncate">@{{ user?.username }}</p>
         </div>
       </div>
       <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="isEditing = true">編集</button>
     </div>
 
     <form v-else enctype="multipart/form-data" class="stack" @submit.prevent="handleSubmit">
-      <div class="flex-1 stack">
-        <div class="flex items-start gap-4">
+      <div class="stack flex-1">
+        <div class="gap-4 flex items-start">
           <div
-            class="relative w-14 h-14 shrink-0 overflow-hidden rounded-full shadow-[0_0_0_2px_var(--color-overlay0)] group">
+            class="w-14 h-14 group relative shrink-0 overflow-hidden rounded-full shadow-[0_0_0_2px_var(--color-overlay0)]">
             <img :src="safePreviewImageUrl" :alt="user?.firstName || 'Profile'" uno-rounded-img />
             <label
-              class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-60 cursor-pointer transition-opacity duration-200 group-hover:opacity-100">
-              <span class="text-[0.625rem] text-white font-medium">変更</span>
+              class="inset-0 bg-black/60 absolute flex cursor-pointer flex-col items-center justify-center opacity-60 transition-opacity duration-200 group-hover:opacity-100">
+              <span class="text-white font-medium text-[0.625rem]">変更</span>
               <input
                 type="file"
                 accept="image/*"
-                class="absolute inset-0 w-full h-full cursor-pointer opacity-0"
+                class="inset-0 absolute h-full w-full cursor-pointer opacity-0"
                 @change="handleImageChange" />
             </label>
           </div>
           <Input v-model="formData.username" label="ユーザー名" />
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="gap-3 grid grid-cols-2">
           <Input v-model="formData.lastName" label="姓" />
           <Input v-model="formData.firstName" label="名" />
         </div>
@@ -53,7 +53,7 @@
         {{ message }}
       </p>
 
-      <div class="flex gap-3 pt-2">
+      <div class="gap-3 pt-2 flex">
         <button type="submit" class="btn-primary w-full" :disabled="isSubmitting">
           {{ isSubmitting ? '保存中...' : '保存' }}
         </button>
@@ -64,8 +64,8 @@
 </template>
 
 <script setup lang="ts">
-import Input from '@/src/components/ui/UiInput.vue';
 import hc from '@/src/lib/honoClient';
+import Input from '@/src/components/ui/UiInput.vue';
 import { computed, reactive, ref, watch } from 'vue';
 
 const $accountPatch = hc.user.clerk.account.$patch;

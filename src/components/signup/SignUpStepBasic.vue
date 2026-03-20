@@ -13,7 +13,7 @@
       :error="formErrors.email"
       @update:model-value="onUpdate('email', $event)" />
 
-    <div class="flex flex-col gap-2">
+    <div class="gap-2 flex flex-col">
       <Input
         id="password"
         name="password"
@@ -30,7 +30,7 @@
           <button
             type="button"
             :disabled="isSignUpCreated"
-            class="bg-transparent border-none text-subtext cursor-pointer transition-colors p-0 flex items-center justify-center hover:text disabled:opacity-50 disabled:cursor-not-allowed"
+            class="text-subtext p-0 hover:text flex cursor-pointer items-center justify-center border-none bg-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             :aria-label="showPassword ? 'パスワードを隠す' : 'パスワードを表示'"
             @click="showPassword = !showPassword">
             <svg
@@ -65,7 +65,7 @@
       </Input>
     </div>
 
-    <div class="flex flex-col gap-2">
+    <div class="gap-2 flex flex-col">
       <Input
         id="password-confirm"
         v-model="passwordConfirm"
@@ -82,7 +82,7 @@
           <button
             type="button"
             :disabled="isSignUpCreated"
-            class="bg-transparent border-none text-subtext cursor-pointer transition-colors p-0 flex items-center justify-center hover:text disabled:opacity-50 disabled:cursor-not-allowed"
+            class="text-subtext p-0 hover:text flex cursor-pointer items-center justify-center border-none bg-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             :aria-label="showPasswordConfirm ? 'パスワードを隠す' : 'パスワードを表示'"
             @click="showPasswordConfirm = !showPasswordConfirm">
             <svg
@@ -117,7 +117,7 @@
       </Input>
     </div>
 
-    <div class="flex justify-end pt-2">
+    <div class="pt-2 flex justify-end">
       <button type="button" class="btn-primary" :disabled="isSignUpCreated || !canProceed" @click="handleNextClick">
         次へ
       </button>
@@ -127,29 +127,25 @@
 
 <script setup lang="ts">
 import Input from '@/src/components/ui/UiInput.vue';
-import type { FormErrors, SignUpFormData } from '@/src/composable/useSignUpForm';
 import { computed, ref, watch } from 'vue';
+import type * as useSignUpForm from '@/src/composable/useSignUpForm';
 
 const props = defineProps<{
-  formValues: Partial<SignUpFormData>;
-  formErrors: Partial<FormErrors>;
+  formValues: Partial<useSignUpForm.SignUpFormData>;
+  formErrors: Partial<useSignUpForm.FormErrors>;
   isSignUpCreated: boolean;
   handleNext: () => void;
 }>();
-
 const emit = defineEmits<{
-  (e: 'update:formValue', key: keyof SignUpFormData, value: string | number): void;
+  (e: 'update:formValue', key: keyof useSignUpForm.SignUpFormData, value: string | number): void;
 }>();
-
 const showPassword = ref(false);
 const showPasswordConfirm = ref(false);
 const passwordConfirm = ref('');
 const passwordConfirmError = ref('');
-
-const onUpdate = (key: keyof SignUpFormData, value: string | number) => {
+const onUpdate = (key: keyof useSignUpForm.SignUpFormData, value: string | number) => {
   emit('update:formValue', key, value);
 };
-
 const validatePasswordMatch = () => {
   if (passwordConfirm.value && passwordConfirm.value !== props.formValues.newPassword) {
     passwordConfirmError.value = 'パスワードが一致しません';
@@ -157,7 +153,6 @@ const validatePasswordMatch = () => {
     passwordConfirmError.value = '';
   }
 };
-
 const canProceed = computed(() => {
   return (
     props.formValues.email &&
@@ -167,13 +162,11 @@ const canProceed = computed(() => {
     passwordConfirm.value === props.formValues.newPassword
   );
 });
-
 const handleNextClick = () => {
   if (canProceed.value) {
     props.handleNext();
   }
 };
-
 watch(
   () => props.formValues.newPassword,
   (newPassword) => {

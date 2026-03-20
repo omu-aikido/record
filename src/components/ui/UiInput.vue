@@ -28,7 +28,7 @@ defineOptions({
 </script>
 
 <template>
-  <div class="flex flex-col gap-1.5 w-full">
+  <div class="gap-1.5 flex w-full flex-col">
     <label v-if="label" :for="id" class="form-label">
       {{ label }}
       <span v-if="required" class="text-red-500 ml-0.5">*</span>
@@ -52,7 +52,7 @@ defineOptions({
               : ($event.target as HTMLInputElement).value
           )
         " />
-      <div v-if="$slots.suffix" class="absolute right-3 flex items-center text-subtext pointer-events-none">
+      <div v-if="$slots.suffix" class="right-3 text-subtext pointer-events-none absolute flex items-center">
         <slot name="suffix" />
       </div>
     </div>

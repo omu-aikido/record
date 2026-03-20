@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
-
 import NormCard from '@/src/components/admin/NormCard.vue';
 
 describe('NormCard.vue', () => {

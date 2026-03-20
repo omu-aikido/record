@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { addMonths, format } from 'date-fns';
 import { ja } from 'date-fns/locale';
-
 import { login, clearActivitiesInRange } from './auth-helper';
 
 test.describe('Record CRUD Operations', () => {

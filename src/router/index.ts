@@ -1,10 +1,10 @@
 import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
-import { createRouter, createWebHistory } from 'vue-router';
-
 // HomeView remains eager for FCP
-import { Role } from '@/share/types/role';
 import HomeView from '@/src/views/Home.vue';
 import NotFoundView from '@/src/views/NotFound.vue';
+import { Role } from '@/share/types/role';
+import { createRouter, createWebHistory } from 'vue-router';
+
 // Lazy load other views
 const RecordView = () => import('@/src/views/Record.vue');
 const SignInView = () => import('@/src/views/SignIn.vue');
@@ -125,10 +125,10 @@ router.beforeEach(async (to: RouteLocationNormalized, _from: RouteLocationNormal
       const role = Role.fromString(`${roleValue}`);
       const isAdmin = role ? role.isManagement : false;
 
-      if (!isAdmin) {
-        next({ name: 'home' }); // Not authorized, redirect to home
-      } else {
+      if (isAdmin) {
         next();
+      } else {
+        next({ name: 'home' }); // Not authorized, redirect to home
       }
     } else if (
       !requiresAuth &&

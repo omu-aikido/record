@@ -1,22 +1,22 @@
 <template>
-  <div class="flex items-center justify-center p-4">
+  <div class="p-4 flex items-center justify-center">
     <Show when="signed-in">
-      <div class="card w-full h-full">
-        <h1 class="text-3xl text-center font-bold text tracking-tighter">Welcome Back</h1>
+      <div class="card h-full w-full">
+        <h1 class="text-3xl font-bold text tracking-tighter text-center">Welcome Back</h1>
         <p class="text-base text-subtext opacity-80">
           ログインが完了しました。<br />
           ホームへリダイレクトしています。
         </p>
-        <div class="w-full mt-4 mb-2 flex justify-center">
-          <div class="w-48 h-3 bg-overlay1 rounded-full overflow-hidden">
+        <div class="mt-4 mb-2 flex w-full justify-center">
+          <div class="w-48 h-3 bg-overlay1 overflow-hidden rounded-full">
             <div
               :style="{ width: gaugePercent + '%' }"
-              class="h-full bg-blue-500 transition-[width] duration-1000 ease" />
+              class="bg-blue-500 ease h-full transition-[width] duration-1000" />
           </div>
         </div>
         <p class="text-sub">
           画面が切り替わらない場合は
-          <RouterLink :to="redirectUrl" class="text-blue-500 underline underline-offset-4 hover:text-blue-600">
+          <RouterLink :to="redirectUrl" class="text-blue-500 hover:text-blue-600 underline underline-offset-4">
             こちら
           </RouterLink>
         </p>
@@ -24,12 +24,12 @@
     </Show>
 
     <Show when="signed-out">
-      <div class="card w-full h-full mx-auto max-w-md">
+      <div class="card max-w-md mx-auto h-full w-full">
         <div class="p-2">
           <h1 class="heading-1">サインイン</h1>
         </div>
         <div class="p-2 pt-0">
-          <div class="flex flex-col gap-6">
+          <div class="gap-6 flex flex-col">
             <form v-if="needsVerification" @submit.prevent="handleVerifyCode">
               <Input id="code" v-model="code" label="認証コード" name="code" required placeholder="認証コードを入力" />
               <p class="text-sub mt-2">{{ email }} に認証コードを送信しました</p>
@@ -37,7 +37,7 @@
               <div v-if="error" class="mt-4 text-base text-red-500">
                 <p>{{ error }}</p>
               </div>
-              <button type="submit" class="btn-primary w-full mt-4" :disabled="isLoading">
+              <button type="submit" class="btn-primary mt-4 w-full" :disabled="isLoading">
                 {{ isLoading ? '認証中...' : '認証' }}
               </button>
             </form>
@@ -63,11 +63,11 @@
 
                       Workaround: Don't use 'label' prop on Input, render label manually above it.
                  -->
-                <div class="flex items-center mb-1.5 text-xs">
+                <div class="mb-1.5 text-xs flex items-center">
                   <label for="password" class="form-label">パスワード</label>
                   <a
                     href="https://accounts.omu-aikido.com/sign-in/"
-                    class="ml-auto inline-block text-base text-subtext underline underline-offset-4 hover:underline"
+                    class="text-base text-subtext ml-auto inline-block underline underline-offset-4 hover:underline"
                     target="_blank"
                     rel="noopener noreferrer">
                     パスワードを忘れた
@@ -90,21 +90,21 @@
                     href="https://accounts.omu-aikido.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-blue-500 underline underline-offset-4 hover:text-blue-600">
+                    class="text-blue-500 hover:text-blue-600 underline underline-offset-4">
                     こちら
                   </a>
                   からサインインをお試しください。
                 </div>
               </div>
 
-              <button type="submit" class="btn-primary w-full mt-6" :disabled="isLoading">
+              <button type="submit" class="btn-primary mt-6 w-full" :disabled="isLoading">
                 {{ isLoading ? 'サインイン中...' : 'サインイン' }}
               </button>
             </form>
 
             <button
               type="button"
-              class="btn bg-[#5865f2] text-white hover:bg-[#4752c4] w-full"
+              class="btn text-white w-full bg-[#5865f2] hover:bg-[#4752c4]"
               :disabled="isLoading"
               @click="handleSignInWithDiscord">
               <svg
@@ -136,9 +136,9 @@
             </button>
           </div>
           <hr class="my-6" />
-          <div class="mt-4 text-center text-base text-subtext">
+          <div class="mt-4 text-base text-subtext text-center">
             まだアカウントがありませんか?
-            <RouterLink to="/sign-up" class="text-blue-500 underline underline-offset-4 hover:text-blue-600">
+            <RouterLink to="/sign-up" class="text-blue-500 hover:text-blue-600 underline underline-offset-4">
               サインアップ
             </RouterLink>
           </div>
@@ -149,19 +149,17 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router';
+import Input from '@/src/components/ui/UiInput.vue';
 import { Show } from '@clerk/vue';
 import { useAuth } from '@/src/composable/useAuth';
 import { useSignIn } from '@/src/composable/useSignIn';
-import Input from '@/src/components/ui/UiInput.vue';
-import { ref, onMounted, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
-
 const { email, password, code, isLoading, error, needsVerification, signIn, verifyCode, signInWithDiscord } =
   useSignIn();
-
 const { isAuthenticated } = useAuth();
 const gaugePercent = ref(0);
 const redirectUrl = ref('/');

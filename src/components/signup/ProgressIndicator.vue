@@ -1,11 +1,11 @@
 <template>
-  <div class="flex justify-center items-center my-4" data-testid="progress-indicator">
+  <div class="my-4 flex items-center justify-center" data-testid="progress-indicator">
     <div
       :class="['text-sm p-2', step === 'basic' ? 'text-blue-500 font-semibold' : 'text-green-500']"
       data-testid="step-basic">
       基本情報
     </div>
-    <div class="flex-1 border-t-2 border-overlay1 transition-colors duration-500 ease-in-out" />
+    <div class="border-overlay1 ease-in-out flex-1 border-t-2 transition-colors duration-500" />
     <div
       :class="[
         'text-sm p-2',
@@ -14,7 +14,7 @@
       data-testid="step-personal">
       個人情報
     </div>
-    <div class="flex-1 border-t-2 border-overlay1 transition-colors duration-500 ease-in-out" />
+    <div class="border-overlay1 ease-in-out flex-1 border-t-2 transition-colors duration-500" />
     <div
       :class="['text-sm p-2', step === 'profile' ? 'text-blue-500 font-semibold' : 'text-subtext']"
       data-testid="step-profile">

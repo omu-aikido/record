@@ -1,13 +1,13 @@
 <template>
   <div class="stack">
-    <div class="grid grid-cols-2 gap-4">
-      <div class="flex flex-col gap-2">
+    <div class="gap-4 grid grid-cols-2">
+      <div class="gap-2 flex flex-col">
         <label for="year" class="text-base font-medium text-subtext">学年</label>
         <select
           id="year"
           :value="formValues.year"
           :disabled="isSignUpCreated"
-          class="w-full h-fit rounded-md border border-overlay1 bg-base px-3 py-2 text-base text transition-shadow duration-200 outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="rounded-md border-overlay1 bg-base px-3 py-2 text-base text focus:ring-blue-500 h-fit w-full border transition-shadow duration-200 outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
           @change="onUpdate('year', ($event.target as HTMLSelectElement).value)">
           <option v-for="y in yearOptions" :key="y.year" :value="y.year">
             {{ y.name }}
@@ -17,13 +17,13 @@
           {{ formErrors.year }}
         </p>
       </div>
-      <div class="flex flex-col gap-2">
+      <div class="gap-2 flex flex-col">
         <label for="grade" class="text-base font-medium text-subtext">級段位</label>
         <select
           id="grade"
           :value="formValues.grade"
           :disabled="isSignUpCreated"
-          class="w-full h-fit rounded-md border border-overlay1 bg-base px-3 py-2 text-base text transition-shadow duration-200 outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="rounded-md border-overlay1 bg-base px-3 py-2 text-base text focus:ring-blue-500 h-fit w-full border transition-shadow duration-200 outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
           @change="onUpdate('grade', Number(($event.target as HTMLSelectElement).value))">
           <option v-for="g in gradeOptions" :key="g.grade" :value="g.grade">
             {{ g.name }}
@@ -53,13 +53,13 @@
       :error="formErrors.getGradeAt"
       @update:model-value="onUpdate('getGradeAt', $event)" />
 
-    <div class="flex items-center gap-2">
+    <div class="gap-2 flex items-center">
       <input
         id="legalAccepted"
         type="checkbox"
         :checked="formValues.legalAccepted"
         :disabled="isSignUpCreated"
-        class="w-4 h-4 rounded-sm border border-overlay1 accent-blue-500"
+        class="w-4 h-4 rounded-sm border-overlay1 accent-blue-500 border"
         @change="onUpdate('legalAccepted', ($event.target as HTMLInputElement).checked)" />
       <label for="legalAccepted" class="text-sub"> 利用規約とプライバシーポリシーに同意します。 </label>
     </div>
@@ -67,7 +67,7 @@
       {{ formErrors.legalAccepted }}
     </p>
 
-    <div class="flex justify-between pt-2">
+    <div class="pt-2 flex justify-between">
       <button type="button" class="btn-secondary" :disabled="isSignUpCreated" @click="prevStep">戻る</button>
       <button type="submit" class="btn-primary" :disabled="!canSubmit">
         {{ isSignUpCreated ? '登録中...' : '登録' }}
@@ -78,8 +78,8 @@
 
 <script setup lang="ts">
 import { grade as gradeOptions } from '@/share/lib/grade';
-import { year as yearOptions } from '@/share/lib/year';
 import Input from '@/src/components/ui/UiInput.vue';
+import { year as yearOptions } from '@/share/lib/year';
 import type { FormErrors, SignUpFormData } from '@/src/composable/useSignUpForm';
 
 defineProps<{

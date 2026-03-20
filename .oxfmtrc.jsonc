@@ -20,16 +20,19 @@
   "endOfLine": "lf",
   "insertFinalNewline": true,
   "htmlWhitespaceSensitivity": "css",
+  "singleAttributePerLine": false,
 
   // メタデータ
   "insertPragma": false,
   "requirePragma": false,
 
-  // ソート
-  "experimentalSortImports": {
-    "ignoreCase": false,
-    "order": "asc",
-    "sortSideEffects": true,
+  "sortTailwindcss": {
+    "stylesheet": "./src/assets/main.css",
+    "preserveWhitespace": true,
+  },
+
+  "sortPackageJson": {
+    "sortScripts": true,
   },
 
   // Ignore

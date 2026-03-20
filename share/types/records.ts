@@ -1,6 +1,5 @@
-import { type } from 'arktype';
-
 import { insertActivitySchema } from '@/server/db/schema';
+import { type } from 'arktype';
 
 export const recordQuerySchema = type({
   'userId?': /^user_[\w]{27}$/,

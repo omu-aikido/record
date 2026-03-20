@@ -1,10 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import type { InferRequestType } from 'hono/client';
-import { computed, type Ref } from 'vue';
-
 import type { Activity } from '@/share/types/records';
 import hc from '@/src/lib/honoClient';
+import type { InferRequestType } from 'hono/client';
 import { queryKeys } from '@/src/lib/queryKeys';
+import { computed, type Ref } from 'vue';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 
 type RecordQuery = InferRequestType<typeof hc.user.record.$get>['query'];
 

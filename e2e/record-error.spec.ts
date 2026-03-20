@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-
 import { login } from './auth-helper';
 
 test('shows error message when record list fails to load', async ({ page }) => {

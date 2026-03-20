@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col gap-6 px-3 py-4 md:px-6">
+  <div class="gap-6 px-3 py-4 md:px-6 flex flex-col">
     <AdminMenu />
-    <div class="stack items-start sm:flex-row sm:items-center sm:justify-between">
-      <div class="flex flex-wrap gap-4 w-full sm:w-auto">
-        <div class="flex bg-overlay1 rounded-lg p-1">
+    <div class="stack sm:flex-row sm:items-center sm:justify-between items-start">
+      <div class="gap-4 sm:w-auto flex w-full flex-wrap">
+        <div class="bg-overlay1 rounded-lg p-1 flex">
           <button
             :class="['filter-btn', { 'filter-btn-active': filterStatus === 'all' }]"
             @click="filterStatus = 'all'">
@@ -21,7 +21,7 @@
           </button>
         </div>
 
-        <div class="flex bg-overlay1 rounded-lg p-1">
+        <div class="bg-overlay1 rounded-lg p-1 flex">
           <button
             title="進捗率: 低→高"
             :class="['filter-btn', { 'filter-btn-active': sortOrder === 'asc' }]"
@@ -37,12 +37,12 @@
         </div>
       </div>
 
-      <div class="w-full sm:w-72">
+      <div class="sm:w-72 w-full">
         <input
           v-model="searchTerm"
           type="text"
           placeholder="名前で検索..."
-          class="w-full h-fit px-3 py-2 pl-10 bg-base border border-overlay0 rounded-md text text-base transition-shadow focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          class="px-3 py-2 pl-10 bg-base border-overlay0 rounded-md text text-base focus:ring-blue-500 h-fit w-full border transition-shadow focus:ring-2 focus:outline-none" />
       </div>
     </div>
 
@@ -51,7 +51,7 @@
       <p class="text-sub">Loading...</p>
     </div>
 
-    <div v-else-if="error" class="p-4 bg-red-500/10 text-red-500 rounded-md border border-red-500/20">
+    <div v-else-if="error" class="p-4 bg-red-500/10 text-red-500 rounded-md border-red-500/20 border">
       {{ error }}
     </div>
 
@@ -65,7 +65,7 @@
           :progress="item.norm.progress" />
       </div>
 
-      <div v-if="!loading && !error && filteredUsers.length === 0" class="text-center py-12 text-subtext">
+      <div v-if="!loading && !error && filteredUsers.length === 0" class="py-12 text-subtext text-center">
         該当するユーザーが見つかりません
       </div>
     </div>
@@ -74,8 +74,8 @@
 
 <script setup lang="ts">
 import AdminMenu from '@/src/components/admin/AdminMenu.vue';
-import NormCard from '@/src/components/admin/NormCard.vue';
 import hc from '@/src/lib/honoClient';
+import NormCard from '@/src/components/admin/NormCard.vue';
 import { queryKeys } from '@/src/lib/queryKeys';
 import { useQuery } from '@tanstack/vue-query';
 import { computed, ref } from 'vue';
@@ -83,7 +83,6 @@ import { computed, ref } from 'vue';
 const searchTerm = ref('');
 const filterStatus = ref<'all' | 'met' | 'unmet'>('all');
 const sortOrder = ref<'asc' | 'desc'>('desc');
-
 const {
   data,
   isLoading: loading,
@@ -98,19 +97,15 @@ const {
     return res.json();
   },
 });
-
 const users = computed(() => {
   if (!data.value || !('users' in data.value)) return [];
   return data.value.users;
 });
-
 const norms = computed(() => {
   if (!data.value || !('norms' in data.value)) return [];
   return data.value.norms;
 });
-
 const error = computed(() => (queryError.value ? 'データの取得に失敗しました' : ''));
-
 const processedData = computed(() => {
   return users.value
     .map((user) => {
@@ -120,7 +115,6 @@ const processedData = computed(() => {
     })
     .filter((item): item is NonNullable<typeof item> => item !== null);
 });
-
 const filteredUsers = computed(() => {
   let result = processedData.value;
 

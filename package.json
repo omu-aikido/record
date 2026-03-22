@@ -35,7 +35,7 @@
     "@headlessui/vue": "^1.7.23",
     "@hono/arktype-validator": "^2.0.1",
     "@hono/clerk-auth": "^3.1.0",
-    "@tanstack/vue-query": "^5.92.12",
+    "@tanstack/vue-query": "^5.95.0",
     "arktype": "^2.2.0",
     "date-fns": "^4.1.0",
     "drizzle-arktype": "^0.1.3",

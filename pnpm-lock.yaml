@@ -29,8 +29,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0(hono@4.12.8)(react@19.2.3)
       '@tanstack/vue-query':
-        specifier: ^5.92.12
-        version: 5.92.12(vue@3.5.30(typescript@5.9.3))
+        specifier: ^5.95.0
+        version: 5.95.0(vue@3.5.30(typescript@5.9.3))
       arktype:
         specifier: ^2.2.0
         version: 2.2.0
@@ -1622,14 +1622,14 @@ packages:
   '@tanstack/query-core@5.90.16':
     resolution: {integrity: sha512-MvtWckSVufs/ja463/K4PyJeqT+HMlJWtw6PrCpywznd2NSgO3m4KwO9RqbFqGg6iDE8vVMFWMeQI4Io3eEYww==}
 
-  '@tanstack/query-core@5.91.2':
-    resolution: {integrity: sha512-Uz2pTgPC1mhqrrSGg18RKCWT/pkduAYtxbcyIyKBhw7dTWjXZIzqmpzO2lBkyWr4hlImQgpu1m1pei3UnkFRWw==}
+  '@tanstack/query-core@5.95.0':
+    resolution: {integrity: sha512-H1/CWCe8tGL3YIVeo770Z6kPbt0B3M1d/iQXIIK1qlFiFt6G2neYdkHgLapOC8uMYNt9DmHjmGukEKgdMk1P+A==}
 
   '@tanstack/virtual-core@3.13.23':
     resolution: {integrity: sha512-zSz2Z2HNyLjCplANTDyl3BcdQJc2k1+yyFoKhNRmCr7V7dY8o8q5m8uFTI1/Pg1kL+Hgrz6u3Xo6eFUB7l66cg==}
 
-  '@tanstack/vue-query@5.92.12':
-    resolution: {integrity: sha512-WDYqVh3IWkhQu/PFP5Gg3o6kpjDoWfl/TkkCBQZ0RWK6T9nbC0xXpJ9Knx6bovehr9KOgQ2RCyJp/GvQshryMg==}
+  '@tanstack/vue-query@5.95.0':
+    resolution: {integrity: sha512-pxZQlXf0mzlcp40EzTfxjrveCc0QYwnjx2CH6QEzjaMmH4N5iWdESGvfOqxfbgx5zbWhRk0T8p79XMbs97y/RA==}
     peerDependencies:
       '@vue/composition-api': ^1.1.2
       vue: ^2.6.0 || ^3.3.0
@@ -4645,14 +4645,14 @@ snapshots:
 
   '@tanstack/query-core@5.90.16': {}
 
-  '@tanstack/query-core@5.91.2': {}
+  '@tanstack/query-core@5.95.0': {}
 
   '@tanstack/virtual-core@3.13.23': {}
 
-  '@tanstack/vue-query@5.92.12(vue@3.5.30(typescript@5.9.3))':
+  '@tanstack/vue-query@5.95.0(vue@3.5.30(typescript@5.9.3))':
     dependencies:
       '@tanstack/match-sorter-utils': 8.19.4
-      '@tanstack/query-core': 5.91.2
+      '@tanstack/query-core': 5.95.0
       '@vue/devtools-api': 6.6.4
       vue: 3.5.30(typescript@5.9.3)
       vue-demi: 0.14.10(vue@3.5.30(typescript@5.9.3))

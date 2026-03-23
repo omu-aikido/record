@@ -14,22 +14,27 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     environment: development
-    timeout-minutes: 30
+    timeout-minutes: 15
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
 
-      - name: Set up Nix
-        uses: cachix/install-nix-action@v31
+      - id: changed
+        run: |
+          git diff HEAD~1 --name-only 2>/dev/null \
+            | grep -qE '^(flake\.lock|bun\.lock|Dockerfile|nix\.conf|compose\.yaml)$' \
+            && echo "rebuild=true" >> $GITHUB_OUTPUT \
+            || echo "rebuild=false" >> $GITHUB_OUTPUT
+
+      - uses: cachix/install-nix-action@v31
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
-      - name: Cache Nix Store
-        uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Cache Bun packages
-        uses: actions/cache@v5
+      - uses: actions/cache@v5
         with:
           path: |
             ~/.bun/install/cache
@@ -37,20 +42,21 @@ jobs:
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
           restore-keys: ${{ runner.os }}-bun-
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v5
+      - uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('bun.lock') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package.json') }}
           restore-keys: ${{ runner.os }}-playwright-
 
-      - name: Install dependencies
-        run: nix develop -c bun install --frozen-lockfile
+      - run: nix develop -c bun install --frozen-lockfile
 
-      - name: Install Playwright Browsers
-        run: nix develop -c bunx playwright install --with-deps
+      - run: nix develop -c bunx playwright install chromium --with-deps
+
+      - if: steps.changed.outputs.rebuild == 'true'
+        run: docker compose build
 
       - name: Run E2E tests
+        timeout-minutes: 10
         env:
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
@@ -62,8 +68,7 @@ jobs:
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
         run: nix develop -c bun test:e2e
 
-      - name: Upload Playwright report
-        if: always()
+      - if: always()
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report

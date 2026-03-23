@@ -1,31 +1,47 @@
-# Build stage using Nix
+# Stage 1: Builder
 FROM nixos/nix:latest AS builder
 
 WORKDIR /app
 
-# Copy flake files
+# Configure Nix
+RUN mkdir -p /root/.config/nix
+COPY nix.conf /root/.config/nix/nix.conf
+
+# Copy flake files first (most stable, longest cached)
 COPY flake.nix flake.lock ./
+
+# Initialize Nix environment (one-time expensive operation)
+RUN nix develop --no-write-lock-file --command true
+
+# Copy dependencies
 COPY package.json bun.lock ./
 
-# Build the Nix environment and install dependencies
-RUN nix --experimental-features "nix-command flakes" flake update && \
-    nix --experimental-features "nix-command flakes" develop --command bash -c "bun install"
+# Install dependencies
+RUN nix develop --no-write-lock-file --command \
+    bun install --frozen-lockfile
 
-# Copy source code
+# Copy source
 COPY . .
 
-# Run the check command
-RUN nix --experimental-features "nix-command flakes" develop --command bash -c "bun run check"
+# Build only
+RUN nix develop --no-write-lock-file --command \
+    bun run build-only
 
-# Runtime stage
+# Stage 2: Runtime
 FROM nixos/nix:latest
 
 WORKDIR /app
 
-# Copy built artifacts from builder
-COPY --from=builder /app /app
+# Configure Nix
+RUN mkdir -p /root/.config/nix
+COPY nix.conf /root/.config/nix/nix.conf
 
-# Set up the environment
-ENV PATH="/root/.nix-profile/bin:$PATH"
+# Copy minimal files needed for runtime
+COPY flake.nix flake.lock package.json bun.lock ./
 
-CMD ["nix", "--experimental-features", "nix-command flakes", "develop", "--command", "bun", "run", "check"]
+# Copy build output only
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+
+ENTRYPOINT ["nix", "develop", "--no-write-lock-file", "--command"]
+CMD ["bash"]

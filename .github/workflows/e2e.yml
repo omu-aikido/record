@@ -11,22 +11,85 @@ on:
   workflow_dispatch:
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      docker-rebuild: ${{ steps.changes.outputs.docker-rebuild }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - id: changes
+        run: |
+          git diff HEAD~1 HEAD --name-only 2>/dev/null \
+            | grep -qE '(flake\.(nix|lock)|bun\.lock|Dockerfile|nix\.conf|compose\.yaml)' \
+            && echo "docker-rebuild=true" >> $GITHUB_OUTPUT \
+            || echo "docker-rebuild=false" >> $GITHUB_OUTPUT
+  build-docker:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docker-rebuild == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build and export Docker image
+        run: |
+          docker compose build
+          mkdir -p /tmp/docker
+          docker save record-app -o /tmp/docker/app.tar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/docker/app.tar
+          retention-days: 1
+
+  setup-playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
+
+      - uses: actions/cache@v5
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package.json') }}
+          restore-keys: ${{ runner.os }}-playwright-
+
+      - run: nix develop -c bun install --frozen-lockfile
+
+      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: nix develop -c bunx playwright install chromium --with-deps
+
   e2e:
+    needs: [detect-changes, build-docker, setup-playwright]
+    if: |
+      always() &&
+      needs.setup-playwright.result == 'success' &&
+      (needs.build-docker.result == 'success' || needs.build-docker.result == 'skipped')
     runs-on: ubuntu-latest
     environment: development
     timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 2
-
-      - id: changed
-        run: |
-          git diff HEAD~1 --name-only 2>/dev/null \
-            | grep -qE '^(flake\.lock|bun\.lock|Dockerfile|nix\.conf|compose\.yaml)$' \
-            && echo "rebuild=true" >> $GITHUB_OUTPUT \
-            || echo "rebuild=false" >> $GITHUB_OUTPUT
 
       - uses: cachix/install-nix-action@v31
         with:
@@ -48,12 +111,35 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('package.json') }}
           restore-keys: ${{ runner.os }}-playwright-
 
+      - if: needs.build-docker.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/docker
+
+      - if: needs.build-docker.result == 'success'
+        run: docker load -i /tmp/docker/app.tar
+
       - run: nix develop -c bun install --frozen-lockfile
 
-      - run: nix develop -c bunx playwright install chromium --with-deps
+      - name: Start server
+        run: docker compose up -d
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_FRONTEND_API_URL: ${{ secrets.CLERK_FRONTEND_API_URL }}
+          CLERK_WEBHOOK_SECRET: ${{ secrets.CLERK_WEBHOOK_SECRET }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
 
-      - if: steps.changed.outputs.rebuild == 'true'
-        run: docker compose build
+      - name: Wait for server
+        timeout-minutes: 3
+        run: |
+          echo "Waiting for http://localhost:5173 ..."
+          until curl -sf http://localhost:5173 > /dev/null; do
+            sleep 2
+          done
+          echo "Server is ready"
 
       - name: Run E2E tests
         timeout-minutes: 10
@@ -66,10 +152,13 @@ jobs:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-        run: nix develop -c bun test:e2e
+        run: nix develop -c bun run test:e2e
 
       - if: always()
-        uses: actions/upload-artifact@v7
+        run: docker compose down --volumes
+
+      - if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/

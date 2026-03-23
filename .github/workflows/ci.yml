@@ -30,14 +30,6 @@ jobs:
         run: |
           echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
 
-      - name: Setup bun cache
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-store-
-
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
 
@@ -63,14 +55,6 @@ jobs:
         shell: bash
         run: |
           echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
-
-      - name: Setup bun cache
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-store-
 
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
@@ -98,14 +82,6 @@ jobs:
         run: |
           echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
 
-      - name: Setup bun cache
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-store-
-
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
 
@@ -131,14 +107,6 @@ jobs:
         shell: bash
         run: |
           echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
-
-      - name: Setup bun cache
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-store-
 
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
@@ -179,14 +147,6 @@ jobs:
         run: |
           echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
 
-      - name: Setup bun cache
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-store-
-
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
 
@@ -212,14 +172,6 @@ jobs:
         shell: bash
         run: |
           echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
-
-      - name: Setup bun cache
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-store-
 
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile

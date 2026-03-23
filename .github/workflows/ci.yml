@@ -25,24 +25,24 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get pnpm store directory
+      - name: Get bun store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      - name: Setup bun cache
         uses: actions/cache@v5
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-bun-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm install --frozen-lockfile
+        run: nix develop -c bun install --frozen-lockfile
 
       - name: Format
-        run: nix develop -c pnpm run format
+        run: nix develop -c bun run format
 
   lint:
     runs-on: ubuntu-latest
@@ -59,24 +59,24 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get pnpm store directory
+      - name: Get bun store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      - name: Setup bun cache
         uses: actions/cache@v5
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-bun-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm install --frozen-lockfile
+        run: nix develop -c bun install --frozen-lockfile
 
       - name: Lint
-        run: nix develop -c pnpm run lint
+        run: nix develop -c bun run lint
 
   knip:
     runs-on: ubuntu-latest
@@ -93,24 +93,24 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get pnpm store directory
+      - name: Get bun store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      - name: Setup bun cache
         uses: actions/cache@v5
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-bun-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm install --frozen-lockfile
+        run: nix develop -c bun install --frozen-lockfile
 
       - name: Knip
-        run: nix develop -c pnpm run knip
+        run: nix develop -c bun run knip
 
   type-check:
     runs-on: ubuntu-latest
@@ -127,21 +127,21 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get pnpm store directory
+      - name: Get bun store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      - name: Setup bun cache
         uses: actions/cache@v5
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-bun-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm install --frozen-lockfile
+        run: nix develop -c bun install --frozen-lockfile
 
       - name: Generate Env File for Cloudflare Types
         run: |
@@ -154,10 +154,10 @@ jobs:
           echo "TURSO_DATABASE_URL=''" >> .env
 
       - name: Type Generation
-        run: nix develop -c pnpm run cf-typegen
+        run: nix develop -c bun run cf-typegen
 
       - name: Type Check
-        run: nix develop -c pnpm run type-check
+        run: nix develop -c bun run type-check
 
   build:
     runs-on: ubuntu-latest
@@ -174,24 +174,24 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get pnpm store directory
+      - name: Get bun store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      - name: Setup bun cache
         uses: actions/cache@v5
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-bun-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm install --frozen-lockfile
+        run: nix develop -c bun install --frozen-lockfile
 
       - name: Build
-        run: nix develop -c pnpm run build-only
+        run: nix develop -c bun run build-only
 
   test:
     runs-on: ubuntu-latest
@@ -208,21 +208,21 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get pnpm store directory
+      - name: Get bun store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(nix develop -c pnpm config get store-dir)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      - name: Setup bun cache
         uses: actions/cache@v5
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-bun-store-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-bun-store-
 
       - name: Install dependencies
-        run: nix develop -c pnpm install --frozen-lockfile
+        run: nix develop -c bun install --frozen-lockfile
 
       - name: Test
-        run: nix develop -c pnpm run test
+        run: nix develop -c bun run test

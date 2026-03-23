@@ -1,0 +1,19 @@
+# ~/.bunfig.toml
+
+telemetry = false
+logLevel = "warn"
+
+[install]
+exact = true
+auto = "auto"
+
+linker = "isolated"
+
+minimumReleaseAge = 64800
+
+[console]
+depth = 3
+
+[run]
+bun = false
+prompt = false

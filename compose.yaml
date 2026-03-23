@@ -2,8 +2,9 @@ services:
   app:
     build: .
     volumes:
-      - .:/app:cached
-      - /app/node_modules
+      # ソースコードのみマウント（node_modulesはコンテナ内のものを使う）
+      - ./src:/app/src:cached
+      - ./public:/app/public:cached
     network_mode: 'service:libsql-server'
     environment:
       - TURSO_AUTH_TOKEN=dev-token
@@ -25,7 +26,7 @@ services:
       echo \"TURSO_AUTH_TOKEN=$TURSO_AUTH_TOKEN\" >> .dev.vars &&
       echo \"TURSO_DATABASE_URL=$TURSO_DATABASE_URL\" >> .dev.vars &&
       bun db:migrate &&
-      if [ "$MODE" = 'preview' ]; then
+      if [ \"$MODE\" = 'preview' ]; then
         bun preview --ip 0.0.0.0 --port 5173;
       else
         bun dev --host;

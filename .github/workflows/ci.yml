@@ -25,10 +25,14 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get bun store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
+      - name: Cache Bun packages
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
 
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
@@ -51,10 +55,14 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get bun store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
+      - name: Cache Bun packages
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
 
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
@@ -77,10 +85,14 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get bun store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
+      - name: Cache Bun packages
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
 
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
@@ -103,10 +115,14 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get bun store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
+      - name: Cache Bun packages
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
 
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
@@ -142,10 +158,14 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get bun store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
+      - name: Cache Bun packages
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
 
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
@@ -168,10 +188,14 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get bun store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(nix develop -c bun config get store-dir)" >> $GITHUB_ENV
+      - name: Cache Bun packages
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
 
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile

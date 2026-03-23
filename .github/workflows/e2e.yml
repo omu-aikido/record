@@ -28,11 +28,6 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get bun store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(nix develop -c bun -- pm config get store-dir)" >> $GITHUB_ENV
-
       - name: Install dependencies
         run: nix develop -c bun install --frozen-lockfile
 

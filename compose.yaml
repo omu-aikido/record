@@ -1,12 +1,15 @@
 services:
   app:
-    build: .
+    build:
+      context: .
     volumes:
       # ソースコードのみマウント（node_modulesはコンテナ内のものを使う）
       - ./src:/app/src:cached
       - ./public:/app/public:cached
     network_mode: 'service:libsql-server'
     environment:
+      - MODE=preview
+      - DISABLE_CLOUDFLARE=true
       - TURSO_AUTH_TOKEN=dev-token
       - TURSO_DATABASE_URL=http://127.0.0.1:8080
       - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
@@ -25,12 +28,8 @@ services:
       echo \"CLERK_WEBHOOK_SECRET=$CLERK_WEBHOOK_SECRET\" >> .dev.vars &&
       echo \"TURSO_AUTH_TOKEN=$TURSO_AUTH_TOKEN\" >> .dev.vars &&
       echo \"TURSO_DATABASE_URL=$TURSO_DATABASE_URL\" >> .dev.vars &&
-      bun db:migrate &&
-      if [ \"$MODE\" = 'preview' ]; then
-        bun preview --ip 0.0.0.0 --port 5173;
-      else
-        bun dev --host;
-      fi"
+      bun db:push &&
+      bun run dev"
 
   libsql-server:
     image: ghcr.io/tursodatabase/libsql-server:latest

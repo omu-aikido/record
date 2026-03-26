@@ -3,12 +3,8 @@ on:
   workflow_call:
     inputs:
       run-command:
-        required: true
-        type: string
-      needs-env:
         required: false
-        type: boolean
-        default: false
+        type: string
 
 jobs:
   run:
@@ -22,9 +18,18 @@ jobs:
       - uses: cachix/install-nix-action@v31
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-      - uses: DeterminateSystems/flakehub-cache-action@v3
+      - uses: actions/cache@v5
+        with:
+          path: |
+            /nix/store
+            ~/.nix-profile
+          key: ${{ runner.os }}-nix-store-${{ hashFiles('flake.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-nix-store-
+
       - run: nix develop -c bun install --frozen-lockfile
 
       - run: nix develop -c bun run cf-typegen
 
       - run: nix develop -c ${{ inputs.run-command }}
+        if: inputs.run-command != ''

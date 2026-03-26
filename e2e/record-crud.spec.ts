@@ -64,12 +64,11 @@ test.describe('Record CRUD Operations', () => {
 
     // Fill form (add 2 hours)
     await page.getByTestId('period-input').fill('2');
+    await expect(page.getByTestId('period-input')).toHaveValue('2');
+    await expect(page.getByTestId('submit-btn')).toBeEnabled();
     await page.getByTestId('submit-btn').click();
 
-    // Wait for modal to close
-    await expect(modalHeading).not.toBeVisible();
-
-    // 2. Verify creation
+    // 2. Verify creation first (while modal still open)
     // Check summary value increased by 2
     // Wait for the value to update (polling via expect)
     await expect
@@ -79,6 +78,9 @@ test.describe('Record CRUD Operations', () => {
         return text ?? null;
       })
       .toBe(String(initialHours + 2));
+
+    // Wait for modal to close
+    await expect(modalHeading).not.toBeVisible();
 
     // 3. Delete the record
     await todayCell.click();

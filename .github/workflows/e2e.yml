@@ -1,5 +1,3 @@
-name: E2E Tests
-
 permissions:
   contents: read
   id-token: write
@@ -16,25 +14,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  setup:
+    uses: ./.github/workflows/_setup.yml
+    with:
+      run-command: ''
+      skip-cf-typegen: true
+    outputs:
+      nix-ready: true
+
   e2e:
+    needs: setup
     runs-on: ubuntu-latest
     environment: development
     timeout-minutes: 30
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Cache Nix Store
-        uses: DeterminateSystems/flakehub-cache-action@v3
-
-      - name: Install dependencies
-        run: nix develop -c bun install --frozen-lockfile
+      - uses: actions/checkout@v6
 
       - name: Get Playwright version
         id: playwright-version
@@ -57,7 +52,6 @@ jobs:
 
       - name: Run E2E tests
         env:
-          # Docker Composeがこれらの環境変数を受け取ってコンテナに渡します
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
           CLERK_FRONTEND_API_URL: ${{ secrets.CLERK_FRONTEND_API_URL }}

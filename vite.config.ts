@@ -14,4 +14,7 @@ export default defineConfig({
   server: {
     host: true, // Listen on all interfaces (localhost, 127.0.0.1, etc.)
   },
+  build: {
+    target: 'es2018',
+  },
 });

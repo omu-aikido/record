@@ -1,5 +1,6 @@
 import App from './App.vue';
 import { clerkPlugin } from '@clerk/vue';
+import { configure } from 'arktype/config';
 import { createApp } from 'vue';
 import { initAuthState } from './composable/useAuth';
 import router from './router';
@@ -8,6 +9,8 @@ import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import './assets/main.css';
 import '@unocss/reset/tailwind-compat.css';
 import 'virtual:uno.css';
+
+configure({ jitless: true });
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!PUBLISHABLE_KEY) {

@@ -69,18 +69,18 @@ MODE=preview docker compose up
 
 ### Development
 
-| Command        | Description          |
-| -------------- | -------------------- |
+| Command       | Description          |
+| ------------- | -------------------- |
 | `bun dev`     | 開発サーバーを起動   |
 | `bun build`   | プロダクションビルド |
 | `bun preview` | ビルドをプレビュー   |
 
 ### Code Quality
 
-| Command           | Description                              |
-| ----------------- | ---------------------------------------- |
+| Command          | Description                              |
+| ---------------- | ---------------------------------------- |
 | `bun check`      | format, lint, type-check, knipを一括実行 |
-| `bun check:all`  | check + audit + testを一括実行            |
+| `bun check:all`  | check + audit + testを一括実行           |
 | `bun lint`       | oxlintでコード品質チェック               |
 | `bun lint:fix`   | lint問題を自動修正                       |
 | `bun format`     | oxfmtでコードをフォーマット              |
@@ -90,18 +90,18 @@ MODE=preview docker compose up
 
 ### Testing
 
-| Command              | Description              |
-| -------------------- | ------------------------ |
-| `bun test`          | Vitestでテストを実行     |
-| `bun test:ui`       | テストUIを起動           |
-| `bun test:coverage` | カバレッジレポートを生成 |
-| `bun test:e2e`      | PlaywrightでE2Eテストを実行 |
+| Command             | Description                    |
+| ------------------- | ------------------------------ |
+| `bun test`          | Vitestでテストを実行           |
+| `bun test:ui`       | テストUIを起動                 |
+| `bun test:coverage` | カバレッジレポートを生成       |
+| `bun test:e2e`      | PlaywrightでE2Eテストを実行    |
 | `bun test:e2e:ui`   | Playwright E2EテストをUIで実行 |
 
 ### Database
 
-| Command            | Description                    |
-| ------------------ | ------------------------------ |
+| Command           | Description                    |
+| ----------------- | ------------------------------ |
 | `bun db:push`     | スキーマをDBにプッシュ         |
 | `bun db:migrate`  | マイグレーションを実行         |
 | `bun db:generate` | マイグレーションファイルを生成 |
@@ -110,8 +110,8 @@ MODE=preview docker compose up
 
 ### Deployment
 
-| Command       | Description                             |
-| ------------- | --------------------------------------- |
+| Command      | Description                             |
+| ------------ | --------------------------------------- |
 | `bun deploy` | Cloudflare Workersにデプロイ（dry-run） |
 
 ## Environment Variables

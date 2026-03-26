@@ -2,7 +2,7 @@
   "extends": "./tsconfig.node.json",
   "compilerOptions": {
     "types": ["./worker-configuration.d.ts"],
-    "baseUrl": ".",
+    "rootDir": ".",
     "paths": { "@/*": ["./*"] },
     "noEmit": true,
     "strict": true,

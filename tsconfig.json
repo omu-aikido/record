@@ -16,7 +16,7 @@
   ],
   "compilerOptions": {
     "types": ["./worker-configuration.d.ts"],
-    "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@/*": ["./*"]
     }

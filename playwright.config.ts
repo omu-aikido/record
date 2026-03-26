@@ -19,13 +19,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['global setup'],
     },
+    {
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 15'] },
+      dependencies: ['global setup'],
+    },
   ],
-  webServer: {
-    command: 'docker compose up --build',
-    url: 'http://localhost:5173',
-    reuseExistingServer: true,
-    timeout: 180000,
-    stdout: 'pipe',
-    stderr: 'pipe',
-  },
 });

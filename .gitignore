@@ -42,6 +42,3 @@ worker-configuration.d.ts
 !.dev.vars.example
 .env*
 !.env.example
-
-# pnpm
-.pnpm-store

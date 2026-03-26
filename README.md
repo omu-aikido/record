@@ -17,7 +17,7 @@
 
 ```sh
 # ローカル開発時のログ
-pnpm dev
+bun dev
 ```
 
 ## Prerequisites
@@ -44,16 +44,16 @@ direnv allow
 
 ```sh
 # 依存関係のインストール
-pnpm install --frozen-lockfile
+bun install --frozen-lockfile
 
 # libSQLサーバーを起動
 docker compose up -d libsql-server
 
 # DBスキーマをプッシュ
-pnpm db:push
+bun db:push
 
 # 開発サーバーを起動
-pnpm dev
+bun dev
 ```
 
 ### E2Eテスト・CI/CD向け
@@ -71,48 +71,48 @@ MODE=preview docker compose up
 
 | Command        | Description          |
 | -------------- | -------------------- |
-| `pnpm dev`     | 開発サーバーを起動   |
-| `pnpm build`   | プロダクションビルド |
-| `pnpm preview` | ビルドをプレビュー   |
+| `bun dev`     | 開発サーバーを起動   |
+| `bun build`   | プロダクションビルド |
+| `bun preview` | ビルドをプレビュー   |
 
 ### Code Quality
 
 | Command           | Description                              |
 | ----------------- | ---------------------------------------- |
-| `pnpm check`      | format, lint, type-check, knipを一括実行 |
-| `pnpm check:all`  | check + audit + testを一括実行            |
-| `pnpm lint`       | oxlintでコード品質チェック               |
-| `pnpm lint:fix`   | lint問題を自動修正                       |
-| `pnpm format`     | oxfmtでコードをフォーマット              |
-| `pnpm type-check` | TypeScriptの型チェック                   |
-| `pnpm knip`       | 未使用コードをチェック                   |
-| `pnpm knip:fix`   | 未使用コードを修正                       |
+| `bun check`      | format, lint, type-check, knipを一括実行 |
+| `bun check:all`  | check + audit + testを一括実行            |
+| `bun lint`       | oxlintでコード品質チェック               |
+| `bun lint:fix`   | lint問題を自動修正                       |
+| `bun format`     | oxfmtでコードをフォーマット              |
+| `bun type-check` | TypeScriptの型チェック                   |
+| `bun knip`       | 未使用コードをチェック                   |
+| `bun knip:fix`   | 未使用コードを修正                       |
 
 ### Testing
 
 | Command              | Description              |
 | -------------------- | ------------------------ |
-| `pnpm test`          | Vitestでテストを実行     |
-| `pnpm test:ui`       | テストUIを起動           |
-| `pnpm test:coverage` | カバレッジレポートを生成 |
-| `pnpm test:e2e`      | PlaywrightでE2Eテストを実行 |
-| `pnpm test:e2e:ui`   | Playwright E2EテストをUIで実行 |
+| `bun test`          | Vitestでテストを実行     |
+| `bun test:ui`       | テストUIを起動           |
+| `bun test:coverage` | カバレッジレポートを生成 |
+| `bun test:e2e`      | PlaywrightでE2Eテストを実行 |
+| `bun test:e2e:ui`   | Playwright E2EテストをUIで実行 |
 
 ### Database
 
 | Command            | Description                    |
 | ------------------ | ------------------------------ |
-| `pnpm db:push`     | スキーマをDBにプッシュ         |
-| `pnpm db:migrate`  | マイグレーションを実行         |
-| `pnpm db:generate` | マイグレーションファイルを生成 |
-| `pnpm db:studio`   | Drizzle Studioを起動           |
-| `pnpm db:check`    | データベーススキーマをチェック |
+| `bun db:push`     | スキーマをDBにプッシュ         |
+| `bun db:migrate`  | マイグレーションを実行         |
+| `bun db:generate` | マイグレーションファイルを生成 |
+| `bun db:studio`   | Drizzle Studioを起動           |
+| `bun db:check`    | データベーススキーマをチェック |
 
 ### Deployment
 
 | Command       | Description                             |
 | ------------- | --------------------------------------- |
-| `pnpm deploy` | Cloudflare Workersにデプロイ（dry-run） |
+| `bun deploy` | Cloudflare Workersにデプロイ（dry-run） |
 
 ## Environment Variables
 
@@ -141,18 +141,18 @@ GitHub Actions を使用して、CI/CDを管理しています。
 
 - **Trigger**: プルリクエストの作成または更新
 - **Jobs**:
-  - Format (`pnpm format`)
-  - Lint (`pnpm lint`)
-  - Knip (`pnpm knip`)
-  - Type Check (`pnpm type-check`)
-  - Build (`pnpm build-only`)
-  - Test (`pnpm test`)
+  - Format (`bun format`)
+  - Lint (`bun lint`)
+  - Knip (`bun knip`)
+  - Type Check (`bun type-check`)
+  - Build (`bun build-only`)
+  - Test (`bun test`)
 
 ### E2E Tests (`e2e.yml`)
 
 - **Trigger**: プルリクエストの作成または更新、手動実行
 - **Jobs**:
-  - E2Eテスト (`pnpm test:e2e`)
+  - E2Eテスト (`bun test:e2e`)
 
 ## Project Structure
 

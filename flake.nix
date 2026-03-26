@@ -15,14 +15,14 @@
       in {
         packages = {
           nodejs = pkgs.nodejs_slim_latest;
-          pnpm = pkgs.pnpm;
+          bun = pkgs.bun;
           default = pkgs.nodejs_slim_latest;
         };
         devShells = {
           default = pkgs.mkShell {
             buildInputs = with pkgs; [
               nodejs-slim_latest
-              pnpm
+              bun
             ];
             shellWrapper = pkgs.writeShellScript "dev-shell" ''
               exec ${pkgs.zsh}/bin/zsh "$@"

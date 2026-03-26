@@ -28,25 +28,12 @@ jobs:
       - name: Cache Nix Store
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(nix develop -c pnpm -- config get store-dir)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
       - name: Install dependencies
-        run: nix develop -c pnpm -- install --frozen-lockfile
+        run: nix develop -c bun install --frozen-lockfile
 
       - name: Get Playwright version
         id: playwright-version
-        run: echo "version=$(nix develop -c pnpm -- list @playwright/test --depth=0 --json | jq -r '.[0].dependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
+        run: echo "version=$(nix develop -c bun why @playwright/test | grep @playwright/test)")" >> $GITHUB_OUTPUT
 
       - name: Cache Playwright browsers
         id: playwright-cache
@@ -57,11 +44,11 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: nix develop -c pnpm -- exec playwright install --with-deps
+        run: nix develop -c bunx playwright install --with-deps
 
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: nix develop -c pnpm -- exec playwright install-deps
+        run: nix develop -c bunx playwright install-deps
 
       - name: Run E2E tests
         env:
@@ -74,7 +61,7 @@ jobs:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-        run: nix develop -c pnpm -- test:e2e
+        run: nix develop -c bun run test:e2e
 
       - name: Upload Playwright report
         if: always()

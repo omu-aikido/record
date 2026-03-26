@@ -24,11 +24,11 @@ services:
       echo \"CLERK_WEBHOOK_SECRET=$CLERK_WEBHOOK_SECRET\" >> .dev.vars &&
       echo \"TURSO_AUTH_TOKEN=$TURSO_AUTH_TOKEN\" >> .dev.vars &&
       echo \"TURSO_DATABASE_URL=$TURSO_DATABASE_URL\" >> .dev.vars &&
-      pnpm db:migrate &&
+      bun db:migrate &&
       if [ \"$MODE\" = 'preview' ]; then
-        pnpm preview --ip 0.0.0.0 --port 5173;
+        bun preview --ip 0.0.0.0 --port 5173;
       else
-        pnpm dev --host;
+        bun dev --host;
       fi"
 
   libsql-server:

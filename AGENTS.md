@@ -4,37 +4,37 @@
 
 ### Development
 
-- `pnpm dev` - Start development server with hot module replacement
-- `pnpm build` - Build for production (runs type-check and cf-typegen)
-- `pnpm preview` - Preview production build locally
+- `bun dev` - Start development server with hot module replacement
+- `bun build` - Build for production (runs type-check and cf-typegen)
+- `bun preview` - Preview production build locally
 
 ### Code Quality
 
-- `pnpm lint` - Run oxlint for code quality checks
-- `pnpm lint:fix` - Auto-fix linting issues
-- `pnpm format` - Format code with oxfmt
-- `pnpm type-check` - Run TypeScript type checking with vue-tsc
+- `bun lint` - Run oxlint for code quality checks
+- `bun lint:fix` - Auto-fix linting issues
+- `bun format` - Format code with oxfmt
+- `bun type-check` - Run TypeScript type checking with vue-tsc
 
 ### Testing
 
-- `pnpm test` - Run all tests with Vitest
-- `pnpm test:ui` - Run tests with Vitest UI interface
-- `pnpm test:coverage` - Run tests with coverage report (80% threshold)
+- `bun test` - Run all tests with Vitest
+- `bun test:ui` - Run tests with Vitest UI interface
+- `bun test:coverage` - Run tests with coverage report (80% threshold)
 - `vitest run path/to/test.test.ts` - Run single test file
 - `vitest run --reporter=verbose path/to/test.test.ts` - Run single test with verbose output
 
 ### Database
 
-- `pnpm db:push` - Push schema changes to database
-- `pnpm db:migrate` - Run database migrations
-- `pnpm db:studio` - Open Drizzle Studio
-- `pnpm db:generate` - Generate migration files
-- `pnpm db:check` - Check database schema
+- `bun db:push` - Push schema changes to database
+- `bun db:migrate` - Run database migrations
+- `bun db:studio` - Open Drizzle Studio
+- `bun db:generate` - Generate migration files
+- `bun db:check` - Check database schema
 
 ### Deployment
 
-- `pnpm deploy` - Build and deploy to Cloudflare Workers (dry-run)
-- `pnpm cf-typegen` - Generate Cloudflare Worker types
+- `bun deploy` - Build and deploy to Cloudflare Workers (dry-run)
+- `bun cf-typegen` - Generate Cloudflare Worker types
 
 ## Code Style Guidelines
 
@@ -132,11 +132,11 @@ async function fetchData() {
 
 ## Development Workflow
 
-1. **Before committing**: Run `pnpm lint` and `pnpm type-check`
-2. **Before pushing**: Run `pnpm test` to ensure all tests pass
-3. **Code formatting**: Use `pnpm format` or configure editor to format on save
-4. **Database changes**: Generate migrations with `pnpm db:generate`
-5. **Type safety**: Always run `pnpm type-check` after TypeScript changes
+1. **Before committing**: Run `bun lint` and `bun type-check`
+2. **Before pushing**: Run `bun test` to ensure all tests pass
+3. **Code formatting**: Use `bun format` or configure editor to format on save
+4. **Database changes**: Generate migrations with `bun db:generate`
+5. **Type safety**: Always run `bun type-check` after TypeScript changes
 
 ## File Structure Patterns
 

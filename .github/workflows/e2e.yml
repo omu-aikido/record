@@ -135,10 +135,8 @@ jobs:
       - name: Wait for server
         timeout-minutes: 3
         run: |
-          echo "Waiting for http://localhost:5173 ..."
-          until curl -sf http://localhost:5173 > /dev/null; do
-            sleep 2
-          done
+          echo "Checking http://localhost:5173 ..."
+          curl --retry 30 --retry-delay 2 --retry-connrefused -sf http://localhost:5173 > /dev/null
           echo "Server is ready"
 
       - name: Run E2E tests

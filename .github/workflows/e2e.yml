@@ -17,7 +17,6 @@ concurrency:
 
 jobs:
   e2e:
-    needs: setup
     runs-on: ubuntu-latest
     environment: development
     timeout-minutes: 10

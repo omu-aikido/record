@@ -9,139 +9,37 @@ on:
       - opened
       - synchronize
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   format:
-    runs-on: ubuntu-latest
-    environment: development
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Cache Nix Store
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
-      - name: Install dependencies
-        run: nix develop -c bun install --frozen-lockfile
-
-      - name: Format
-        run: nix develop -c bun run format
+    uses: ./.github/workflows/_setup.yml
+    with:
+      run-command: bun run format
 
   lint:
-    runs-on: ubuntu-latest
-    environment: development
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Cache Nix Store
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
-      - name: Install dependencies
-        run: nix develop -c bun install --frozen-lockfile
-
-      - name: Lint
-        run: nix develop -c bun run lint
+    uses: ./.github/workflows/_setup.yml
+    with:
+      run-command: bun run lint
 
   knip:
-    runs-on: ubuntu-latest
-    environment: development
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Cache Nix Store
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
-      - name: Install dependencies
-        run: nix develop -c bun install --frozen-lockfile
-
-      - name: Knip
-        run: nix develop -c bunx knip
+    uses: ./.github/workflows/_setup.yml
+    with:
+      run-command: bunx knip
 
   type-check:
-    runs-on: ubuntu-latest
-    environment: development
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Cache Nix Store
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
-      - name: Install dependencies
-        run: nix develop -c bun install --frozen-lockfile
-
-      - name: Generate Env File for Cloudflare Types
-        run: |
-          touch .env
-          echo "VITE_CLERK_PUBLISHABLE_KEY=''" >> .env
-          echo "CLERK_SECRET_KEY=''" >> .env
-          echo "CLERK_FRONTEND_API_URL=''" >> .env
-          echo "CLERK_WEBHOOK_SECRET=''" >> .env
-          echo "TURSO_AUTH_TOKEN=''" >> .env
-          echo "TURSO_DATABASE_URL=''" >> .env
-
-      - name: Type Generation
-        run: nix develop -c bun run cf-typegen
-
-      - name: Type Check
-        run: nix develop -c bun run type-check
+    uses: ./.github/workflows/_setup.yml
+    with:
+      run-command: bun run type-check
 
   build:
-    runs-on: ubuntu-latest
-    environment: development
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Cache Nix Store
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
-      - name: Build
-        run: nix develop -c bun run build-only
+    uses: ./.github/workflows/_setup.yml
+    with:
+      run-command: bun run build-only
 
   test:
-    runs-on: ubuntu-latest
-    environment: development
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Cache Nix Store
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
-      - name: Install dependencies
-        run: nix develop -c bun install --frozen-lockfile
-
-      - name: Test
-        run: nix develop -c bun run test
+    uses: ./.github/workflows/_setup.yml
+    with:
+      run-command: bun run test

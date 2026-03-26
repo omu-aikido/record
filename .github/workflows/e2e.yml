@@ -33,7 +33,7 @@ jobs:
 
       - name: Get Playwright version
         id: playwright-version
-        run: echo "version=$(nix develop -c bun why @playwright/test | grep @playwright/test)")" >> $GITHUB_OUTPUT
+        run: echo "version=$(nix develop -c bun list | grep @playwright/test | sed 's/.*@//')" >> $GITHUB_OUTPUT
 
       - name: Cache Playwright browsers
         id: playwright-cache

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "bun run type-check",
     "build-only": "vite build",
     "cf-typegen": "wrangler types",
     "check": "bun format && bun lint:fix && bun type-check && bun build-only && bun knip",
@@ -16,8 +16,6 @@
     "deploy": "bun run build --minify && wrangler deploy --dry-run",
     "dev": "vite",
     "format": "oxfmt --write .",
-    "knip": "knip",
-    "knip:fix": "knip --fix",
     "lint": "oxlint . --fix -D correctness --ignore-path .gitignore",
     "lint:fix": "oxlint . -D correctness --ignore-path .gitignore",
     "prebuild": "bun run cf-typegen",

@@ -64,9 +64,17 @@ test.describe('Record CRUD Operations', () => {
 
     // Fill form (add 2 hours)
     await page.getByTestId('period-input').fill('2');
+
+    // Click submit and wait for submission to complete
     await page.getByTestId('submit-btn').click();
 
-    // Wait for modal to close
+    // Wait for button to be disabled during submission
+    await expect(page.getByTestId('submit-btn')).toBeDisabled();
+
+    // Wait for button to be enabled again (submission complete)
+    await expect(page.getByTestId('submit-btn')).toBeEnabled();
+
+    // Now wait for modal to close
     await expect(modalHeading).not.toBeVisible();
 
     // 2. Verify creation
@@ -131,6 +139,11 @@ test.describe('Record CRUD Operations', () => {
       await expect(modalHeading).toBeVisible();
       await page.getByTestId('period-input').fill(String(period));
       await page.getByTestId('submit-btn').click();
+
+      // Wait for submission to complete
+      await expect(page.getByTestId('submit-btn')).toBeDisabled();
+      await expect(page.getByTestId('submit-btn')).toBeEnabled();
+
       await expect(modalHeading).not.toBeVisible();
     };
 

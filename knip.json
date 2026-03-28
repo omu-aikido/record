@@ -1,6 +1,0 @@
-{
-  "$schema": "https://unpkg.com/knip@latest/schema.json",
-  "project": ["src/**/*.{ts,vue}", "server/**/*.ts", "share/**/*.ts"],
-  "ignore": [],
-  "ignoreDependencies": ["@clerk/testing"]
-}

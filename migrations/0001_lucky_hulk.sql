@@ -1,1 +1,0 @@
-ALTER TABLE `activity` ALTER COLUMN "period" TO "period" real NOT NULL DEFAULT 1.5;

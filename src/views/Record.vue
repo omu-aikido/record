@@ -9,7 +9,7 @@ import { endOfMonth, format, isSameDay, parseISO, startOfMonth } from 'date-fns'
 import { useActivities, useAddActivity, useDeleteActivity } from '@/src/composable/useActivity';
 
 // Mutations
-const { mutateAsync: addActivity } = useAddActivity();
+const { mutateAsync: addActivity, isPending: isAddingActivity } = useAddActivity();
 const { mutateAsync: deleteActivity } = useDeleteActivity();
 // State
 const currentMonth = ref(new Date());
@@ -99,7 +99,7 @@ const selectedDateActivities = computed(() => {
               </button>
             </div>
 
-            <ActivityForm :loading="loading" :initial-date="selectedDate" @submit="handleSubmit" />
+            <ActivityForm :loading="isAddingActivity" :initial-date="selectedDate" @submit="handleSubmit" />
 
             <div v-if="selectedDateActivities.length > 0" class="mt-8 pt-6 border-overlay0 border-t">
               <h4 class="text-sm font-bold text-subtext mb-3">この日の記録</h4>

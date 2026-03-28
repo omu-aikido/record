@@ -14,14 +14,14 @@
         pkgs = import nixpkgs {inherit system;};
       in {
         packages = {
-          nodejs = pkgs.nodejs_slim_latest;
+          nodejs = pkgs.nodejs-slim;
           pnpm = pkgs.pnpm;
-          default = pkgs.nodejs_slim_latest;
+          default = pkgs.nodejs-slim;
         };
         devShells = {
           default = pkgs.mkShell {
             buildInputs = with pkgs; [
-              nodejs-slim_latest
+              nodejs-slim
               pnpm
             ];
             shellWrapper = pkgs.writeShellScript "dev-shell" ''

@@ -1,0 +1,13 @@
+{
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.direnv/*",
+    "**/*.tsbuildinfo",
+    "**/.vscode",
+    "**/node_modules",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.wrangler",
+    "**/.turbo"
+  ]
+}

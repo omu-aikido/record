@@ -1,0 +1,21 @@
+{
+  "name": "record",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "deploy": "turbo run deploy",
+    "dev": "bunx turbo dev",
+    "format": "oxfmt --write .",
+    "knip": "bunx knip",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix ."
+  },
+  "devDependencies": {
+    "oxfmt": "latest",
+    "oxlint": "latest",
+    "turbo": "2.8.21"
+  },
+  "packageManager": "bun@1.3.11"
+}

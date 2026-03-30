@@ -1,0 +1,6 @@
+{
+  "name": "tursodb",
+  "scripts": {
+    "dev": "turso dev -f record.db -p 8080"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "workspaces": {
+    "apps/*": {
+      "ignore": []
+    }
+  },
+  "ignoreFiles": [".direnv/**"],
+  "ignoreDependencies": ["@vue/tsconfig"],
+  "ignoreBinaries": ["turso"]
+}

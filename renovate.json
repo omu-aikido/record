@@ -1,0 +1,20 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:js-app", ":disableDependencyDashboard"],
+  "schedule": ["* * * * 0"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch", "pin", "digest"],
+      "minimumReleaseAge": "3 days",
+      "automerge": true,
+      "groupName": "patch updates"
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "minimumReleaseAge": "3 days",
+      "automerge": true,
+      "groupName": "devDependency updates"
+    }
+  ],
+  "timezone": "Asia/Tokyo"
+}

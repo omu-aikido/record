@@ -6,6 +6,7 @@
   "scripts": {
     "build": "turbo build",
     "deploy": "turbo run deploy",
+    "deploy:do": "turbo run deploy:do",
     "dev": "bunx turbo dev",
     "format": "oxfmt --write .",
     "knip": "bunx knip",

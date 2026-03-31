@@ -1,170 +1,101 @@
-# AGENTS.md - Development Guidelines for Vue 3 + Hono Application
+# AGENTS.md
 
-## Build Commands
+AIコーディングアシスタント向けのプロジェクトガイドライン。
 
-### Development
+## プロジェクトの憲法
 
-- `pnpm dev` - Start development server with hot module replacement
-- `pnpm build` - Build for production (runs type-check and cf-typegen)
-- `pnpm preview` - Preview production build locally
+1. **境界の遵守:** `apps/client` から `drizzle-orm` を直接インポートしてはならない。DB操作は常に `apps/server` のAPIを通すこと。
+2. **共有ロジック:** 型定義やバリデーションロジックは可能な限り `apps/share` に記述し、`apps/server` と `apps/client` でインポートして共有すること。
+3. **ビルドの原則:** `apps/client` はSPAとして配信される。SSRは行わない。
+4. **API通信:** Hono RPC (`hc<AppType>`) を使用すること。手動の `fetch` やURL文字列のハードコーディングは禁止。
+5. **認証:** 認証ロジックは Clerk を使用し、Honoのミドルウェア層でガードをかけること。クライアント側での権限チェックはあくまでUX目的であること。
+6. **テスト:** 新しい機能を追加する際は必ず対応するテスト（`apps/share`ならUnit, `apps/server`ならAPI/Integration, `apps/client`ならComponent）をセットで提案すること。
+7. **スタイリング:** UnoCSSを使用する。Tailwind互換のユーティリティクラスを優先する。
+8. **コンポーネント:** HeadlessUIを使用してアクセシビリティを確保する。
 
-### Code Quality
-
-- `pnpm lint` - Run oxlint for code quality checks
-- `pnpm lint:fix` - Auto-fix linting issues
-- `pnpm format` - Format code with oxfmt
-- `pnpm type-check` - Run TypeScript type checking with vue-tsc
-
-### Testing
-
-- `pnpm test` - Run all tests with Vitest
-- `pnpm test:ui` - Run tests with Vitest UI interface
-- `pnpm test:coverage` - Run tests with coverage report (80% threshold)
-- `vitest run path/to/test.test.ts` - Run single test file
-- `vitest run --reporter=verbose path/to/test.test.ts` - Run single test with verbose output
-
-### Database
-
-- `pnpm db:push` - Push schema changes to database
-- `pnpm db:migrate` - Run database migrations
-- `pnpm db:studio` - Open Drizzle Studio
-- `pnpm db:generate` - Generate migration files
-- `pnpm db:check` - Check database schema
-
-### Deployment
-
-- `pnpm deploy` - Build and deploy to Cloudflare Workers (dry-run)
-- `pnpm cf-typegen` - Generate Cloudflare Worker types
-
-## Code Style Guidelines
-
-### TypeScript Configuration
-
-- Strict mode enabled with comprehensive type checking
-- No implicit any types - use explicit types everywhere
-- Exact optional properties enabled
-- No unchecked indexed access
-- Force consistent file naming casing
-
-### Import Organization
-
-```typescript
-// 1. Vue ecosystem imports
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-
-// 2. External library imports
-import { tv } from 'tailwind-variants';
-import hc from '@/src/lib/honoClinet';
-
-// 3. Internal imports (use @ alias)
-import type { UserResource } from '@clerk/types';
-import { useAuth } from '@/src/composable/useAuth';
-```
-
-### Component Structure
-
-- Use `<script setup lang="ts">` for all components
-- Define props with TypeScript interfaces
-- Use tailwind-variants for styling consistency
-- Separate business logic into composables
-
-### Naming Conventions
-
-- **Components**: PascalCase (e.g., `UserProfile.vue`)
-- **Composables**: camelCase with `use` prefix (e.g., `useAuth.ts`)
-- **Files**: kebab-case for utilities, camelCase for composables
-- **Variables**: camelCase, descriptive names
-- **Constants**: UPPER_SNAKE_CASE for exports
-
-### Error Handling
-
-```typescript
-// API calls with proper error handling
-async function fetchData() {
-  try {
-    const response = await hc.api.endpoint.$get();
-    if (!response.ok) throw new Error('Failed to fetch data');
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    // Return fallback or re-throw with context
-    return null;
-  }
-}
-```
-
-### Styling Guidelines
-
-- Use Tailwind CSS with tailwind-variants for component styles
-- Define base styles in UI components (Card.vue pattern)
-- Dark mode support with `dark:` prefixes
-- Responsive design with `sm:`, `md:`, `lg:` prefixes
-
-### State Management
-
-- Use Vue 3 Composition API with `ref` and `computed`
-- Centralize authentication state in `useAuth` composable
-- Server state fetching with proper loading states
-- Immutable state updates - avoid direct mutations
-
-### Testing Guidelines
-
-- Test files: `*.test.ts` or `*.spec.ts`
-- Use Vitest with happy-dom environment
-- Mock external dependencies in `tests/setup.ts`
-- Component testing with @testing-library/vue
-- Coverage threshold: 80% for all metrics
-
-### API Integration
-
-- Use Hono client with type-safe endpoints
-- Proper error handling for network requests
-- Loading states for async operations
-- Runtime type validation with Arktype
-
-### Database Operations
-
-- Use Drizzle ORM with TypeScript types
-- Transactions for complex operations
-- Proper error handling for database failures
-- Schema validation with Arktype integration
-
-## Development Workflow
-
-1. **Before committing**: Run `pnpm lint` and `pnpm type-check`
-2. **Before pushing**: Run `pnpm test` to ensure all tests pass
-3. **Code formatting**: Use `pnpm format` or configure editor to format on save
-4. **Database changes**: Generate migrations with `pnpm db:generate`
-5. **Type safety**: Always run `pnpm type-check` after TypeScript changes
-
-## File Structure Patterns
+## ディレクトリ構成
 
 ```
-src/
-├── components/
-│   ├── ui/           # Reusable UI components
-│   ├── pages/        # Page-specific components
-│   └── providers/    # Context providers
-├── composable/       # Vue composables
-├── lib/             # Utility functions
-├── router/          # Route definitions
-├── styles/          # Global styles
-└── views/           # Page components
+apps/
+├── client/     # Frontend (Vue 3 SPA)
+│   └── src/
+│       ├── components/  # Vue コンポーネント
+│       ├── assets/      # 静的アセット
+│       └── App.vue      # ルートコンポーネント
+├── server/     # Backend (Hono/Cloudflare Workers)
+│   └── src/
+│       └── index.ts     # API エントリポイント
+└── share/      # 共有コード
+    └── index.ts  # 型定義・バリデーション
 ```
 
-## Security Guidelines
+## 技術スタック
 
-- Never commit secrets or API keys
-- Use environment variables for configuration
-- Validate all user inputs on both client and server
-- Implement proper authentication checks with Clerk
-- Use HTTPS for all API communications
+| レイヤー   | 技術                                            |
+| ---------- | ----------------------------------------------- |
+| Frontend   | Vue 3, Vite, UnoCSS, HeadlessUI, TanStack Query |
+| Backend    | Hono, Cloudflare Workers                        |
+| DB         | Turso, Drizzle ORM                              |
+| Auth       | Clerk                                           |
+| Validation | Arktype, Drizzle-Arktype                        |
+| Build      | Turborepo, Bun                                  |
 
-## Performance Considerations
+## 開発ガイドライン
 
-- Lazy load routes with Vue Router
-- Use `shallowRef` for large objects that don't need deep reactivity
-- Implement proper loading states for async operations
-- Optimize bundle size with dynamic imports
-- Use Vue DevTools for component inspection
+### API設計
+
+- RESTful原則に従う
+- エンドポイントは `/api/` プレフィックスを付ける
+- レスポンスはJSON形式
+
+### コンポーネント設計
+
+- コンポーネントは `apps/client/src/components/` に配置
+- ファイル名は PascalCase (例: `UserProfile.vue`)
+- Props と Emit は明確に定義
+
+### スタイリング
+
+- UnoCSSのユーティリティクラスを使用
+- TailwindCSS互換記法を使用するが、直書きは避けて、shortcut/ruleなどでセマンティックに作成
+- カスタムテーマが必要な場合は `uno.config.ts` で定義
+
+### テスト
+
+- `apps/share`: Unit テスト (Vitest)
+- `apps/server`: API/Integration テスト
+- `apps/client`: Component テスト
+
+- Unit Test
+
+## コマンド
+
+```bash
+# 開発サーバー起動
+bun run dev
+
+# 本番ビルド
+bun run build
+
+# Frontend のみ起動
+cd apps/client && bun run dev
+
+# Backend のみ起動
+cd apps/server && bun run dev
+
+# Backend デプロイ
+cd apps/server && bun run deploy
+```
+
+## 環境変数
+
+`.env.local` に以下を設定:
+
+```env
+CLERK_PUBLISHABLE_KEY=pk_test_***
+CLERK_SECRET_KEY=sk_test_***
+TURSO_DB_URL=libsql://*.turso.io
+TURSO_DB_AUTH_TOKEN=***
+CF_ACCOUNT_ID=***
+CF_API_TOKEN=***
+```

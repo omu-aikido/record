@@ -1,0 +1,62 @@
+<template>
+  <div class="stack">
+    <div class="gap-4 grid grid-cols-2">
+      <Input
+        id="lastName"
+        name="lastName"
+        label="姓"
+        :model-value="formValues.lastName"
+        required
+        placeholder="山田"
+        :disabled="isSignUpCreated"
+        :error="formErrors.lastName"
+        @update:model-value="onUpdate('lastName', $event)" />
+      <Input
+        id="firstName"
+        name="firstName"
+        label="名"
+        :model-value="formValues.firstName"
+        required
+        placeholder="太郎"
+        :disabled="isSignUpCreated"
+        :error="formErrors.firstName"
+        @update:model-value="onUpdate('firstName', $event)" />
+    </div>
+
+    <Input
+      id="username"
+      name="username"
+      label="ユーザー名 (任意・6文字以上)"
+      type="text"
+      autocomplete="username"
+      :model-value="formValues.username"
+      placeholder="aikido_taro"
+      :disabled="isSignUpCreated"
+      :error="formErrors.username"
+      @update:model-value="onUpdate('username', $event)" />
+
+    <div class="pt-2 flex justify-between">
+      <button type="button" class="btn-secondary" :disabled="isSignUpCreated" @click="prevStep">戻る</button>
+      <button type="button" class="btn-primary" :disabled="isSignUpCreated" @click="handleNext">次へ</button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import Input from '@/components/ui/UiInput.vue';
+import type { FormErrors, SignUpFormData } from '@/composable/useSignUpForm';
+
+defineProps<{
+  formValues: Partial<SignUpFormData>;
+  formErrors: Partial<FormErrors>;
+  isSignUpCreated: boolean;
+  handleNext: () => void;
+  prevStep: () => void;
+}>();
+const emit = defineEmits<{
+  (e: 'update:formValue', key: keyof SignUpFormData, value: string | number): void;
+}>();
+const onUpdate = (key: keyof SignUpFormData, value: string | number) => {
+  emit('update:formValue', key, value);
+};
+</script>

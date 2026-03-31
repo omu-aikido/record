@@ -3,7 +3,6 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
-
   outputs = {
     nixpkgs,
     flake-utils,
@@ -13,21 +12,16 @@
       system: let
         pkgs = import nixpkgs {inherit system;};
       in {
-        packages = {
-          nodejs = pkgs.nodejs_slim_latest;
-          pnpm = pkgs.pnpm;
-          default = pkgs.nodejs_slim_latest;
-        };
-        devShells = {
-          default = pkgs.mkShell {
-            buildInputs = with pkgs; [
-              nodejs-slim_latest
-              pnpm
-            ];
-            shellWrapper = pkgs.writeShellScript "dev-shell" ''
-              exec ${pkgs.zsh}/bin/zsh "$@"
-            '';
-          };
+        devShell = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            bun
+            nodejs-slim_24
+            turso-cli
+            sqld
+          ];
+          shellWrapper = pkgs.writeShellScript "dev-shell" ''
+            exec ${pkgs.zsh}/bin/zsh \"$@\"
+          '';
         };
       }
     );

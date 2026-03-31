@@ -1,186 +1,132 @@
-# OMU Aikido App
+# record
 
-大阪公立大学合気道部の稽古管理アプリ
+Vue 3 SPA + Hono Backend on Cloudflare Workers
 
-## Tech Stack
+## 技術スタック
 
-- **Frontend**: Vue 3 + Vite + UnoCSS
-- **Backend**: Hono (Cloudflare Workers)
-- **Database**: Drizzle ORM + libSQL (Turso)
-- **Authentication**: Clerk
-- **Validation**: Arktype
-- **Observability**: Cloudflare Workers Observability
+| レイヤー   | 技術                                            |
+| ---------- | ----------------------------------------------- |
+| Frontend   | Vue 3, Vite, UnoCSS, HeadlessUI, TanStack Query |
+| Backend    | Hono, Cloudflare Workers                        |
+| DB         | Turso, Drizzle ORM                              |
+| Auth       | Clerk                                           |
+| Validation | Arktype, Drizzle-Arktype                        |
+| Build      | Turborepo, Bun                                  |
+| DevEnv     | Nix                                             |
 
-## Observability & Error Monitoring
+## 前提条件
 
-### ログの確認方法
+- Bun 1.3.11+
+- Node.js 24+ (Nix利用時)
+- Cloudflare アカウント (デプロイ時)
+- Turso アカウント (DB利用時)
+- Clerk アカウント (認証利用時)
 
-```sh
-# ローカル開発時のログ
-pnpm dev
+## セットアップ
+
+### 1. 依存関係インストール
+
+```bash
+bun install
 ```
 
-## Prerequisites
+### 2. 環境変数設定
 
-### セットアップ方法
-
-#### nix/flake（推奨）
-
-```sh
-# nixがインストールされている場合
-nix develop
+```bash
+cp .env .env.local
 ```
 
-または
+`.env.local` を編集して必要な環境変数を設定:
 
-```sh
-# flakeが有効な場合
-direnv allow
+```env
+# Clerk認証
+CLERK_PUBLISHABLE_KEY=pk_test_***
+CLERK_SECRET_KEY=sk_test_***
+
+# Turso DB
+TURSO_DB_URL=libsql://*.turso.io
+TURSO_DB_AUTH_TOKEN=***
+
+# Cloudflare
+CF_ACCOUNT_ID=***
+CF_API_TOKEN=***
 ```
 
-## Quick Start
+### 3. 開発サーバー起動
 
-### ローカル
+```bash
+# 全体開発サーバー起動 (client + server)
+bun run dev
 
-```sh
-# 依存関係のインストール
-pnpm install --frozen-lockfile
-
-# libSQLサーバーを起動
-docker compose up -d libsql-server
-
-# DBスキーマをプッシュ
-pnpm db:push
-
-# 開発サーバーを起動
-pnpm dev
+# 個別起動
+cd apps/client && bun run dev  # Frontend: http://localhost:5173
+cd apps/server && bun run dev  # Backend:  http://localhost:8787
 ```
 
-### E2Eテスト・CI/CD向け
+## 開発コマンド
 
-```sh
-docker compose up
+| コマンド                           | 説明                          |
+| ---------------------------------- | ----------------------------- |
+| `bun run dev`                      | 開発サーバー起動 (Turborepo)  |
+| `bun run build`                    | 本番ビルド (Turborepo)        |
+| `cd apps/client && bun run dev`    | Frontend のみ起動             |
+| `cd apps/server && bun run dev`    | Backend のみ起動              |
+| `cd apps/server && bun run deploy` | Cloudflare Workers にデプロイ |
 
-# Wranglerを使用してアプリサービスを起動（libSQL + アプリ）
-MODE=preview docker compose up
-```
-
-## Scripts
-
-### Development
-
-| Command        | Description          |
-| -------------- | -------------------- |
-| `pnpm dev`     | 開発サーバーを起動   |
-| `pnpm build`   | プロダクションビルド |
-| `pnpm preview` | ビルドをプレビュー   |
-
-### Code Quality
-
-| Command           | Description                              |
-| ----------------- | ---------------------------------------- |
-| `pnpm check`      | format, lint, type-check, knipを一括実行 |
-| `pnpm check:all`  | check + audit + testを一括実行            |
-| `pnpm lint`       | oxlintでコード品質チェック               |
-| `pnpm lint:fix`   | lint問題を自動修正                       |
-| `pnpm format`     | oxfmtでコードをフォーマット              |
-| `pnpm type-check` | TypeScriptの型チェック                   |
-| `pnpm knip`       | 未使用コードをチェック                   |
-| `pnpm knip:fix`   | 未使用コードを修正                       |
-
-### Testing
-
-| Command              | Description              |
-| -------------------- | ------------------------ |
-| `pnpm test`          | Vitestでテストを実行     |
-| `pnpm test:ui`       | テストUIを起動           |
-| `pnpm test:coverage` | カバレッジレポートを生成 |
-| `pnpm test:e2e`      | PlaywrightでE2Eテストを実行 |
-| `pnpm test:e2e:ui`   | Playwright E2EテストをUIで実行 |
-
-### Database
-
-| Command            | Description                    |
-| ------------------ | ------------------------------ |
-| `pnpm db:push`     | スキーマをDBにプッシュ         |
-| `pnpm db:migrate`  | マイグレーションを実行         |
-| `pnpm db:generate` | マイグレーションファイルを生成 |
-| `pnpm db:studio`   | Drizzle Studioを起動           |
-| `pnpm db:check`    | データベーススキーマをチェック |
-
-### Deployment
-
-| Command       | Description                             |
-| ------------- | --------------------------------------- |
-| `pnpm deploy` | Cloudflare Workersにデプロイ（dry-run） |
-
-## Environment Variables
-
-プロジェクトのルートに `.dev.vars` ファイルを作成し、以下の変数を設定してください（`.env.example` 参照）。
-
-```ini
-# Client (Clerk)
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_PUBLISHABLE_KEY=pk_test_...
-
-# Server (Clerk)
-CLERK_SECRET_KEY=sk_test_...
-CLERK_FRONTEND_API_URL=https://...
-CLERK_WEBHOOK_SECRET=whsec_...
-
-# Server (Database)
-TURSO_AUTH_TOKEN=...
-TURSO_DATABASE_URL=http://localhost:8080
-```
-
-## CI/CD Workflow
-
-GitHub Actions を使用して、CI/CDを管理しています。
-
-### CI: Validation (`ci.yml`)
-
-- **Trigger**: プルリクエストの作成または更新
-- **Jobs**:
-  - Format (`pnpm format`)
-  - Lint (`pnpm lint`)
-  - Knip (`pnpm knip`)
-  - Type Check (`pnpm type-check`)
-  - Build (`pnpm build-only`)
-  - Test (`pnpm test`)
-
-### E2E Tests (`e2e.yml`)
-
-- **Trigger**: プルリクエストの作成または更新、手動実行
-- **Jobs**:
-  - E2Eテスト (`pnpm test:e2e`)
-
-## Project Structure
+## アーキテクチャ
 
 ```
-├── src/                  # Vueフロントエンド (tsconfig.app.json)
-│   ├── components        # UIコンポーネント
-│   ├── composable        # Vueコンポーザブル
-│   ├── views             # ページコンポーネント
-│   ├── router            # ルーティング
-│   └── lib               # ユーティリティ関数
-├── server/               # Honoバックエンド (tsconfig.worker.json)
-├── share/                # 共有型定義・ユーティリティ
-├── tests/                # ユニットテスト・統合テスト
-├── e2e/                  # E2Eテストファイル
-├── migrations/           # DBマイグレーション
-├── .github/workflows/    # CI/CD設定
-├── uno.config.ts         # UnoCSS設定
-├── wrangler.jsonc        # Wrangler設定
-├── drizzle.config.ts     # Drizzle設定
-├── knip.json             # 未使用コード検出設定
-├── vitest.config.ts      # Vitest設定
-├── playwright.config.ts  # Playwright設定
-├── tsconfig.json         # TypeScript構成のエントリポイント
-├── tsconfig.app.json     # フロントエンド用TS設定
-├── tsconfig.worker.json  # Cloudflare Workers用TS設定
-└── tsconfig.node.json    # ビルドツール用TS設定
+apps/
+├── client/     # Vue 3 SPA (Vite)
+├── server/     # Hono API (Cloudflare Workers)
+└── share/      # 共有型・バリデーション
 ```
 
-## License
+### データフロー
 
-[Apache License 2.0](LICENSE)
+1. **Client → Server**: Hono RPC (`hc<AppType>`) を使用
+2. **Server → DB**: Drizzle ORM 経由で Turso にアクセス
+3. **Auth**: Clerk 認証を Hono ミドルウェアでガード
+
+## デプロイ
+
+### 1. Frontend ビルド
+
+```bash
+cd apps/client && bun run build
+```
+
+### 2. Backend デプロイ
+
+```bash
+cd apps/server && bun run deploy
+```
+
+### 3. SPA モード
+
+`wrangler.jsonc` の `assets.not_found_handling: "single-page-application"` により、API以外のリクエストはSPAとして配信されます。
+
+## テスト
+
+### テスト戦略
+
+| アプリ        | テストタイプ           |
+| ------------- | ---------------------- |
+| `apps/share`  | Unit テスト            |
+| `apps/server` | API/Integration テスト |
+| `apps/client` | Component テスト       |
+
+### テスト実行
+
+```bash
+# 各appsで Vitest を使用 (今後設定予定)
+bun run test
+```
+
+## 開発ガイドライン
+
+詳細な開発ルールは [AGENTS.md](./AGENTS.md) を参照してください。
+
+## ライセンス
+
+MIT

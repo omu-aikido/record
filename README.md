@@ -4,7 +4,7 @@ Vue 3 SPA + Hono Backend on Cloudflare Workers
 
 ## 技術スタック
 
-| レイヤー   | 技術                                            |
+|            |                                                 |
 | ---------- | ----------------------------------------------- |
 | Frontend   | Vue 3, Vite, UnoCSS, HeadlessUI, TanStack Query |
 | Backend    | Hono, Cloudflare Workers                        |
@@ -27,51 +27,31 @@ Vue 3 SPA + Hono Backend on Cloudflare Workers
 ### 1. 依存関係インストール
 
 ```bash
+echo "use flake" > .envrc && direnv allow
+```
+
+```bash
 bun install
+```
+
+ローカル開発用のsqliteファイルを準備
+
+```bash
+cat migrations/20260331022512_certain_sunspot/migration.sql | sqlite3 local.db
 ```
 
 ### 2. 環境変数設定
 
-```bash
-cp .env .env.local
-```
-
-`.env.local` を編集して必要な環境変数を設定:
-
-```env
-# Clerk認証
-CLERK_PUBLISHABLE_KEY=pk_test_***
-CLERK_SECRET_KEY=sk_test_***
-
-# Turso DB
-TURSO_DB_URL=libsql://*.turso.io
-TURSO_DB_AUTH_TOKEN=***
-
-# Cloudflare
-CF_ACCOUNT_ID=***
-CF_API_TOKEN=***
-```
+.env.exampleを参考に。
+`apps/server`,`apps/client`それぞれに必要な変数を記述して配置
 
 ### 3. 開発サーバー起動
 
 ```bash
-# 全体開発サーバー起動 (client + server)
 bun run dev
-
-# 個別起動
-cd apps/client && bun run dev  # Frontend: http://localhost:5173
-cd apps/server && bun run dev  # Backend:  http://localhost:8787
 ```
 
-## 開発コマンド
-
-| コマンド                           | 説明                          |
-| ---------------------------------- | ----------------------------- |
-| `bun run dev`                      | 開発サーバー起動 (Turborepo)  |
-| `bun run build`                    | 本番ビルド (Turborepo)        |
-| `cd apps/client && bun run dev`    | Frontend のみ起動             |
-| `cd apps/server && bun run dev`    | Backend のみ起動              |
-| `cd apps/server && bun run deploy` | Cloudflare Workers にデプロイ |
+ブラウザで http://localhost:5173 を開く
 
 ## アーキテクチャ
 
@@ -119,7 +99,6 @@ cd apps/server && bun run deploy
 ### テスト実行
 
 ```bash
-# 各appsで Vitest を使用 (今後設定予定)
 bun run test
 ```
 
@@ -129,4 +108,4 @@ bun run test
 
 ## ライセンス
 
-MIT
+[LICENSE](LICENSE)

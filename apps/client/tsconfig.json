@@ -18,7 +18,6 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/*": ["./src/*"],
-      "share": ["../share/index.ts"]
     },
     "baseUrl": "."
   },

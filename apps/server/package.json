@@ -9,6 +9,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "deploy": "wrangler deploy --minify --dry-run",
+    "deploy:do": "wrangler deploy --minify",
     "dev": "wrangler dev"
   },
   "dependencies": {

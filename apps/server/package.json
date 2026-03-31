@@ -18,7 +18,7 @@
     "@hono/clerk-auth": "3.1.0",
     "@libsql/client": "0.17.2",
     "arktype": "2.2.0",
-    "drizzle-orm": "1.0.0-beta.20",
+    "drizzle-orm": "1.0.0-beta.9-e89174b",
     "hono": "4.12.9",
     "svix": "1.89.0"
   },

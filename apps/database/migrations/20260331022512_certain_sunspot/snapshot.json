@@ -2,9 +2,7 @@
   "version": "7",
   "dialect": "sqlite",
   "id": "2e2c088f-7797-45fe-98d0-1c473fde962b",
-  "prevIds": [
-    "00000000-0000-0000-0000-000000000000"
-  ],
+  "prevIds": ["00000000-0000-0000-0000-000000000000"],
   "ddl": [
     {
       "name": "activity",
@@ -71,9 +69,7 @@
       "table": "activity"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "activity_pk",
       "table": "activity",

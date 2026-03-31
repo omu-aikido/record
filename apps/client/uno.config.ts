@@ -1,11 +1,7 @@
-import {
-  defineConfig,
-  presetWind4,
-  presetAttributify,
-  presetIcons,
-  transformerVariantGroup,
-  transformerDirectives,
-} from 'unocss';
+import { defineConfig, transformerDirectives, transformerVariantGroup } from 'unocss';
+import { presetWind4 } from 'unocss/preset-wind4';
+import { presetAttributify } from 'unocss/preset-attributify';
+import { presetIcons } from 'unocss/preset-icons';
 
 export default defineConfig({
   presets: [

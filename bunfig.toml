@@ -1,1 +1,28 @@
+telemetry = false
+logLevel = "warn"
 
+[install]
+exact = true
+auto = "auto"
+
+linker = "isolated"
+
+minimumReleaseAge = 129600
+
+[install.cache]
+disable = false
+disableManifest = false
+
+[console]
+depth = 3
+
+[test]
+coverage = true
+coverageReporter = ["text", "lcov"]
+retry = 2
+randomize = true
+onlyFailures = true
+
+[run]
+bun = false
+silent = true

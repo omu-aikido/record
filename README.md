@@ -37,7 +37,8 @@ bun install
 ローカル開発用のsqliteファイルを準備
 
 ```bash
-cat migrations/20260331022512_certain_sunspot/migration.sql | sqlite3 local.db
+cd apps/database/
+cat migrations/20260331022512_certain_sunspot/migration.sql | sqlite3 record.db
 ```
 
 ### 2. 環境変数設定

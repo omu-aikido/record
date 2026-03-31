@@ -8,12 +8,6 @@
     "dev": {
       "cache": false,
       "persistent": true
-    },
-    "deploy": {
-      "dependsOn": ["^deploy"]
-    },
-    "deploy:do": {
-      "dependsOn": ["^deploy:do"]
     }
   }
 }

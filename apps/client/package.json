@@ -9,9 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@clerk/vue": "2.0.7",
+    "@clerk/vue": "2.0.8",
     "@headlessui/vue": "1.7.23",
-    "@iconify-json/lucide": "1.2.100",
+    "@iconify-json/lucide": "1.2.101",
     "@tanstack/vue-query": "5.95.2",
     "arktype": "2.2.0",
     "date-fns": "4.1.0",

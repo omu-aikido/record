@@ -12,7 +12,7 @@
     "@clerk/vue": "2.0.8",
     "@headlessui/vue": "1.7.23",
     "@iconify-json/lucide": "1.2.101",
-    "@tanstack/vue-query": "5.95.2",
+    "@tanstack/vue-query": "5.96.2",
     "arktype": "2.2.0",
     "date-fns": "4.1.0",
     "hono": "4.12.9",

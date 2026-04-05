@@ -3,11 +3,15 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./hono": {
+      "types": "./src/hono.d.ts",
+      "default": "./src/empty.js"
+    }
   },
   "scripts": {},
   "dependencies": {
-    "arktype": "2.2.0"
+    "arktype": "catalog:"
   },
   "devDependencies": {}
 }

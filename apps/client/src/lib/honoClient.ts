@@ -1,6 +1,6 @@
-import type App from '../../../server/src';
+import type { AppType } from 'share/hono';
 import { hc } from 'hono/client';
 
-const honoClient = hc<typeof App>('/', { init: { credentials: 'include' } }).api;
+const honoClient = hc<AppType>('/', { init: { credentials: 'include' } }).api;
 
 export default honoClient;

@@ -16,16 +16,16 @@
     "@hono/arktype-validator": "2.0.1",
     "@hono/clerk-auth": "3.1.0",
     "@libsql/client": "0.17.2",
-    "arktype": "2.2.0",
-    "drizzle-orm": "1.0.0-beta.9-e89174b",
-    "hono": "4.12.10",
+    "arktype": "catalog:",
+    "drizzle-orm": "1.0.0-beta.20",
+    "hono": "catalog:",
     "share": "workspace:*",
-    "svix": "1.89.0"
+    "svix": "1.90.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20260402.1",
+    "@cloudflare/workers-types": "4.20260329.1",
     "@types/node": "24.12.0",
     "drizzle-kit": "1.0.0-beta.9-e89174b",
-    "wrangler": "4.79.0"
+    "wrangler": "4.80.0"
   }
 }

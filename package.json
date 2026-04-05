@@ -15,7 +15,7 @@
     "oxfmt": "latest",
     "oxlint": "latest",
     "turbo": "2.9.3",
-    "wrangler": "4.79.0"
+    "wrangler": "4.80.0"
   },
   "packageManager": "bun@1.3.11"
 }

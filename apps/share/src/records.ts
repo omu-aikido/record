@@ -1,4 +1,3 @@
-import { insertActivitySchema } from '../../server/src/db/schema';
 import { type } from 'arktype';
 
 export const recordQuerySchema = type({
@@ -7,7 +6,10 @@ export const recordQuerySchema = type({
   'endDate?': /^\d{4}-\d{2}-\d{2}$/,
 });
 
-export const createActivitySchema = insertActivitySchema.pick('date', 'period');
+export const createActivitySchema = type({
+  date: 'string',
+  period: 'number > 0',
+});
 
 export const deleteActivitiesSchema = type({ ids: 'string[]' });
 

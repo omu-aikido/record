@@ -57,6 +57,7 @@ describe('schemaName', () => {
 ```
 
 **Coverage checklist for schemas:**
+
 - [ ] All required fields present (valid case)
 - [ ] Each required field missing (individual invalid cases)
 - [ ] Each field with wrong type
@@ -93,6 +94,7 @@ describe('functionName()', () => {
 ```
 
 **Example from grade.ts:**
+
 ```typescript
 describe('translateGrade()', () => {
   describe('valid inputs', () => {
@@ -121,6 +123,7 @@ describe('translateGrade()', () => {
 ```
 
 **Coverage checklist for functions:**
+
 - [ ] All switch/case branches
 - [ ] All if/else branches
 - [ ] Default/fallback paths
@@ -190,6 +193,7 @@ describe('ClassName.compare()', () => {
 ```
 
 **Coverage checklist for classes:**
+
 - [ ] All static properties
 - [ ] ALL array contents and ordering
 - [ ] Static methods with valid inputs

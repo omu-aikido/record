@@ -55,7 +55,7 @@ function withSetup<T>(composable: () => T): [T, ReturnType<typeof createApp>] {
     setup() {
       result = composable();
       return () => null;
-    }
+    },
   });
   app.mount(document.createElement('div'));
   return [result!, app];
@@ -104,7 +104,7 @@ describe('useActivity', () => {
 
     expect(result.isLoading.value).toBe(true);
     await nextTick();
-    await new Promise(r => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
 
     expect(result.data.value).toBeDefined();
 
@@ -128,7 +128,7 @@ describe('MyComponent', () => {
 
   test('should render with custom props', () => {
     const wrapper = mount(MyComponent, {
-      props: { title: 'Custom Title' }
+      props: { title: 'Custom Title' },
     });
     expect(wrapper.text()).toContain('Custom Title');
   });
@@ -176,7 +176,7 @@ describe('conditional rendering', () => {
 describe('slots', () => {
   test('should render default slot', () => {
     const wrapper = mount(MyComponent, {
-      slots: { default: 'Slot content' }
+      slots: { default: 'Slot content' },
     });
     expect(wrapper.text()).toContain('Slot content');
   });
@@ -213,10 +213,10 @@ const mockApiClient = {
     user: {
       record: {
         $get: mock(() => Promise.resolve({ ok: true, data: [] })),
-        $post: mock(() => Promise.resolve({ ok: true, data: { id: 1 } }))
-      }
-    }
-  }
+        $post: mock(() => Promise.resolve({ ok: true, data: { id: 1 } })),
+      },
+    },
+  },
 };
 ```
 
@@ -227,12 +227,12 @@ const mockApiClient = {
 mockModule('@clerk/clerk-vue', () => ({
   useUser: () => ({
     isSignedIn: ref(true),
-    user: ref({ id: 'user_123', fullName: 'Test User' })
+    user: ref({ id: 'user_123', fullName: 'Test User' }),
   }),
   useAuth: () => ({
     isSignedIn: ref(true),
-    getToken: mock(() => Promise.resolve('mock-token'))
-  })
+    getToken: mock(() => Promise.resolve('mock-token')),
+  }),
 }));
 ```
 
@@ -245,13 +245,14 @@ const mockRouter = {
   push: mock(() => {}),
   replace: mock(() => {}),
   back: mock(() => {}),
-  currentRoute: { value: { path: '/' } }
+  currentRoute: { value: { path: '/' } },
 };
 ```
 
 ## Coverage Checklist
 
 For each composable:
+
 - [ ] Initial state values
 - [ ] State mutations (all methods that modify state)
 - [ ] Computed values
@@ -260,6 +261,7 @@ For each composable:
 - [ ] Edge cases (empty data, loading states)
 
 For each component:
+
 - [ ] Default rendering
 - [ ] All prop variations
 - [ ] User interactions (clicks, inputs, selections)
@@ -272,6 +274,7 @@ For each component:
 - [ ] Empty states
 
 For each page:
+
 - [ ] Page renders
 - [ ] Data fetching
 - [ ] Navigation

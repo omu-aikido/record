@@ -12,9 +12,9 @@ import { AccountMetadata, Role, updateAccountSchema } from 'share';
 export const clerk = new Hono<{ Bindings: Env }>() //
   .get('/account', async (c) => {
     const auth = getAuth(c);
-    if (!auth || !auth.userId) throw new Error('Not Authenticated');
+    if (!auth || !auth.userId) return c.json({ error: 'Not Authenticated' }, 401);
     const user = await getUser(c);
-    if (!user) throw new Error('User not found');
+    if (!user) return c.json({ error: 'User not found' }, 404);
     return c.json(user, 200);
   })
   .patch(
@@ -27,7 +27,7 @@ export const clerk = new Hono<{ Bindings: Env }>() //
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) throw new Error('Not Authenticated');
+      if (!auth || !auth.userId) return c.json({ error: 'Not Authenticated' }, 401);
 
       const body = c.req.valid('form');
 
@@ -70,18 +70,18 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         notify(c, err, { statusCode: 500 });
-        throw new Error('Failed to update account', { cause: error });
+        return c.json({ error: 'Failed to update account' }, 500);
       }
     }
   )
   .get('/profile', async (c) => {
     const auth = getAuth(c);
 
-    if (!auth || !auth.userId) throw new Error('Not Authenticated');
+    if (!auth || !auth.userId) return c.json({ error: 'Not Authenticated' }, 401);
 
     const profile = await getProfile(c);
 
-    if (!profile) throw new Error('Profile not found');
+    if (!profile) return c.json({ error: 'Profile not found' }, 404);
 
     return c.json({ profile: { id: auth.userId, ...profile } }, 200);
   })
@@ -97,25 +97,26 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       const reqData = c.req.valid('json');
       const profile = await getProfile(c);
 
-      if (!profile) throw new Error('Profile not found');
+      if (!profile) return c.json({ error: 'Profile not found' }, 404);
 
       const newUserData = await patchProfile(c, {
         role: profile.role,
         ...reqData,
       });
 
-      if (Object.keys(newUserData.publicMetadata).length === 0) throw new Error('Failed to update user data.');
+      if (Object.keys(newUserData.publicMetadata).length === 0)
+        return c.json({ error: 'Failed to update user data.' }, 500);
 
       const newProfile = AccountMetadata(newUserData.publicMetadata);
 
-      if (newProfile instanceof ArkErrors) throw new Error('Invalid profile data');
+      if (newProfile instanceof ArkErrors) return c.json({ error: 'Invalid profile data' }, 400);
 
       return c.json({ profile: { id: newUserData.id, ...newProfile } }, 200);
     }
   )
   .get('/menu', async (c) => {
     const auth = getAuth(c);
-    if (!auth || !auth.userId) throw new Error('Not Authenticated');
+    if (!auth || !auth.userId) return c.json({ error: 'Not Authenticated' }, 401);
 
     const profile = await getProfile(c);
     const role = profile ? Role.parse(profile.role) : undefined;

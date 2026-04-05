@@ -5,8 +5,7 @@
   "exports": {
     ".": "./index.ts",
     "./hono": {
-      "types": "./src/hono.d.ts",
-      "default": "./src/empty.js"
+      "types": "./src/hono.d.ts"
     }
   },
   "scripts": {},

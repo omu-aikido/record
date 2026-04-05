@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test';
-import honoClient from '@/lib/honoClient';
+import honoClient from '../../src/lib/honoClient';
 
 describe('honoClient', () => {
   test('should be defined', () => {

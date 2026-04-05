@@ -41,9 +41,14 @@ describe('GET /api/endpoint', () => {
   });
 
   test('should return 401 without auth', async () => {
-    const res = await client.api.endpoint.$get({}, {
-      headers: { /* no auth header */ }
-    });
+    const res = await client.api.endpoint.$get(
+      {},
+      {
+        headers: {
+          /* no auth header */
+        },
+      }
+    );
     expect(res.status).toBe(401);
   });
 });
@@ -55,14 +60,14 @@ describe('GET /api/endpoint', () => {
 describe('POST /api/endpoint', () => {
   test('should create resource with valid input', async () => {
     const res = await client.api.endpoint.$post({
-      json: { field: 'value' }
+      json: { field: 'value' },
     });
     expect(res.status).toBe(201);
   });
 
   test('should return 400 with invalid input', async () => {
     const res = await client.api.endpoint.$post({
-      json: { field: '' }
+      json: { field: '' },
     });
     expect(res.status).toBe(400);
   });
@@ -75,7 +80,7 @@ describe('POST /api/endpoint', () => {
 describe('DELETE /api/endpoint/:id', () => {
   test('should delete resource', async () => {
     const res = await client.api.endpoint[':id'].$delete({
-      param: { id: '123' }
+      param: { id: '123' },
     });
     expect(res.status).toBe(200);
   });
@@ -89,11 +94,14 @@ describe('DELETE /api/endpoint/:id', () => {
 ```typescript
 describe('signedIn middleware', () => {
   test('should pass with valid auth', async () => {
-    const res = await client.api.protected.$get({}, {
-      headers: {
-        Authorization: 'Bearer valid-token'
+    const res = await client.api.protected.$get(
+      {},
+      {
+        headers: {
+          Authorization: 'Bearer valid-token',
+        },
       }
-    });
+    );
     expect(res.status).toBe(200);
   });
 
@@ -109,22 +117,28 @@ describe('signedIn middleware', () => {
 ```typescript
 describe('admin middleware', () => {
   test('should allow admin access', async () => {
-    const res = await client.api.admin.$get({}, {
-      headers: {
-        Authorization: 'Bearer admin-token',
-        'X-Role': 'admin'
+    const res = await client.api.admin.$get(
+      {},
+      {
+        headers: {
+          Authorization: 'Bearer admin-token',
+          'X-Role': 'admin',
+        },
       }
-    });
+    );
     expect(res.status).toBe(200);
   });
 
   test('should reject non-admin', async () => {
-    const res = await client.api.admin.$get({}, {
-      headers: {
-        Authorization: 'Bearer user-token',
-        'X-Role': 'member'
+    const res = await client.api.admin.$get(
+      {},
+      {
+        headers: {
+          Authorization: 'Bearer user-token',
+          'X-Role': 'member',
+        },
       }
-    });
+    );
     expect(res.status).toBe(403);
   });
 });
@@ -155,9 +169,9 @@ mockModule('@clerk/backend', () => ({
   createClerkClient: () => ({
     users: {
       getUser: mock(() => Promise.resolve({ id: 'user_123', role: 'admin' })),
-      updateUser: mock(() => Promise.resolve({ id: 'user_123' }))
-    }
-  })
+      updateUser: mock(() => Promise.resolve({ id: 'user_123' })),
+    },
+  }),
 }));
 ```
 
@@ -169,7 +183,7 @@ const mockDb = {
   select: mock(() => Promise.resolve([])),
   insert: mock(() => Promise.resolve({})),
   update: mock(() => Promise.resolve({})),
-  delete: mock(() => Promise.resolve({}))
+  delete: mock(() => Promise.resolve({})),
 };
 
 // For each test, set up mock return values
@@ -183,7 +197,7 @@ mockDb.select.mockImplementation(() => Promise.resolve([{ id: 1, name: 'test' }]
 const mockEnv = {
   TURSO_DB_URL: 'libsql://test.turso.io',
   TURSO_DB_AUTH_TOKEN: 'test-token',
-  CLERK_SECRET_KEY: 'test-secret'
+  CLERK_SECRET_KEY: 'test-secret',
 };
 
 // Pass to app.request if needed
@@ -197,11 +211,11 @@ describe('POST /webhooks/clerk', () => {
   test('should handle user.created event', async () => {
     const payload = {
       type: 'user.created',
-      data: { id: 'user_123', email_addresses: [{ email_address: 'test@example.com' }] }
+      data: { id: 'user_123', email_addresses: [{ email_address: 'test@example.com' }] },
     };
 
     const res = await client.webhooks.clerk.$post({
-      json: payload
+      json: payload,
     });
     expect(res.status).toBe(200);
   });
@@ -209,11 +223,11 @@ describe('POST /webhooks/clerk', () => {
   test('should handle user.updated event', async () => {
     const payload = {
       type: 'user.updated',
-      data: { id: 'user_123', role: 'admin' }
+      data: { id: 'user_123', role: 'admin' },
     };
 
     const res = await client.webhooks.clerk.$post({
-      json: payload
+      json: payload,
     });
     expect(res.status).toBe(200);
   });
@@ -222,7 +236,7 @@ describe('POST /webhooks/clerk', () => {
     const payload = { type: 'unknown.event', data: {} };
 
     const res = await client.webhooks.clerk.$post({
-      json: payload
+      json: payload,
     });
     expect(res.status).toBe(200);
   });
@@ -232,6 +246,7 @@ describe('POST /webhooks/clerk', () => {
 ## Coverage Checklist
 
 For each route file:
+
 - [ ] Happy path (valid request, expected response)
 - [ ] Missing authentication
 - [ ] Invalid request body (validation errors)
@@ -244,6 +259,7 @@ For each route file:
 - [ ] Sorting/filtering parameters
 
 For each middleware:
+
 - [ ] Pass-through case (valid request)
 - [ ] Rejection case (invalid/missing auth)
 - [ ] Error handling

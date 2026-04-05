@@ -34,6 +34,7 @@ apps/server/test/
 ```
 
 **Rules:**
+
 - One test file per source module (1:1 mapping)
 - Place tests in a separate `test/` directory (not co-located)
 - Preserve nested directory structure exactly
@@ -53,6 +54,7 @@ onlyFailures = true
 ```
 
 **Run tests:**
+
 ```bash
 bun test                    # Run all tests
 bun test --coverage         # Run with coverage report
@@ -62,17 +64,18 @@ bun test path/to/file.test.ts  # Run single file
 
 ## Testing by App Type
 
-| App | Test Type | Key Tools | Reference |
-|-----|-----------|-----------|-----------|
-| `apps/share` | Unit | `bun:test`, Arktype helpers | [share-patterns.md](references/share-patterns.md) |
-| `apps/server` | API/Integration | `bun:test`, `hono/testing` | [server-patterns.md](references/server-patterns.md) |
-| `apps/client` | Component | `bun:test`, `@vue/test-utils` | [client-patterns.md](references/client-patterns.md) |
+| App           | Test Type       | Key Tools                     | Reference                                           |
+| ------------- | --------------- | ----------------------------- | --------------------------------------------------- |
+| `apps/share`  | Unit            | `bun:test`, Arktype helpers   | [share-patterns.md](references/share-patterns.md)   |
+| `apps/server` | API/Integration | `bun:test`, `hono/testing`    | [server-patterns.md](references/server-patterns.md) |
+| `apps/client` | Component       | `bun:test`, `@vue/test-utils` | [client-patterns.md](references/client-patterns.md) |
 
 ## Achieving 100% Coverage
 
 Coverage means every branch, line, and function is exercised by at least one test.
 
 **Strategy:**
+
 1. Run `bun test --coverage` to identify gaps
 2. Read the coverage report to find uncovered lines/branches
 3. Add tests specifically targeting those gaps:
@@ -83,6 +86,7 @@ Coverage means every branch, line, and function is exercised by at least one tes
 4. Repeat until coverage reaches 100%
 
 **Test structure pattern:**
+
 ```typescript
 import { describe, test, expect } from 'bun:test';
 

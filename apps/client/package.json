@@ -22,6 +22,7 @@
     "vue-router": "5.0.4"
   },
   "devDependencies": {
+    "@types/bun": "latest",
     "@vitejs/plugin-vue": "6.0.5",
     "@vue/tsconfig": "0.9.1",
     "vite": "8.0.3"

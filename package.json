@@ -7,11 +7,12 @@
     "build": "turbo build",
     "dev": "bunx turbo dev",
     "format": "oxfmt --write .",
-    "knip": "bunx knip",
+    "knip": "knip",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix ."
   },
   "devDependencies": {
+    "knip": "latest",
     "oxfmt": "latest",
     "oxlint": "latest",
     "turbo": "2.9.3"

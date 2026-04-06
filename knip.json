@@ -5,7 +5,7 @@
     "apps/server": {},
     "apps/share": {}
   },
-  "ignoreFiles": [".direnv/**", "./**/env.d.ts"],
+  "ignoreFiles": [".direnv/**", "./**/env.d.ts", "**/test/**"],
   "ignoreDependencies": ["@vue/tsconfig"],
   "ignoreBinaries": ["turso"]
 }

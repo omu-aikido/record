@@ -62,9 +62,9 @@ apps/
 
 ### テスト
 
-- `apps/share`: Unit テスト (Vitest)
-- `apps/server`: API/Integration テスト
-- `apps/client`: Component テスト
+- `apps/share`: Unit テスト (`bun:test`)
+- `apps/server`: Unitテスト・API/Integration テスト（`bun:test`, `hono/testing`,）
+- `apps/client`: Composable テスト
 
 - Unit Test
 

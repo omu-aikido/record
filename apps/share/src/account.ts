@@ -11,8 +11,8 @@ export const AccountMetadata = type({
 });
 
 export const AccountInfo = type({
-  firstName: 'string?',
-  lastName: 'string?',
-  username: 'string?',
-  profileImage: 'unknown?',
+  firstName: '(string | undefined)?',
+  lastName: '(string | undefined)?',
+  username: '(string | undefined)?',
+  profileImage: '(unknown)?',
 });

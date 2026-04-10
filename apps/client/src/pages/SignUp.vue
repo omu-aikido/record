@@ -7,16 +7,16 @@
       <div class="p-6 pt-0">
         <ProgressIndicator :step="step" />
         <form @submit.prevent="handleSubmit">
-          <div :class="step === 'basic' ? '' : 'hidden'">
+          <template v-if="step === 'basic'">
             <SignUpStepBasic
               :form-values="formValues"
               :form-errors="formErrors"
               :is-sign-up-created="isSignUpCreated"
               :handle-next="handleNext"
               @update:form-value="setFormValue" />
-          </div>
+          </template>
 
-          <div :class="step === 'personal' ? '' : 'hidden'">
+          <template v-if="step === 'personal'">
             <SignUpStepPersonal
               :form-values="formValues"
               :form-errors="formErrors"
@@ -24,9 +24,9 @@
               :handle-next="handleNext"
               :prev-step="prevStep"
               @update:form-value="setFormValue" />
-          </div>
+          </template>
 
-          <div :class="step === 'profile' ? '' : 'hidden'">
+          <template v-if="step === 'profile'">
             <SignUpStepProfile
               :form-values="formValues"
               :form-errors="formErrors"
@@ -34,11 +34,7 @@
               :can-submit="!isSignUpCreated"
               :prev-step="prevStep"
               @update:form-value="setFormValue" />
-          </div>
-
-          <div class="my-4 col-span-3">
-            <div id="clerk-captcha" />
-          </div>
+          </template>
         </form>
 
         <div v-if="formErrors.general" class="mt-4 text-base text-red-500">

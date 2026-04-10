@@ -67,6 +67,8 @@
       {{ formErrors.legalAccepted }}
     </p>
 
+    <div id="clerk-captcha" />
+
     <div class="pt-2 flex justify-between">
       <button type="button" class="btn-secondary" :disabled="isSignUpCreated" @click="prevStep">戻る</button>
       <button type="submit" class="btn-primary" :disabled="!canSubmit">

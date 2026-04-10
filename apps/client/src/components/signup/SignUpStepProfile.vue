@@ -7,7 +7,7 @@
           id="year"
           :value="formValues.year"
           :disabled="isSignUpCreated"
-          class="rounded-md border-overlay1 bg-base px-3 py-2 text-base text focus:ring-blue-500 h-fit w-full border transition-shadow duration-200 outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="rounded-md border-overlay1 bg-base px-3 py-2 input-base text focus:ring-blue-500 h-fit w-full border transition-shadow duration-200 outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
           @change="onUpdate('year', ($event.target as HTMLSelectElement).value)">
           <option v-for="y in yearOptions" :key="y.year" :value="y.year">
             {{ y.name }}
@@ -23,7 +23,7 @@
           id="grade"
           :value="formValues.grade"
           :disabled="isSignUpCreated"
-          class="rounded-md border-overlay1 bg-base px-3 py-2 text-base text focus:ring-blue-500 h-fit w-full border transition-shadow duration-200 outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+          class="rounded-md border-overlay1 bg-base px-3 py-2 input-base text focus:ring-blue-500 h-fit w-full border transition-shadow duration-200 outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
           @change="onUpdate('grade', Number(($event.target as HTMLSelectElement).value))">
           <option v-for="g in gradeOptions" :key="g.grade" :value="g.grade">
             {{ g.name }}
@@ -66,6 +66,8 @@
     <p v-if="formErrors.legalAccepted" class="text-sm text-red-500">
       {{ formErrors.legalAccepted }}
     </p>
+
+    <div id="clerk-captcha" />
 
     <div class="pt-2 flex justify-between">
       <button type="button" class="btn-secondary" :disabled="isSignUpCreated" @click="prevStep">戻る</button>

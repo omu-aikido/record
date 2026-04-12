@@ -45,6 +45,7 @@ export const clerk = new Hono<{ Bindings: Env }>() //
         const updatePayload: Parameters<typeof clerkClient.users.updateUser>[1] = {};
 
         if (username && typeof username === 'string') updatePayload.username = username;
+        if (!username) updatePayload.username = '';
         if (firstName && typeof firstName === 'string') updatePayload.firstName = firstName;
         if (lastName && typeof lastName === 'string') updatePayload.lastName = lastName;
         if (Object.keys(updatePayload).length > 0) await clerkClient.users.updateUser(auth.userId, updatePayload);

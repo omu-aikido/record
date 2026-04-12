@@ -63,7 +63,7 @@
                 translateGrade(formData.grade)
               }}</span>
               <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
-                <ChevronsUpDownIcon class="w-4 h-4 text-subtext" aria-hidden="true" />
+                <div class="i-lucide:lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
               </span>
             </ListboxButton>
             <transition
@@ -77,13 +77,18 @@
                   :key="gradeOption.grade"
                   v-slot="{ active, selected }"
                   :value="gradeOption.grade">
-                  <li :class="['py-2 px-4 pr-10 text relative cursor-default select-none', active ? 'bg-overlay' : '']">
+                  <li
+                    :class="[
+                      'py-2 px-4 pr-10 text inline-flex items-center cursor-default select-none',
+                      active ? 'bg-overlay' : '',
+                      selected ? 'text-blue-500' : '',
+                    ]">
                     <span
                       :class="['block overflow-hidden text-ellipsis whitespace-nowrap', selected ? 'font-medium' : '']">
                       {{ gradeOption.name }}
                     </span>
-                    <span v-if="selected" class="inset-0 left-0 pl-3 text-blue-500 absolute flex items-center">
-                      <CheckIcon class="w-4 h-4" aria-hidden="true" />
+                    <span v-if="selected" class="right-0 pr-6 absolute">
+                      <div class="i-lucide:check h-4 w-4 text-blue-500" aria-hidden="true" />
                     </span>
                   </li>
                 </ListboxOption>
@@ -107,7 +112,7 @@
                 translateYear(formData.year)
               }}</span>
               <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
-                <ChevronsUpDownIcon class="w-4 h-4 text-subtext" aria-hidden="true" />
+                <div class="i-lucide:lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
               </span>
             </ListboxButton>
             <transition
@@ -121,13 +126,18 @@
                   :key="yearOption.year"
                   v-slot="{ active, selected }"
                   :value="yearOption.year">
-                  <li :class="['py-2 px-4 pr-10 text relative cursor-default select-none', active ? 'bg-overlay' : '']">
+                  <li
+                    :class="[
+                      'py-2 px-4 pr-10 text inline-flex items-center cursor-default select-none',
+                      active ? 'bg-overlay' : '',
+                      selected ? 'text-blue-500' : '',
+                    ]">
                     <span
                       :class="['block overflow-hidden text-ellipsis whitespace-nowrap', selected ? 'font-medium' : '']">
                       {{ yearOption.name }}
                     </span>
-                    <span v-if="selected" class="inset-0 left-0 pl-3 text-blue-500 absolute flex items-center">
-                      <CheckIcon class="w-4 h-4" aria-hidden="true" />
+                    <span v-if="selected" class="right-0 pr-6 absolute">
+                      <div class="i-lucide:check h-4 w-4 text-blue-500" aria-hidden="true" />
                     </span>
                   </li>
                 </ListboxOption>

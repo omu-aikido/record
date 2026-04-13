@@ -3,6 +3,11 @@ name: Weekly Update and PR
 on:
   schedule:
     - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   update-and-pr:
@@ -10,18 +15,55 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+
+      - name: Create/update branch
+        run: |
+          git fetch
+          git checkout -B update-weekly origin/update-weekly 2>&1 || git checkout -b update-weekly
+          git pull --rebase origin update-weekly
+
       - name: Update packages
-        run: bun update -r
+        run: |
+          bun update -ry --latest
+          cd apps/client && bun update -ry --latest
+          cd ../server && bun update -ry --latest
+
+      - name: Check outdated
+        id: outdated
+        run: |
+          OUTDATED=$(bun outdated -r 2>&1 || echo "No outdated packages")
+          echo "$OUTDATED" > outdated.txt
+
       - name: Commit changes
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions-[bot]"
+          git config --local user.name "github-actions[bot]"
           git add .
-          git commit -m "Weekly update: $(date +'%Y-%m-%d')"
-      - name: Push to new branch
-        run: git push origin update-weekly
-      - name: Create pull request
-        run: gh pr create --title "Weekly update PR" --body "Automated weekly update PR" --base main --head update-weekly
+          git commit -m "Weekly update $(date +'%Y-%m-%d')" || echo "No changes to commit"
+
+      - name: Push
+        run: git push -u origin update-weekly
+
+      - name: Create PR
+        run: |
+          OUTDATED=$(cat outdated.txt)
+          {
+            echo "Automated weekly package update"
+            echo ""
+            echo "## Outdated Packages"
+            echo "\`\`\`"
+            cat outdated.txt
+            echo "\`\`\`"
+          } > pr_body.md
+          gh pr create \
+            --title "Weekly update $(date +'%Y-%m-%d')" \
+            --body-file pr_body.md \
+            --base main \
+            --head update-weekly

@@ -26,8 +26,12 @@ jobs:
       - name: Create/update branch
         run: |
           git fetch
-          git checkout -B update-weekly origin/update-weekly 2>&1 || git checkout -b update-weekly
-          git pull --rebase origin update-weekly
+          if git show-ref --verify --quiet refs/heads/update-weekly; then
+            git checkout update-weekly
+            git pull --rebase origin update-weekly
+          else
+            git checkout -b update-weekly main
+          fi
 
       - name: Update packages
         run: |

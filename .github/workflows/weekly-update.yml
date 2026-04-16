@@ -25,15 +25,17 @@ jobs:
 
       - name: Create/update branch
         run: |
-          git fetch
-          git checkout -B update-weekly origin/update-weekly 2>&1 || git checkout -b update-weekly
-          git pull --rebase origin update-weekly
+          git fetch origin
+          if git ls-remote --exit-code --heads origin update-weekly; then
+            git checkout update-weekly
+            git pull --rebase origin update-weekly
+          else
+            git checkout -b update-weekly main
+          fi
 
       - name: Update packages
         run: |
-          bun update -ry --latest
-          cd apps/client && bun update -ry --latest
-          cd ../server && bun update -ry --latest
+          bun update -r --latest
 
       - name: Check outdated
         id: outdated
@@ -49,9 +51,11 @@ jobs:
           git commit -m "Weekly update $(date +'%Y-%m-%d')" || echo "No changes to commit"
 
       - name: Push
-        run: git push -u origin update-weekly
+        run: git push origin update-weekly
 
       - name: Create PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           OUTDATED=$(cat outdated.txt)
           {
@@ -62,8 +66,17 @@ jobs:
             cat outdated.txt
             echo "\`\`\`"
           } > pr_body.md
-          gh pr create \
-            --title "Weekly update $(date +'%Y-%m-%d')" \
-            --body-file pr_body.md \
-            --base main \
-            --head update-weekly
+          
+          # 既存のPRがあるか確認
+          PR_EXISTS=$(gh pr list --head update-weekly --base main --json number --jq '.[0].number')
+          
+          if [ -z "$PR_EXISTS" ]; then
+            gh pr create \
+              --title "Weekly update $(date +'%Y-%m-%d')" \
+              --body-file pr_body.md \
+              --base main \
+              --head update-weekly
+          else
+            echo "PR already exists: $PR_EXISTS. Updating the PR body."
+            gh pr edit "$PR_EXISTS" --body-file pr_body.md
+          fi

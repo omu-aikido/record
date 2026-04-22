@@ -50,9 +50,10 @@ const needToNextGrade = computed(() => {
 });
 
 const progressPercentage = computed(() => {
-  if (!props.practiceData) return 0;
+  if (!props.practiceData || !requiredCount.value) return 0;
   const percentage = (props.practiceData.practiceCount / requiredCount.value) * 100;
-  return Math.min(Math.round(percentage), 100);
+  const result = Math.min(Math.round(percentage), 100);
+  return isNaN(result) ? 0 : result;
 });
 
 const progressComment = computed(() => {
@@ -77,53 +78,40 @@ const progressComment = computed(() => {
 
 <template>
   <div class="w-full" data-testid="practice-count-graph">
-    <div v-if="loading" class="card animate-pulse rounded" data-testid="skeleton">
-      <div class="flex flex-col items-center justify-center">
-        <div class="bg-overlay1 rounded flex justify-center">
-          <span class="text-transparent"> &nbsp;&nbsp; </span>
-        </div>
-        <div class="max-w-96 py-4 w-full">
-          <div class="rounded-md h-2 bg-overlay0 w-full">
-            <div class="rounded-md bg-text h-full max-w-full" style="width: 0" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div v-else-if="error" class="py-8 text-center">
+    <div v-if="error" class="py-8 text-center">
       <div class="text-sm text-red-500">エラー: {{ error }}</div>
     </div>
 
-    <details v-else-if="practiceData" class="card select-none">
+    <details v-else class="card select-none">
       <summary class="rounded-lg cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <div class="flex w-full cursor-pointer flex-col items-center justify-center">
-          <div class="text-lg">
-            {{ translateGrade(targetGrade) }}{{ promotionType }}まで
-            <span class="text font-bold text-3xl">{{ needToNextGrade }}</span>
-            日
+          <div
+            class="transition-all duration-200"
+            :class="[loading ? 'bg-overlay1 rounded flex justify-center min-w-[120px]' : 'text-lg']">
+            <span class="transition-opacity duration-200" :class="loading ? 'invisible' : 'visible'">
+              {{ translateGrade(targetGrade) }}{{ promotionType }}まで
+              <span class="text font-bold text-3xl">{{ needToNextGrade }}</span>
+              日
+            </span>
           </div>
 
           <div class="max-w-96 py-4 w-full">
-            <div class="rounded-md h-2 bg-surface1 w-full">
+            <div class="rounded-md h-2" :class="loading ? 'bg-overlay0' : 'bg-surface1'">
               <div
                 class="rounded-md bg-text h-full max-w-full"
-                :style="{ width: `${progressPercentage}%` }"
-                data-testid="progress-bar" />
+                :style="{ width: loading ? '0%' : `${progressPercentage}%` }"
+                :data-testid="!loading ? 'progress-bar' : undefined" />
             </div>
           </div>
         </div>
       </summary>
 
-      <div class="p-4 border-overlay1 border-t">
+      <div v-if="practiceData && !loading" class="p-4 border-overlay1 border-t">
         <div class="space-y-3">
-          <p class="text">
-            {{ progressComment }}
-          </p>
+          <p class="text">{{ progressComment }}</p>
           <p>
             目標の<span class="font-bold">{{ translateGrade(targetGrade) }}</span
-            >への{{ promotionType }}まで
-            <span class="font-bold">{{ requiredCount }}日分</span>
-            の稽古が必要です。
+            >への{{ promotionType }}まで <span class="font-bold">{{ requiredCount }}日分</span>の稽古が必要です。
           </p>
           <p class="mt-2">
             現在、<span class="text-green-500 font-medium">{{ practiceData.practiceCount }}日</span>達成しています。

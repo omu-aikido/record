@@ -12,7 +12,7 @@
     "dev": "wrangler dev"
   },
   "dependencies": {
-    "@clerk/backend": "3.2.8",
+    "@clerk/backend": "3.2.13",
     "@hono/arktype-validator": "2.0.1",
     "@hono/clerk-auth": "3.1.1",
     "@libsql/client": "0.17.2",
@@ -23,9 +23,9 @@
     "svix": "1.90.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20260405.1",
+    "@cloudflare/workers-types": "4.20260418.1",
     "@types/node": "24.12.0",
     "drizzle-kit": "1.0.0-beta.9-e89174b",
-    "wrangler": "4.81.0"
+    "wrangler": "4.83.0"
   }
 }

@@ -6,12 +6,14 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
 
 jobs:
-  update-and-pr:
+  update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,40 +36,34 @@ jobs:
           fi
 
       - name: Update packages
-        run: |
-          bun update -r --latest
+        run: bun update -r --latest
 
-      - name: Check outdated
-        id: outdated
-        run: |
-          OUTDATED=$(bun outdated -r 2>&1 || echo "No outdated packages")
-          echo "$OUTDATED" > outdated.txt
-
-      - name: Commit changes
+      - name: Commit and push
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add .
           git commit -m "Weekly update $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git push origin update-weekly
 
-      - name: Push
-        run: git push origin update-weekly
-
+  pr:
+    runs-on: ubuntu-latest
+    needs: update
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
       - name: Create PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          OUTDATED=$(cat outdated.txt)
           {
             echo "Automated weekly package update"
             echo ""
             echo "## Outdated Packages"
             echo "\`\`\`"
-            cat outdated.txt
+            bun outdated -r 2>&1 || echo "No outdated packages"
             echo "\`\`\`"
           } > pr_body.md
 
-          # 既存のPRがあるか確認
           PR_EXISTS=$(gh pr list --head update-weekly --base main --json number --jq '.[0].number')
 
           if [ -z "$PR_EXISTS" ]; then

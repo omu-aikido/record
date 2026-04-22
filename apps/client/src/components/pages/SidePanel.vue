@@ -43,6 +43,15 @@
                 <UserAvatar alt="User Avatar" rounded />
                 アカウント設定
               </RouterLink>
+              <hr />
+              <a
+                href="https://omu-aikido.com/calendar"
+                class="flex-inline gap-2 text items-center"
+                target="_blank"
+                @click="close">
+                <div class="i-lucide:calendar" />
+                カレンダー ↗
+              </a>
             </nav>
           </Show>
         </div>

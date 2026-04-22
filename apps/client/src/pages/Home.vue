@@ -23,6 +23,7 @@ const iconMap = {
   'clipboard-list': 'i-lucide:clipboard-list',
   user: 'i-lucide:user',
   settings: 'i-lucide:settings',
+  calendar: 'i-lucide:calendar',
 };
 // Queries
 const { data: profileData } = useQuery({
@@ -128,6 +129,7 @@ const getNavLabelClass = (theme: string) => {
             :key="item.id"
             :to="item.href.startsWith('http') ? undefined : item.href"
             :href="item.href.startsWith('http') ? item.href : undefined"
+            :target="item.href.startsWith('http') ? '_blank' : undefined"
             :class="[
               'group gap-3 card text hover:shadow-md flex cursor-pointer flex-col items-center justify-center no-underline transition-colors transition-shadow',
               getNavItemClass(item.theme),

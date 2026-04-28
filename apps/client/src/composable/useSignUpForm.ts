@@ -27,8 +27,8 @@ const getValidationSchema = (currentStep: SignUpStep) => {
       return type({ email: /.+@.+\..+/, newPassword: '10<=string<=100' });
     case 'personal':
       return type({
-        firstName: '2<=string<=50',
-        lastName: '2<=string<=50',
+        firstName: '1<=string<=50',
+        lastName: '1<=string<=50',
         username: "6<=string<=50 | '' | undefined",
       });
     case 'profile':

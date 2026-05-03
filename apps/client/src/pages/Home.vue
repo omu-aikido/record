@@ -2,6 +2,7 @@
 import ActivityForm from '@/components/record/ActivityForm.vue';
 import hc from '@/lib/honoClient';
 import type { InferResponseType } from 'hono/client';
+import LastMonthReview from '@/components/home/LastMonthReview.vue';
 import PracticeCountGraph from '@/components/home/PracticeCountGraph.vue';
 import PracticeRanking from '@/components/home/PracticeRanking.vue';
 import { queryKeys } from '@/lib/queryKeys';
@@ -62,6 +63,28 @@ const { data: rankingDataRaw, isLoading: rankingLoading } = useQuery({
   },
 });
 const rankingData = computed(() => rankingDataRaw.value ?? null);
+
+// Calculate last month in JST (UTC+9)
+const jstNow = new Date(Date.now() + 9 * 60 * 60 * 1000);
+const jstYear = jstNow.getUTCFullYear();
+const jstMonth = jstNow.getUTCMonth() + 1;
+const lastMonthYear = jstMonth === 1 ? jstYear - 1 : jstYear;
+const lastMonthMonth = jstMonth === 1 ? 12 : jstMonth - 1;
+
+const {
+  data: lastMonthRankingDataRaw,
+  isLoading: lastMonthRankingLoading,
+  error: lastMonthRankingErrorRaw,
+} = useQuery({
+  queryKey: [...queryKeys.user.record.ranking(), lastMonthYear, lastMonthMonth],
+  queryFn: async () => {
+    const res = await hc.user.record.ranking.$get({ query: { year: lastMonthYear, month: lastMonthMonth } });
+    if (!res.ok) throw new Error('Failed to fetch last month ranking');
+    return res.json() as Promise<RankingResponse>;
+  },
+});
+const lastMonthRankingData = computed(() => lastMonthRankingDataRaw.value ?? null);
+const lastMonthRankingError = computed(() => (lastMonthRankingErrorRaw.value ? '先月のデータの取得に失敗しました' : null));
 const { data: menuData } = useQuery({
   queryKey: queryKeys.user.clerk.menu(),
   queryFn: async () => {
@@ -116,7 +139,17 @@ const getNavLabelClass = (theme: string) => {
           :loading="countLoading"
           :error="error" />
 
-        <PracticeRanking :ranking-data="rankingData" :loading="rankingLoading" />
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="w-full sm:w-1/2">
+            <PracticeRanking :ranking-data="rankingData" :loading="rankingLoading" />
+          </div>
+          <div class="w-full sm:w-1/2">
+            <LastMonthReview
+              :ranking-data="lastMonthRankingData"
+              :loading="lastMonthRankingLoading"
+              :error="lastMonthRankingError" />
+          </div>
+        </div>
 
         <ActivityForm :loading="activityLoading" @submit="handleAddActivity" />
 

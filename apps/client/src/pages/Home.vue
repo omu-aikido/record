@@ -65,7 +65,8 @@ const { data: rankingDataRaw, isLoading: rankingLoading } = useQuery({
 const rankingData = computed(() => rankingDataRaw.value ?? null);
 
 // Calculate last month in JST (UTC+9)
-const jstNow = new Date(Date.now() + 9 * 60 * 60 * 1000);
+const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+const jstNow = new Date(Date.now() + JST_OFFSET_MS);
 const jstYear = jstNow.getUTCFullYear();
 const jstMonth = jstNow.getUTCMonth() + 1;
 const lastMonthYear = jstMonth === 1 ? jstYear - 1 : jstYear;
@@ -78,7 +79,7 @@ const {
 } = useQuery({
   queryKey: [...queryKeys.user.record.ranking(), lastMonthYear, lastMonthMonth],
   queryFn: async () => {
-    const res = await hc.user.record.ranking.$get({ query: { year: lastMonthYear, month: lastMonthMonth } });
+    const res = await hc.user.record.ranking.$get({ query: { year: Number(lastMonthYear), month: Number(lastMonthMonth) } });
     if (!res.ok) throw new Error('Failed to fetch last month ranking');
     return res.json() as Promise<RankingResponse>;
   },

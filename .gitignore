@@ -32,8 +32,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# misc
-.DS_Store
+# coverage
+coverage/
+
 
 # Logs
 logs

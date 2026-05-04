@@ -27,7 +27,7 @@ const getRankClass = (rank: number) => {
   <div class="w-full" data-testid="ranking-card">
     <!-- Loading State -->
     <div v-if="loading" class="card skeleton" data-testid="loading-state">
-      <div class="flex flex-colgap-4">
+      <div class="flex flex-col gap-4">
         <!-- Current Month Skeleton -->
         <div>
           <div class="text-xs font-medium text-subtext mb-1 bg-overlay1 rounded-md text-transparent">

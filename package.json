@@ -12,7 +12,7 @@
     "lint:fix": "oxlint --fix ."
   },
   "devDependencies": {
-    "knip": "6.9.0",
+    "knip": "6.11.0",
     "oxfmt": "0.47.0",
     "oxlint": "1.62.0",
     "turbo": "2.9.7"

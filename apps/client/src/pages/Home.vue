@@ -2,10 +2,9 @@
 import ActivityForm from '@/components/record/ActivityForm.vue';
 import hc from '@/lib/honoClient';
 import type { InferResponseType } from 'hono/client';
-import LastMonthReview from '@/components/home/LastMonthReview.vue';
 import PracticeCountGraph from '@/components/home/PracticeCountGraph.vue';
-import PracticeRanking from '@/components/home/PracticeRanking.vue';
 import { queryKeys } from '@/lib/queryKeys';
+import RankingCard from '@/components/home/RankingCard.vue';
 import { Show } from '@clerk/vue';
 import { useAddActivity } from '@/composable/useActivity';
 import { computed, ref } from 'vue';
@@ -54,7 +53,11 @@ const currentGrade = computed(() => {
   if (!profileData.value || !('profile' in profileData.value)) return 0;
   return profileData.value.profile.grade ?? 0;
 });
-const { data: rankingDataRaw, isLoading: rankingLoading } = useQuery({
+const {
+  data: rankingDataRaw,
+  isLoading: rankingLoading,
+  error: rankingErrorRaw,
+} = useQuery({
   queryKey: queryKeys.user.record.ranking(),
   queryFn: async () => {
     const res = await hc.user.record.ranking.$get({ query: {} });
@@ -63,6 +66,10 @@ const { data: rankingDataRaw, isLoading: rankingLoading } = useQuery({
   },
 });
 const rankingData = computed(() => rankingDataRaw.value ?? null);
+const currentRankingError = computed(() => (rankingErrorRaw.value ? '当月ランキングの取得に失敗しました' : null));
+
+// Combined loading state for ranking card
+const rankingCardLoading = computed(() => rankingLoading.value || lastMonthRankingLoading.value);
 
 // Calculate last month in JST (UTC+9)
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
@@ -79,13 +86,17 @@ const {
 } = useQuery({
   queryKey: [...queryKeys.user.record.ranking(), lastMonthYear, lastMonthMonth],
   queryFn: async () => {
-    const res = await hc.user.record.ranking.$get({ query: { year: Number(lastMonthYear), month: Number(lastMonthMonth) } });
+    const res = await hc.user.record.ranking.$get({
+      query: { year: Number(lastMonthYear), month: Number(lastMonthMonth) },
+    });
     if (!res.ok) throw new Error('Failed to fetch last month ranking');
     return res.json() as Promise<RankingResponse>;
   },
 });
 const lastMonthRankingData = computed(() => lastMonthRankingDataRaw.value ?? null);
-const lastMonthRankingError = computed(() => (lastMonthRankingErrorRaw.value ? '先月のデータの取得に失敗しました' : null));
+const lastMonthRankingError = computed(() =>
+  lastMonthRankingErrorRaw.value ? '先月のデータの取得に失敗しました' : null
+);
 const { data: menuData } = useQuery({
   queryKey: queryKeys.user.clerk.menu(),
   queryFn: async () => {
@@ -140,17 +151,12 @@ const getNavLabelClass = (theme: string) => {
           :loading="countLoading"
           :error="error" />
 
-        <div class="flex flex-col sm:flex-row gap-4">
-          <div class="w-full sm:w-1/2">
-            <PracticeRanking :ranking-data="rankingData" :loading="rankingLoading" />
-          </div>
-          <div class="w-full sm:w-1/2">
-            <LastMonthReview
-              :ranking-data="lastMonthRankingData"
-              :loading="lastMonthRankingLoading"
-              :error="lastMonthRankingError" />
-          </div>
-        </div>
+        <RankingCard
+          :current-ranking="rankingData"
+          :last-month-ranking="lastMonthRankingData"
+          :loading="rankingCardLoading"
+          :current-error="currentRankingError"
+          :last-month-error="lastMonthRankingError" />
 
         <ActivityForm :loading="activityLoading" @submit="handleAddActivity" />
 

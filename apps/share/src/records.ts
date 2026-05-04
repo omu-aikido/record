@@ -19,8 +19,8 @@ export const paginationSchema = type({
 });
 
 export const rankingQuerySchema = type({
-  'year?': '1900 <= number.integer < 2100',
-  'month?': '1 <= number.integer <= 12',
+  'year?': type('number.integer | string.integer.parse').narrow((n) => n >= 1900 && n < 2100),
+  'month?': type('number.integer | string.integer.parse').narrow((n) => n >= 1 && n <= 12),
   'period?': "'monthly' | 'annual' | 'fiscal'",
 });
 

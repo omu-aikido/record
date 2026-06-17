@@ -6,7 +6,7 @@ import { getAuth } from '@hono/clerk-auth';
 
 import { AccountMetadata } from 'share';
 
-import { notify } from '@/src/lib/observability';
+import { notify } from '../lib/observability';
 
 export const getProfile = async (c: Context) => {
   const auth = getAuth(c);

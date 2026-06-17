@@ -1,5 +1,5 @@
 import { clerk } from './clerk';
-import { ensureSignedIn } from '@/src/middleware/signedIn';
+import { ensureSignedIn } from '../../middleware/signedIn';
 import { Hono } from 'hono';
 import { record } from './record';
 

@@ -19,5 +19,5 @@
     "types": ["node", "./env.d.ts"],
     "baseUrl": "."
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "env.d.ts"]
 }

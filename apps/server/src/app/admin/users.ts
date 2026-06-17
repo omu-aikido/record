@@ -1,10 +1,10 @@
-import { activity } from '@/src/db/schema';
+import { activity } from '../../db/schema';
 import { arktypeValidator } from '@hono/arktype-validator';
 import { createClerkClient } from '@clerk/backend';
-import { dbClient } from '@/src/db/drizzle';
+import { dbClient } from '../../db/drizzle';
 import { getAuth } from '@hono/clerk-auth';
 import { Hono } from 'hono';
-import { notify } from '@/src/lib/observability';
+import { notify } from '../../lib/observability';
 import { Role } from 'share';
 import { type } from 'arktype';
 import * as drizzleOrm from 'drizzle-orm';

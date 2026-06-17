@@ -3,9 +3,9 @@ import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { Webhook } from 'svix';
 
-import { activity } from '@/src/db/schema';
-import { dbClient } from '@/src/db/drizzle';
-import { notify } from '@/src/lib/observability';
+import { activity } from '../../db/schema';
+import { dbClient } from '../../db/drizzle';
+import { notify } from '../../lib/observability';
 
 type ClerkWebhookEvent = {
   type: string;

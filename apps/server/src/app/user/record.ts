@@ -6,8 +6,8 @@ import { getAuth } from '@hono/clerk-auth';
 import * as drizzleOrm from 'drizzle-orm';
 import * as records from 'share';
 
-import { activity } from '@/src/db/schema';
-import { dbClient } from '@/src/db/drizzle';
+import { activity } from '../../db/schema';
+import { dbClient } from '../../db/drizzle';
 import { calculatePeriodRange, getCurrentUserRanking, getRankingData, maskRankingData } from './ranking';
 
 export const record = new Hono<{ Bindings: Env }>()
@@ -108,7 +108,7 @@ export const record = new Hono<{ Bindings: Env }>()
 
     const db = dbClient(c.env);
 
-    const { getProfile } = await import('@/src/clerk/profile');
+    const { getProfile } = await import('../../clerk/profile');
     const profile = await getProfile(c);
 
     const startDate = profile?.getGradeAt || '1970-01-01';

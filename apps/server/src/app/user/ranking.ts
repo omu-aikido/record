@@ -1,8 +1,8 @@
 import type { Context } from 'hono';
 import * as drizzleOrm from 'drizzle-orm';
 
-import { activity } from '@/src/db/schema';
-import { dbClient } from '@/src/db/drizzle';
+import { activity } from '../../db/schema';
+import { dbClient } from '../../db/drizzle';
 import type { RankingEntry } from 'share';
 
 type RawRankingEntry = {

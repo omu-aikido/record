@@ -9,7 +9,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "deploy": "wrangler deploy --minify --dry-run",
-    "dev": "wrangler dev"
+    "dev": "wrangler dev",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@clerk/backend": "3.4.4",

@@ -1,4 +1,4 @@
-import { ensureAdmin } from '@/src/middleware/admin';
+import { ensureAdmin } from '../../middleware/admin';
 import { Hono } from 'hono';
 import statsApp from './stats';
 import usersApp from './users';

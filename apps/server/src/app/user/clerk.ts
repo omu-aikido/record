@@ -4,8 +4,8 @@ import { Hono } from 'hono';
 import { arktypeValidator } from '@hono/arktype-validator';
 import { getAuth } from '@hono/clerk-auth';
 
-import { notify } from '@/src/lib/observability';
-import { getProfile, getUser, patchProfile } from '@/src/clerk/profile';
+import { notify } from '../../lib/observability';
+import { getProfile, getUser, patchProfile } from '../../clerk/profile';
 
 import { AccountMetadata, Role, updateAccountSchema } from 'share';
 

@@ -1,19 +1,12 @@
 import type hc from './honoClient';
 import { type InferRequestType } from 'hono/client';
 
-type Client = typeof hc;
+type RecordQuery = Partial<InferRequestType<typeof hc.user.record.$get>>;
+type AdminAccountsQuery = Partial<InferRequestType<typeof hc.admin.accounts.$get>>;
+type AdminNormsQuery = Partial<InferRequestType<typeof hc.admin.norms.$get>>;
+type AdminUsersQuery = Partial<InferRequestType<(typeof hc.admin.users)[':userId']['$get']>['query']>;
 
-type ValidateStructure<TClient, TKeys> = {
-  [K in keyof TKeys]: K extends keyof TClient
-    ? TKeys[K] extends (...args: unknown[]) => unknown
-      ? TKeys[K] & ValidateStructure<TClient[K], Omit<TKeys[K], keyof ((...args: unknown[]) => unknown)>>
-      : ValidateStructure<TClient[K], TKeys[K]>
-    : never;
-};
-
-const createQueryKeys = <T extends ValidateStructure<Client, T>>(q: T) => q;
-
-export const queryKeys = createQueryKeys({
+export const queryKeys = {
   user: {
     clerk: {
       profile: () => ['user', 'clerk', 'profile'] as const,
@@ -21,7 +14,7 @@ export const queryKeys = createQueryKeys({
       menu: () => ['user', 'clerk', 'menu'] as const,
     },
     record: Object.assign(
-      (args?: Partial<InferRequestType<Client['user']['record']['$get']>>) => ['user', 'record', args] as const,
+      (args?: RecordQuery) => ['user', 'record', args] as const,
       {
         count: () => ['user', 'record', 'count'] as const,
         ranking: () => ['user', 'record', 'ranking'] as const,
@@ -30,10 +23,9 @@ export const queryKeys = createQueryKeys({
   },
   admin: {
     dashboard: () => ['admin', 'dashboard'] as const,
-    accounts: (args?: Partial<InferRequestType<Client['admin']['accounts']['$get']>>) =>
-      ['admin', 'accounts', args] as const,
-    norms: (args?: Partial<InferRequestType<Client['admin']['norms']['$get']>>) => ['admin', 'norms', args] as const,
-    users: (userId: string, args?: Partial<InferRequestType<Client['admin']['users'][':userId']['$get']>>['query']) =>
+    accounts: (args?: AdminAccountsQuery) => ['admin', 'accounts', args] as const,
+    norms: (args?: AdminNormsQuery) => ['admin', 'norms', args] as const,
+    users: (userId: string, args?: AdminUsersQuery) =>
       ['admin', 'users', userId, { query: args }] as const,
   },
-});
+} as const;

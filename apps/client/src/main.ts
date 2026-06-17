@@ -9,8 +9,6 @@ import 'virtual:uno.css';
 import App from './App.vue';
 import router from './router';
 
-import { initAuthState } from './composable/useAuth';
-
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!PUBLISHABLE_KEY) {
   throw new Error('VITE_CLERK_PUBLISHABLE_KEY is required');
@@ -37,11 +35,4 @@ app.use(clerkPlugin, { publishableKey: PUBLISHABLE_KEY });
 app.use(VueQueryPlugin, { queryClient });
 
 app.use(router);
-(async () => {
-  try {
-    await initAuthState();
-    app.mount('#app');
-  } catch {
-    console.error(new Date().toLocaleTimeString(), 'Failed to initialize app');
-  }
-})();
+app.mount('#app');

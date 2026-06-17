@@ -31,11 +31,6 @@ export const createActivitySchema = type({
 
 export const deleteActivitiesSchema = type({ ids: 'string[]' });
 
-export const paginationSchema = type({
-  page: 'number.integer >= 1',
-  'perPage?': '1 <= number.integer <= 100',
-});
-
 export const rankingQuerySchema = type({
   'year?': type('number.integer | string.integer.parse').narrow((n) => n >= 1900 && n < 2100),
   'month?': type('number.integer | string.integer.parse').narrow((n) => n >= 1 && n <= 12),

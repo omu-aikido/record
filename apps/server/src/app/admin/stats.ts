@@ -1,6 +1,6 @@
-import { activity } from '@/src/db/schema';
+import { activity } from '../../db/schema';
 import { arktypeValidator } from '@hono/arktype-validator';
-import { dbClient } from '@/src/db/drizzle';
+import { dbClient } from '../../db/drizzle';
 import { Hono } from 'hono';
 import { type } from 'arktype';
 import { createClerkClient, type User } from '@clerk/backend';

@@ -13,20 +13,20 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@clerk/backend": "3.4.4",
+    "@clerk/backend": "3.7.1",
     "@hono/arktype-validator": "2.0.1",
     "@hono/clerk-auth": "3.1.1",
-    "@libsql/client": "0.17.3",
+    "@libsql/client": "0.17.4",
     "arktype": "catalog:",
     "drizzle-orm": "1.0.0-beta.20",
     "hono": "catalog:",
     "share": "workspace:*",
-    "svix": "1.92.2"
+    "svix": "1.95.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20260426.1",
+    "@cloudflare/workers-types": "4.20260613.1",
     "@types/node": "24.12.0",
     "drizzle-kit": "1.0.0-rc.1",
-    "wrangler": "4.87.0"
+    "wrangler": "4.100.0"
   }
 }

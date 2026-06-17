@@ -126,49 +126,6 @@ export const record = new Hono<{ Bindings: Env }>()
 
     return c.json({ practiceCount, totalPeriod, since: startDate }, 200);
   })
-
-  // POST /api/user/record/page - ページネーション付き記録取得
-  .post(
-    '/page',
-    arktypeValidator('json', records.paginationSchema, (result, c) => {
-      if (!result.success) {
-        return c.json({ error: 'Invalid Pagination Data' }, 400);
-      }
-      return;
-    }),
-    async (c) => {
-      const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: 'Unauthorized' }, 401);
-
-      const body = c.req.valid('json');
-      const page = body.page;
-      const perPage = body.perPage ?? 20;
-      const offset = (page - 1) * perPage;
-
-      const db = dbClient(c.env);
-
-      // 総件数を取得
-      const countResult = await db
-        .select({ total: drizzleOrm.sql<number>`COUNT(*)` })
-        .from(activity)
-        .where(drizzleOrm.eq(activity.userId, auth.userId));
-
-      const total = countResult[0]?.total || 0;
-      const totalPages = Math.ceil(total / perPage);
-
-      // ページネーション付きデータを取得
-      const activities = await db
-        .select()
-        .from(activity)
-        .where(drizzleOrm.eq(activity.userId, auth.userId))
-        .orderBy(drizzleOrm.desc(activity.date))
-        .limit(perPage)
-        .offset(offset);
-
-      return c.json({ activities, pagination: { page, perPage, total, totalPages } }, 200);
-    }
-  )
-
   // GET /api/user/record/ranking - キャッシュ最適化されたランキング取得
   .get(
     '/ranking',

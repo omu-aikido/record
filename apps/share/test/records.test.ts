@@ -4,7 +4,6 @@ import {
   recordQuerySchema,
   createActivitySchema,
   deleteActivitiesSchema,
-  paginationSchema,
   rankingQuerySchema,
 } from '../index';
 
@@ -74,48 +73,6 @@ describe('recordQuerySchema', () => {
 
   test('should reject non-date strings', () => {
     const result = recordQuerySchema({ startDate: 'not-a-date' });
-    expect(isValid(result)).toBe(false);
-  });
-});
-
-describe('paginationSchema', () => {
-  test('should accept valid page and perPage', () => {
-    const result = paginationSchema({ page: 1, perPage: 10 });
-    expect(isValid(result)).toBe(true);
-  });
-
-  test('should accept large valid values', () => {
-    const result = paginationSchema({ page: 100, perPage: 100 });
-    expect(isValid(result)).toBe(true);
-  });
-
-  test('should accept missing perPage', () => {
-    const result = paginationSchema({ page: 1 });
-    expect(isValid(result)).toBe(true);
-  });
-
-  test('should reject page=0', () => {
-    const result = paginationSchema({ page: 0 });
-    expect(isValid(result)).toBe(false);
-  });
-
-  test('should reject negative page', () => {
-    const result = paginationSchema({ page: -1 });
-    expect(isValid(result)).toBe(false);
-  });
-
-  test('should reject perPage > 100', () => {
-    const result = paginationSchema({ page: 1, perPage: 101 });
-    expect(isValid(result)).toBe(false);
-  });
-
-  test('should reject perPage < 1', () => {
-    const result = paginationSchema({ page: 1, perPage: 0 });
-    expect(isValid(result)).toBe(false);
-  });
-
-  test('should reject missing page', () => {
-    const result = paginationSchema({});
     expect(isValid(result)).toBe(false);
   });
 });

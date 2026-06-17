@@ -10,7 +10,6 @@ export {
   recordQuerySchema,
   createActivitySchema,
   deleteActivitiesSchema,
-  paginationSchema,
   rankingQuerySchema,
 } from './src/records';
 export type { RankingEntry, RankingResponse, Activity, PracticeCountData } from './src/records';

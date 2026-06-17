@@ -1,6 +1,6 @@
+import { computed } from 'vue';
 import type { Ref } from 'vue';
 import type { UserResource } from '@clerk/vue/types';
-import { computed } from 'vue';
 import { useClerk, useAuth as useClerkAuth, useUser } from '@clerk/vue';
 
 export function useAuth() {

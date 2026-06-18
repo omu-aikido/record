@@ -24,18 +24,20 @@ export const userActivitiesQuerySchema = type({
 
 export const adminProfileUpdateSchema = type({
   year: 'string',
-  grade: 'number',
+  grade: 'number | null',
   role: 'string',
-  joinedAt: 'number',
+  joinedAt: 'number | null',
   'getGradeAt?': 'string | null',
+  'birthday?': 'string | null',
 });
 
 export const publicMetadataProfileSchema = type({
   'role?': 'string',
-  'grade?': 'number | string',
-  'joinedAt?': 'number',
-  'year?': 'string',
+  'grade?': 'number | string | null',
+  'joinedAt?': 'number | null',
+  'year?': 'string | null',
   'getGradeAt?': 'string | null',
+  'birthday?': 'string | null',
 });
 
 // ============================================================
@@ -55,6 +57,7 @@ export function toAdminUser(user: User): AdminUserType {
   const yearStr = typeof meta?.year === 'string' ? meta.year : '';
   const joinedAt = typeof meta?.joinedAt === 'number' ? meta.joinedAt : null;
   const getGradeAt = typeof meta?.getGradeAt === 'string' ? meta.getGradeAt : null;
+  const birthday = typeof meta?.birthday === 'string' ? meta.birthday : null;
 
   const res = AdminUser({
     id: user.id,
@@ -71,6 +74,7 @@ export function toAdminUser(user: User): AdminUserType {
       yearLabel: translateYear(yearStr),
       joinedAt,
       getGradeAt,
+      birthday,
     },
   });
 

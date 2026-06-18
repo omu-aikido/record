@@ -1,7 +1,7 @@
 import { type } from 'arktype';
 
 function isStrictIsoDate(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+  if (!/^\d{4}-\d{2}-\d{2}$/u.test(value)) {
     return false;
   }
 
@@ -19,13 +19,13 @@ function isStrictIsoDate(value: string): boolean {
 }
 
 export const recordQuerySchema = type({
-  'userId?': /^user_[\w]{27}$/,
-  'startDate?': /^\d{4}-\d{2}-\d{2}$/,
-  'endDate?': /^\d{4}-\d{2}-\d{2}$/,
+  'userId?': /^user_[\w]{27}$/u,
+  'startDate?': /^\d{4}-\d{2}-\d{2}$/u,
+  'endDate?': /^\d{4}-\d{2}-\d{2}$/u,
 });
 
 export const createActivitySchema = type({
-  date: /^\d{4}-\d{2}-\d{2}$/,
+  date: /^\d{4}-\d{2}-\d{2}$/u,
   period: 'number > 0',
 }).narrow((input) => isStrictIsoDate(input.date));
 

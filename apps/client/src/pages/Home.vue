@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ActivityForm from '@/components/record/ActivityForm.vue';
+import { ArkErrors } from 'arktype';
 import hc from '@/lib/honoClient';
 import type { InferResponseType } from 'hono/client';
 import PracticeCountGraph from '@/components/home/PracticeCountGraph.vue';
@@ -7,6 +8,7 @@ import { queryKeys } from '@/lib/queryKeys';
 import RankingCard from '@/components/home/RankingCard.vue';
 import { Show } from '@clerk/vue';
 import { useAddActivity } from '@/composable/useActivity';
+import { AccountMetadata, isProfileComplete } from 'share';
 import { computed, ref } from 'vue';
 import { useQuery, useQueryClient } from '@tanstack/vue-query';
 
@@ -32,6 +34,13 @@ const { data: profileData } = useQuery({
     const res = await hc.user.clerk.profile.$get();
     if (!res.ok) throw new Error('Failed to fetch profile');
     const data = await res.json();
+    if (data.profile) {
+      const validated = AccountMetadata(data.profile);
+      if (validated instanceof ArkErrors) {
+        throw new TypeError('Invalid profile');
+      }
+      return { ...data, profile: validated } as ProfileResponse;
+    }
     return data as ProfileResponse;
   },
 });
@@ -51,7 +60,12 @@ const practiceData = computed(() => practiceDataRaw.value ?? null);
 const error = computed(() => (validationError.value ? '稽古データの取得に失敗しました' : null));
 const currentGrade = computed(() => {
   if (!profileData.value || !('profile' in profileData.value)) return 0;
-  return profileData.value.profile.grade ?? 0;
+  return profileData.value.profile?.grade ?? 0;
+});
+const needsProfileCompletion = computed(() => {
+  if (!profileData.value) return false;
+  if (!profileData.value.profile) return true;
+  return !isProfileComplete(profileData.value.profile);
 });
 const {
   data: rankingDataRaw,
@@ -141,6 +155,13 @@ const getNavLabelClass = (theme: string) => {
   <div class="max-w-7xl px-4 mx-auto">
     <Show when="signed-in">
       <div class="max-w-3xl gap-6 mx-auto flex flex-col">
+        <RouterLink
+          v-if="needsProfileCompletion"
+          to="/account"
+          class="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 no-underline transition-colors hover:bg-amber-500/15">
+          プロフィール情報に未入力があります。誕生日を含む必要項目を登録してください。
+        </RouterLink>
+
         <div v-if="error" class="bg-red-50 text-red-500 p-4 rounded-lg text-sm dark:bg-red-900/10 text-center">
           {{ error }}
         </div>

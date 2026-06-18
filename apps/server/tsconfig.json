@@ -16,8 +16,7 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "types": ["node", "./env.d.ts"],
-    "baseUrl": "."
+    "types": ["bun", "node", "./env.d.ts"]
   },
-  "include": ["src/**/*.ts", "env.d.ts"]
+  "include": ["src/**/*.ts", "test/**/*.ts", "env.d.ts"]
 }

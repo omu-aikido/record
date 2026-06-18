@@ -55,6 +55,7 @@
                 学年
                 <span v-if="sortBy === 'year'" class="ml-1">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
               </th>
+              <th class="th-base md:px-6">誕生日</th>
             </tr>
           </thead>
           <tbody>
@@ -81,9 +82,12 @@
               <td class="td-base md:px-6 text-center">
                 <span class="text">{{ user.profile.yearLabel }}</span>
               </td>
+              <td class="td-base md:px-6 text-center">
+                <span class="text">{{ formatDateSlash(user.profile.birthday) }}</span>
+              </td>
             </tr>
             <tr v-if="sortedUsers.length === 0">
-              <td colspan="4" class="p-12 text-subtext text-center">ユーザーが見つかりませんでした</td>
+              <td colspan="5" class="p-12 text-subtext text-center">ユーザーが見つかりませんでした</td>
             </tr>
           </tbody>
         </table>
@@ -97,7 +101,7 @@ import AdminMenu from '@/components/admin/AdminMenu.vue';
 import hc from '@/lib/honoClient';
 import { queryKeys } from '@/lib/queryKeys';
 import { useQuery } from '@tanstack/vue-query';
-import { type AdminUserType, Role } from 'share';
+import { type AdminUserType, formatDateSlash, Role } from 'share';
 import { computed, ref } from 'vue';
 
 const searchQuery = ref('');

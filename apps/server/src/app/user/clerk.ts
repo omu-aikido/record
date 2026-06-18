@@ -7,7 +7,7 @@ import { getAuth } from '@hono/clerk-auth';
 import { notify } from '../../lib/observability';
 import { getProfile, getUser, patchProfile } from '../../clerk/profile';
 
-import { AccountMetadata, Role, updateAccountSchema } from 'share';
+import { AccountMetadata, isProfileComplete, Role, updateAccountSchema } from 'share';
 
 export const clerk = new Hono<{ Bindings: Env }>() //
   .get('/account', async (c) => {
@@ -82,9 +82,17 @@ export const clerk = new Hono<{ Bindings: Env }>() //
 
     const profile = await getProfile(c);
 
-    if (!profile) return c.json({ error: 'Profile not found' }, 404);
+    if (!profile) {
+      return c.json(
+        {
+          profile: null,
+          needsProfileCompletion: true,
+        },
+        200
+      );
+    }
 
-    return c.json({ profile: { id: auth.userId, ...profile } }, 200);
+    return c.json({ profile: { id: auth.userId, ...profile }, needsProfileCompletion: !isProfileComplete(profile) }, 200);
   })
   .patch(
     '/profile',
@@ -98,10 +106,8 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       const reqData = c.req.valid('json');
       const profile = await getProfile(c);
 
-      if (!profile) return c.json({ error: 'Profile not found' }, 404);
-
       const newUserData = await patchProfile(c, {
-        role: profile.role,
+        role: profile?.role ?? 'member',
         ...reqData,
       });
 
@@ -112,7 +118,13 @@ export const clerk = new Hono<{ Bindings: Env }>() //
 
       if (newProfile instanceof ArkErrors) return c.json({ error: 'Invalid profile data' }, 400);
 
-      return c.json({ profile: { id: newUserData.id, ...newProfile } }, 200);
+      return c.json(
+        {
+          profile: { id: newUserData.id, ...newProfile },
+          needsProfileCompletion: !isProfileComplete(newProfile),
+        },
+        200
+      );
     }
   )
   .get('/menu', async (c) => {

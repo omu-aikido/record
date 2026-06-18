@@ -47,6 +47,42 @@ const getMonthlyRanking = (env: Env) => {
     .limit(5);
 };
 
+function validateAdminJoinedAt(joinedAt: number | null) {
+  const currentYear = new Date().getFullYear();
+  const minJoinedAt = currentYear - 4;
+  const maxJoinedAt = currentYear + 1;
+
+  if (joinedAt !== null && (joinedAt < minJoinedAt || joinedAt > maxJoinedAt)) {
+    return `入部年度は${minJoinedAt}年から${maxJoinedAt}年の間で入力してください`;
+  }
+
+  return null;
+}
+
+async function resolveManagementRoles(clerkClient: ReturnType<typeof createClerkClient>, adminUserId: string, targetUserId: string) {
+  const adminUser = await clerkClient.users.getUser(adminUserId);
+  const adminProfileParse = helpers.publicMetadataProfileSchema(
+    helpers.coerceProfileMetadata(adminUser.publicMetadata)
+  );
+  const adminProfile = adminProfileParse instanceof type.errors ? null : adminProfileParse;
+  const adminRole = adminProfile?.role ? Role.fromString(adminProfile.role) : null;
+
+  const targetUser = await clerkClient.users.getUser(targetUserId);
+  const targetProfileParsed = helpers.publicMetadataProfileSchema(
+    helpers.coerceProfileMetadata(targetUser.publicMetadata)
+  );
+  const targetCurrentRole =
+    targetProfileParsed instanceof type.errors
+      ? Role.MEMBER
+      : (Role.fromString(targetProfileParsed.role ?? 'member') ?? Role.MEMBER);
+
+  return { adminRole, targetCurrentRole };
+}
+
+function normalizeOptionalDate(dateText: string | null | undefined) {
+  return dateText && dateText !== 'null' ? new Date(`${dateText}T00:00:00.000Z`) : null;
+}
+
 // ============================================================
 // Routes
 // ============================================================
@@ -134,43 +170,20 @@ const app = new Hono<{ Bindings: Env }>()
 
     const targetUserId = c.req.param('userId');
     const parsed = c.req.valid('json');
-    const { year, grade, role, joinedAt } = parsed;
+    const { year, grade, role, joinedAt, birthday } = parsed;
 
-    const currentYear = new Date().getFullYear();
-    const minJoinedAt = currentYear - 4;
-    const maxJoinedAt = currentYear + 1;
-    if (joinedAt < minJoinedAt || joinedAt > maxJoinedAt) {
-      return c.json(
-        {
-          error: `入部年度は${minJoinedAt}年から${maxJoinedAt}年の間で入力してください`,
-        },
-        400
-      );
-    }
+    const joinedAtError = validateAdminJoinedAt(joinedAt);
+    if (joinedAtError) return c.json({ error: joinedAtError }, 400);
 
     const clerkClient = createClerkClient({
       secretKey: c.env.CLERK_SECRET_KEY,
     });
 
-    const adminUser = await clerkClient.users.getUser(auth.userId);
-    const adminProfileParse = helpers.publicMetadataProfileSchema(
-      helpers.coerceProfileMetadata(adminUser.publicMetadata)
-    );
-    const adminProfile = adminProfileParse instanceof type.errors ? null : adminProfileParse;
-    const adminRole = adminProfile?.role ? Role.fromString(adminProfile.role) : null;
+    const { adminRole, targetCurrentRole } = await resolveManagementRoles(clerkClient, auth.userId, targetUserId);
 
     if (!adminRole?.isManagement()) {
       return c.json({ error: '権限が不足しています' }, 403);
     }
-
-    const targetUser = await clerkClient.users.getUser(targetUserId);
-    const targetProfileParsed = helpers.publicMetadataProfileSchema(
-      helpers.coerceProfileMetadata(targetUser.publicMetadata)
-    );
-    const targetCurrentRole =
-      targetProfileParsed instanceof type.errors
-        ? Role.MEMBER
-        : (Role.fromString(targetProfileParsed.role ?? 'member') ?? Role.MEMBER);
 
     if (targetCurrentRole && Role.compare(adminRole.role, targetCurrentRole.role) > 0) {
       return c.json({ error: '現在の権限より上書きできません' }, 403);
@@ -181,9 +194,14 @@ const app = new Hono<{ Bindings: Env }>()
       return c.json({ error: '権限が不足しています' }, 403);
     }
 
-    const normalizedGetGradeAt = parsed.getGradeAt && parsed.getGradeAt !== 'null' ? new Date(parsed.getGradeAt) : null;
-    if (normalizedGetGradeAt && isNaN(normalizedGetGradeAt.getTime())) {
+    const normalizedGetGradeAt = normalizeOptionalDate(parsed.getGradeAt);
+    if (normalizedGetGradeAt && Number.isNaN(normalizedGetGradeAt.getTime())) {
       return c.json({ error: '級段位取得日の形式が正しくありません' }, 400);
+    }
+
+    const normalizedBirthday = normalizeOptionalDate(birthday);
+    if (normalizedBirthday && Number.isNaN(normalizedBirthday.getTime())) {
+      return c.json({ error: '誕生日の形式が正しくありません' }, 400);
     }
 
     const updatedMetadata = {
@@ -191,6 +209,7 @@ const app = new Hono<{ Bindings: Env }>()
       getGradeAt: normalizedGetGradeAt ? helpers.formatDateToJSTString(normalizedGetGradeAt) : null,
       joinedAt,
       year,
+      birthday: normalizedBirthday ? helpers.formatDateToJSTString(normalizedBirthday) : null,
       role,
     };
 

@@ -1,4 +1,4 @@
-export { AccountMetadata, AccountInfo } from './src/account';
+export { AccountMetadata, AccountInfo, formatDateSlash, isProfileComplete, type AccountMetadataType } from './src/account';
 
 export { AdminUser, type AdminUserType } from './src/admin';
 

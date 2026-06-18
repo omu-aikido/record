@@ -19,6 +19,7 @@ export const AdminUser = type({
     yearLabel: 'string',
     joinedAt: 'number | null',
     getGradeAt: 'string | null',
+    birthday: 'string | null',
   }),
 });
 

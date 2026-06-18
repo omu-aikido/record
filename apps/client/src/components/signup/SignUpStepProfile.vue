@@ -53,6 +53,16 @@
       :error="formErrors.getGradeAt"
       @update:model-value="onUpdate('getGradeAt', $event)" />
 
+    <Input
+      id="birthday"
+      :model-value="formValues.birthday"
+      type="date"
+      label="誕生日"
+      required
+      :disabled="isSignUpCreated"
+      :error="formErrors.birthday"
+      @update:model-value="onUpdate('birthday', $event)" />
+
     <div class="gap-2 flex items-center">
       <input
         id="legalAccepted"

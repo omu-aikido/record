@@ -26,11 +26,22 @@
     </div>
 
     <div v-else-if="!isEditing" class="stack">
+      <div
+        v-if="needsProfileCompletion"
+        class="rounded-md border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700">
+        プロフィール情報に未入力があります。誕生日を含む必要項目を登録してください。
+      </div>
       <div class="flex-between">
         <h3 class="text-lg font-bold text">プロフィール</h3>
-        <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="isEditing = true">編集</button>
+        <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="isEditing = true">
+          {{ needsProfileCompletion ? '入力する' : '編集' }}
+        </button>
       </div>
       <div class="gap-3 text-subtext flex flex-col">
+        <div class="py-1 flex items-center justify-between">
+          <span class="text-subtext">誕生日</span>
+          <span class="font-medium text">{{ formatDateSlash(profile?.birthday) }}</span>
+        </div>
         <div class="py-1 flex items-center justify-between">
           <span class="text-subtext">級段位</span>
           <span class="font-medium text">{{ translateGrade(profile?.grade ?? '') || '-' }}</span>
@@ -60,7 +71,7 @@
             <ListboxButton
               class="rounded-md bg-surface0 border-overlay0 px-3 py-2 pr-10 text text focus:ring-blue-500 relative w-full cursor-default border text-left focus:ring-2 focus:outline-none">
               <span class="block overflow-hidden text-ellipsis whitespace-nowrap">{{
-                translateGrade(formData.grade)
+                translateGrade(formData.grade ?? '')
               }}</span>
               <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
                 <div class="i-lucide:lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
@@ -99,6 +110,8 @@
       </div>
 
       <Input v-model="formData.getGradeAt" type="date" label="取得日" />
+
+      <Input v-model="formData.birthday" type="date" label="誕生日" />
 
       <Input v-model="formData.joinedAt" type="number" label="入部年" min="2020" max="9999" />
 
@@ -162,11 +175,11 @@
 </template>
 
 <script setup lang="ts">
-import { AccountMetadata } from 'share';
 import { ArkErrors } from 'arktype';
 import hc from '@/lib/honoClient';
 import Input from '@/components/ui/UiInput.vue';
 import { queryKeys } from '@/lib/queryKeys';
+import { AccountMetadata, formatDateSlash, isProfileComplete } from 'share';
 import { computed, reactive, ref, watch } from 'vue';
 import { grade, translateGrade } from 'share';
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue';
@@ -174,10 +187,11 @@ import { translateYear, year } from 'share';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 
 interface FormData {
-  grade: number;
+  grade: number | null;
   getGradeAt: string;
-  joinedAt: number;
+  joinedAt: number | null;
   year: `b${number}` | `m${number}` | `d${number}`;
+  birthday: string;
 }
 
 const queryClient = useQueryClient();
@@ -191,8 +205,9 @@ const yearOptions = year;
 const formData = reactive<FormData>({
   grade: 0,
   getGradeAt: '',
-  joinedAt: new Date().getFullYear(),
+  joinedAt: null,
   year: 'b1',
+  birthday: '',
 });
 
 // Query - Returns { profile: ... } to match server response shape
@@ -208,35 +223,41 @@ const { data: profileData } = useQuery({
         console.error(profileParsed);
         throw new Error('Invalid profile data');
       }
-      return { profile: profileParsed };
+      return { profile: profileParsed, needsProfileCompletion: Boolean(data.needsProfileCompletion) };
     }
-    return { profile: null };
+    return { profile: null, needsProfileCompletion: true };
   },
 });
 
 const profile = computed(() => profileData.value?.profile ?? null);
+const needsProfileCompletion = computed(() => profileData.value?.needsProfileCompletion ?? true);
+
+function applyProfileToForm(newProfile: typeof profile.value) {
+  if (newProfile) {
+    formData.grade = Number(newProfile.grade) || 0;
+    formData.getGradeAt = newProfile.getGradeAt || '';
+    formData.joinedAt = newProfile.joinedAt ?? new Date().getFullYear();
+    formData.year = (newProfile.year || 'b1') as `b${number}` | `m${number}` | `d${number}`;
+    formData.birthday = newProfile.birthday || '';
+    return;
+  }
+
+  formData.grade = 0;
+  formData.getGradeAt = '';
+  formData.joinedAt = new Date().getFullYear();
+  formData.year = 'b1';
+  formData.birthday = '';
+}
 
 // Sync form data
 watch(
   profile,
-  (newProfile) => {
-    if (newProfile) {
-      formData.grade = Number(newProfile.grade) || 0;
-      formData.getGradeAt = newProfile.getGradeAt || '';
-      formData.joinedAt = Number(newProfile.joinedAt) || new Date().getFullYear();
-      formData.year = newProfile.year || 'b1';
-    }
-  },
+  (newProfile) => applyProfileToForm(newProfile),
   { immediate: true }
 );
 
 function updateFormData() {
-  if (profile.value) {
-    formData.grade = Number(profile.value.grade) || 0;
-    formData.getGradeAt = profile.value.getGradeAt || '';
-    formData.joinedAt = Number(profile.value.joinedAt) || new Date().getFullYear();
-    formData.year = profile.value.year || 'b1';
-  }
+  applyProfileToForm(profile.value);
 }
 
 // Mutation
@@ -244,8 +265,9 @@ const { mutateAsync: updateProfile, isPending: isSubmitting } = useMutation({
   mutationFn: async (json: {
     grade: number;
     getGradeAt: `${number}-${number}-${number}` | null;
-    joinedAt: number;
+    joinedAt: number | null;
     year: `b${number}` | `m${number}` | `d${number}`;
+    birthday: `${number}-${number}-${number}` | null;
   }) => {
     const res = await hc.user.clerk.profile.$patch({ json });
     if (!res.ok) throw new Error('プロフィールの更新に失敗しました');
@@ -261,12 +283,16 @@ const { mutateAsync: updateProfile, isPending: isSubmitting } = useMutation({
         getGradeAt: responseData.profile.getGradeAt,
         joinedAt: responseData.profile.joinedAt,
         year: responseData.profile.year,
+        birthday: responseData.profile.birthday,
       });
       if (validatedProfile instanceof ArkErrors) {
         console.error(validatedProfile);
       } else {
         // Set cache with consistent { profile: ... } shape
-        queryClient.setQueryData(queryKeys.user.clerk.profile(), { profile: validatedProfile });
+        queryClient.setQueryData(queryKeys.user.clerk.profile(), {
+          profile: validatedProfile,
+          needsProfileCompletion: !isProfileComplete(validatedProfile),
+        });
       }
     }
 
@@ -284,12 +310,14 @@ async function handleSubmit() {
   isError.value = false;
   try {
     const getGradeAtValue = (formData.getGradeAt || null) as `${number}-${number}-${number}` | null;
+    const birthdayValue = (formData.birthday || null) as `${number}-${number}-${number}` | null;
 
     const updateData = {
-      grade: formData.grade,
+      grade: formData.grade ?? 0,
       getGradeAt: getGradeAtValue,
       joinedAt: formData.joinedAt,
       year: formData.year as `b${number}` | `m${number}` | `d${number}`,
+      birthday: birthdayValue,
     };
 
     await updateProfile(updateData);

@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "."
+    "types": ["bun"]
   },
-  "include": ["index.ts", "src/**/*.ts"]
+  "include": ["index.ts", "src/**/*.ts", "test/**/*.ts"]
 }

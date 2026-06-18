@@ -23,6 +23,7 @@ describe('AdminUser', () => {
         yearLabel: '1回生',
         joinedAt: 2024,
         getGradeAt: '2024-01-01',
+        birthday: '2001-02-03',
       },
     });
     expect(isValid(result)).toBe(true);
@@ -44,6 +45,7 @@ describe('AdminUser', () => {
         yearLabel: '1回生',
         joinedAt: null,
         getGradeAt: null,
+        birthday: null,
       },
     });
     expect(isValid(result)).toBe(true);
@@ -64,6 +66,7 @@ describe('AdminUser', () => {
         yearLabel: '1回生',
         joinedAt: 2024,
         getGradeAt: '2024-01-01',
+        birthday: '2001-02-03',
       },
     });
     expect(isValid(result)).toBe(false);
@@ -96,6 +99,7 @@ describe('AdminUser', () => {
         yearLabel: '1回生',
         joinedAt: '2024',
         getGradeAt: '2024-01-01',
+        birthday: '2001-02-03',
       },
     });
     expect(isValid(result)).toBe(false);
@@ -117,6 +121,7 @@ describe('AdminUser', () => {
         yearLabel: '1回生',
         joinedAt: 2024,
         getGradeAt: '2024-01-01',
+        birthday: '2001-02-03',
       },
     });
     expect(isValid(result)).toBe(false);
@@ -138,6 +143,7 @@ describe('AdminUser', () => {
         yearLabel: '1回生',
         joinedAt: 2024,
         getGradeAt: '2024-01-01',
+        birthday: '2001-02-03',
       },
     });
     expect(isValid(result)).toBe(false);

@@ -4,7 +4,7 @@ import { ArkErrors, type } from 'arktype';
 import { reactive, readonly, ref } from 'vue';
 
 const formDataSchema = type({
-  email: /.+@.+\..+/,
+  email: /.+@.+\..+/u,
   newPassword: '10<=string<=100',
   firstName: '2<=string<=50',
   lastName: '2<=string<=50',
@@ -13,6 +13,7 @@ const formDataSchema = type({
   grade: 'number',
   joinedAt: 'number',
   getGradeAt: 'string | null',
+  birthday: 'string',
   legalAccepted: 'boolean',
 });
 
@@ -24,7 +25,7 @@ type SignUpStep = 'basic' | 'personal' | 'profile';
 const getValidationSchema = (currentStep: SignUpStep) => {
   switch (currentStep) {
     case 'basic':
-      return type({ email: /.+@.+\..+/, newPassword: '10<=string<=100' });
+      return type({ email: /.+@.+\..+/u, newPassword: '10<=string<=100' });
     case 'personal':
       return type({
         firstName: '1<=string<=50',
@@ -37,6 +38,7 @@ const getValidationSchema = (currentStep: SignUpStep) => {
         grade: 'number',
         joinedAt: 'number',
         getGradeAt: 'string | null',
+        birthday: '/^\\d{4}-\\d{2}-\\d{2}$/',
         legalAccepted: 'true',
       });
     default:
@@ -91,6 +93,7 @@ const createSignUpParams = (formValues: SignUpFormData) => ({
     grade: formValues.grade,
     joinedAt: formValues.joinedAt,
     getGradeAt: formValues.getGradeAt,
+    birthday: formValues.birthday,
   },
 });
 
@@ -157,6 +160,7 @@ export function useSignUpForm(currentYear: number) {
     grade: 0,
     joinedAt: currentYear,
     getGradeAt: null,
+    birthday: '',
     legalAccepted: false,
   });
 

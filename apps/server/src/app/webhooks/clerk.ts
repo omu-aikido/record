@@ -46,6 +46,7 @@ async function handleUserCreated(event: ClerkWebhookEvent, c: Context): Promise<
         grade: meta.grade,
         joinedAt: meta.joinedAt,
         getGradeAt: meta.getGradeAt,
+        birthday: meta.birthday,
         role: 'member',
       },
     });

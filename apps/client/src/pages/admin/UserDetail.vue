@@ -40,7 +40,9 @@
                     <span class="sq-1 bg-subtext rounded-full" />
                     <span>{{ yearLabels[user.profile?.year as string] || user.profile?.year }}</span>
                     <span class="sq-1 bg-subtext rounded-full" />
-                    <span>{{ user.profile?.joinedAt }}年度入部</span>
+                    <span>{{ user.profile?.joinedAt ? `${user.profile.joinedAt}年度入部` : '入部年度未登録' }}</span>
+                    <span class="sq-1 bg-subtext rounded-full" />
+                    <span>誕生日: {{ formatDateSlash(user.profile?.birthday) }}</span>
                   </template>
                 </div>
               </div>
@@ -99,6 +101,7 @@
                 :min="1950"
                 :max="new Date().getFullYear() + 1" />
               <Input v-model="formData.getGradeAt" type="date" label="級段位取得日" />
+              <Input v-model="formData.birthday" type="date" label="誕生日" />
             </div>
 
             <div class="gap-2 mt-2 flex justify-end">
@@ -284,6 +287,7 @@
 
 <script setup lang="ts">
 import AdminMenu from '@/components/admin/AdminMenu.vue';
+import { formatDateSlash } from 'share';
 import hc from '@/lib/honoClient';
 import Input from '@/components/ui/UiInput.vue';
 import { queryKeys } from '@/lib/queryKeys';
@@ -377,8 +381,9 @@ const formData = ref({
   role: 'member',
   grade: 0,
   year: 'b1',
-  joinedAt: new Date().getFullYear(),
+  joinedAt: null as number | null,
   getGradeAt: '',
+  birthday: '',
 });
 const updateSuccess = ref('');
 const updateError = ref('');
@@ -399,16 +404,18 @@ watch(
         role: (newUser.profile.role as string) || 'member',
         grade: Number(newUser.profile.grade || 0),
         year: (newUser.profile.year as string) || 'b1',
-        joinedAt: Number(newUser.profile.joinedAt || new Date().getFullYear()),
+        joinedAt: newUser.profile.joinedAt ? Number(newUser.profile.joinedAt) : null,
         getGradeAt: newUser.profile.getGradeAt ? new Date(newUser.profile.getGradeAt).toISOString().split('T')[0]! : '',
+        birthday: newUser.profile.birthday ? new Date(newUser.profile.birthday).toISOString().split('T')[0]! : '',
       };
     } else {
       formData.value = {
         role: 'member',
         grade: 0,
         year: 'b1',
-        joinedAt: new Date().getFullYear(),
+        joinedAt: null,
         getGradeAt: '',
+        birthday: '',
       };
     }
   },
@@ -437,8 +444,9 @@ const { mutateAsync: updateProfile, isPending: updating } = useMutation({
     role: string;
     grade: number;
     year: string;
-    joinedAt: number;
+    joinedAt: number | null;
     getGradeAt: string | null;
+    birthday: string | null;
   }) => {
     const res = await hc.admin.users[':userId'].profile.$patch({
       param: { userId },
@@ -480,6 +488,7 @@ const handleUpdateProfile = async () => {
     year: formData.value.year,
     joinedAt: formData.value.joinedAt,
     getGradeAt: formData.value.getGradeAt ? formData.value.getGradeAt : null,
+    birthday: formData.value.birthday ? formData.value.birthday : null,
   };
 
   try {

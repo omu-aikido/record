@@ -7,6 +7,7 @@ import './assets/main.css';
 import 'virtual:uno.css';
 
 import App from './App.vue';
+import { isIgnoredBrowserInternalError } from './lib/browserInternalError';
 import router from './router';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -15,6 +16,14 @@ if (!PUBLISHABLE_KEY) {
 }
 
 const app = createApp(App);
+
+app.config.errorHandler = (error, _instance, info) => {
+  if (isIgnoredBrowserInternalError(error)) {
+    return;
+  }
+
+  console.error('Vue app error:', error, info);
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {

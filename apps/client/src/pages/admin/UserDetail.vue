@@ -147,6 +147,10 @@
         </div>
       </div>
 
+      <div v-if="user.profile?.norm" class="card">
+        <NormSummary :norm="user.profile.norm" />
+      </div>
+
       <div class="stack">
         <h3 class="text-base font-medium text">アクティビティ履歴</h3>
 
@@ -290,6 +294,7 @@ import AdminMenu from '@/components/admin/AdminMenu.vue';
 import { formatDateSlash } from 'share';
 import hc from '@/lib/honoClient';
 import Input from '@/components/ui/UiInput.vue';
+import NormSummary from '@/components/admin/NormSummary.vue';
 import { queryKeys } from '@/lib/queryKeys';
 import { computed, ref, watch } from 'vue';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';

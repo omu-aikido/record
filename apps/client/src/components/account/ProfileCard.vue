@@ -250,11 +250,7 @@ function applyProfileToForm(newProfile: typeof profile.value) {
 }
 
 // Sync form data
-watch(
-  profile,
-  (newProfile) => applyProfileToForm(newProfile),
-  { immediate: true }
-);
+watch(profile, (newProfile) => applyProfileToForm(newProfile), { immediate: true });
 
 function updateFormData() {
   applyProfileToForm(profile.value);

@@ -33,73 +33,81 @@ describe('AccountMetadata', () => {
 
   test('should accept valid numeric grade within range', () => {
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: -5, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null }))
-    ).toBe(
-      true
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: -5, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null })
+      )
+    ).toBe(true);
     expect(
       isValid(AccountMetadata({ role: 'member', grade: 5, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: '' }))
-    ).toBe(
-      true
-    );
+    ).toBe(true);
     expect(
       isValid(
-        AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: '2001-02-03' })
+        AccountMetadata({
+          role: 'member',
+          grade: 0,
+          getGradeAt: null,
+          joinedAt: 2024,
+          year: 'b1',
+          birthday: '2001-02-03',
+        })
       )
-    ).toBe(
-      true
-    );
+    ).toBe(true);
   });
 
   test('should accept valid year formats', () => {
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null }))
-    ).toBe(
-      true
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null })
+      )
+    ).toBe(true);
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b4', birthday: null }))
-    ).toBe(
-      true
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b4', birthday: null })
+      )
+    ).toBe(true);
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'm1', birthday: null }))
-    ).toBe(
-      true
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'm1', birthday: null })
+      )
+    ).toBe(true);
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'm2', birthday: null }))
-    ).toBe(
-      true
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'm2', birthday: null })
+      )
+    ).toBe(true);
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'd1', birthday: null }))
-    ).toBe(
-      true
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'd1', birthday: null })
+      )
+    ).toBe(true);
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'd2', birthday: null }))
-    ).toBe(
-      true
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'd2', birthday: null })
+      )
+    ).toBe(true);
   });
 
   test('should accept valid roles', () => {
     expect(
-      isValid(AccountMetadata({ role: 'admin', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null }))
-    ).toBe(
-      true
-    );
+      isValid(
+        AccountMetadata({ role: 'admin', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null })
+      )
+    ).toBe(true);
     expect(
       isValid(
         AccountMetadata({ role: 'captain', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null })
       )
-    ).toBe(
-      true
-    );
+    ).toBe(true);
     expect(
       isValid(
-        AccountMetadata({ role: 'vice-captain', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null })
+        AccountMetadata({
+          role: 'vice-captain',
+          grade: 0,
+          getGradeAt: null,
+          joinedAt: 2024,
+          year: 'b1',
+          birthday: null,
+        })
       )
     ).toBe(true);
     expect(
@@ -108,23 +116,21 @@ describe('AccountMetadata', () => {
       )
     ).toBe(true);
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null }))
-    ).toBe(
-      true
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null })
+      )
+    ).toBe(true);
   });
 
   test('should accept getGradeAt as null or empty string', () => {
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null }))
-    ).toBe(
-      true
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: 0, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null })
+      )
+    ).toBe(true);
     expect(
       isValid(AccountMetadata({ role: 'member', grade: 0, getGradeAt: '', joinedAt: 2024, year: 'b1', birthday: null }))
-    ).toBe(
-      true
-    );
+    ).toBe(true);
   });
 
   test('should accept getGradeAt as valid date string', () => {
@@ -201,15 +207,15 @@ describe('AccountMetadata', () => {
 
   test('should reject grade out of range', () => {
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: 6, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null }))
-    ).toBe(
-      false
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: 6, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null })
+      )
+    ).toBe(false);
     expect(
-      isValid(AccountMetadata({ role: 'member', grade: -6, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null }))
-    ).toBe(
-      false
-    );
+      isValid(
+        AccountMetadata({ role: 'member', grade: -6, getGradeAt: null, joinedAt: 2024, year: 'b1', birthday: null })
+      )
+    ).toBe(false);
   });
 });
 

@@ -92,7 +92,10 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       );
     }
 
-    return c.json({ profile: { id: auth.userId, ...profile }, needsProfileCompletion: !isProfileComplete(profile) }, 200);
+    return c.json(
+      { profile: { id: auth.userId, ...profile }, needsProfileCompletion: !isProfileComplete(profile) },
+      200
+    );
   })
   .patch(
     '/profile',

@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { isIgnoredBrowserInternalError } from '@/lib/browserInternalError';
 import { useRouter } from 'vue-router';
 import { onErrorCaptured, onMounted, onUnmounted, ref } from 'vue';
 
@@ -67,15 +68,19 @@ onErrorCaptured(handleError);
 
 // グローバルエラーハンドラー
 const handleGlobalError = (event: ErrorEvent) => {
+  if (isIgnoredBrowserInternalError(event)) {
+    return;
+  }
+
   console.error('Global error handler:', event.error);
-  hasError.value = true;
-  errorMessage.value = event.error?.message || '不明なエラーが発生しました';
 };
 
 const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+  if (isIgnoredBrowserInternalError(event)) {
+    return;
+  }
+
   console.error('Unhandled promise rejection:', event.reason);
-  hasError.value = true;
-  errorMessage.value = event.reason instanceof Error ? event.reason.message : 'Promiseが拒否されました';
 };
 
 // グローバルエラーハンドラーの登録

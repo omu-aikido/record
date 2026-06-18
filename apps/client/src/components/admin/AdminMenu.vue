@@ -17,11 +17,6 @@
           アカウント
         </button>
       </Tab>
-      <Tab v-slot="{ selected }" as="template">
-        <button :class="['tab-item', selected ? ' text-blue-500' : 'border-transparent']" data-testid="tab-norms">
-          審査
-        </button>
-      </Tab>
     </TabList>
   </TabGroup>
 </template>
@@ -36,7 +31,6 @@ const router = useRouter();
 const tabs = [
   { name: 'ダッシュボード', path: '/admin' },
   { name: 'アカウント管理', path: '/admin/accounts' },
-  { name: 'ノルマ管理', path: '/admin/norms' },
 ];
 const selectedIndex = computed(() => {
   const currentPath = route.path;

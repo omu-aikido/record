@@ -30,8 +30,11 @@ describe('honoClient', () => {
     expect(honoClient.admin).toBeDefined();
     expect(honoClient.admin.dashboard).toBeDefined();
     expect(honoClient.admin.accounts).toBeDefined();
-    expect(honoClient.admin.norms).toBeDefined();
     expect(honoClient.admin.users).toBeDefined();
+  });
+
+  test('should not expose deprecated norms endpoint', () => {
+    expect('norms' in honoClient.admin).toBe(false);
   });
 
   test('should support HTTP methods', () => {

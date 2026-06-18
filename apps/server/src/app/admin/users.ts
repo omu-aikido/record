@@ -10,6 +10,8 @@ import { type } from 'arktype';
 import * as drizzleOrm from 'drizzle-orm';
 import * as helpers from './helpers';
 
+import { buildNormSummary, getUsersNorm } from './stats';
+
 // ============================================================
 // Helper Functions
 // ============================================================
@@ -59,7 +61,11 @@ function validateAdminJoinedAt(joinedAt: number | null) {
   return null;
 }
 
-async function resolveManagementRoles(clerkClient: ReturnType<typeof createClerkClient>, adminUserId: string, targetUserId: string) {
+async function resolveManagementRoles(
+  clerkClient: ReturnType<typeof createClerkClient>,
+  adminUserId: string,
+  targetUserId: string
+) {
   const adminUser = await clerkClient.users.getUser(adminUserId);
   const adminProfileParse = helpers.publicMetadataProfileSchema(
     helpers.coerceProfileMetadata(adminUser.publicMetadata)
@@ -103,7 +109,15 @@ const app = new Hono<{ Bindings: Env }>()
       orderBy: 'created_at',
     });
 
-    const users = clerkUsers.data.map(helpers.toAdminUser);
+    const norms = await getUsersNorm(c.env, clerkUsers.data);
+    const users = clerkUsers.data.map((clerkUser) => {
+      const user = helpers.toAdminUser(clerkUser);
+      const norm = norms.find((item) => item.userId === clerkUser.id);
+      if (!norm) return user;
+      return Object.assign({}, user, {
+        profile: Object.assign({}, user.profile, { norm }),
+      });
+    });
     const ranking = await getMonthlyRanking(c.env);
 
     return c.json({ users, query: query ?? '', ranking });
@@ -142,9 +156,12 @@ const app = new Hono<{ Bindings: Env }>()
 
       const trainCount = Math.floor(allActivities.map((a) => a.period).reduce((sum, val) => sum + val, 0) / 1.5);
       const doneTrain = Math.floor(trainsAfterGrade / 1.5);
+      const norm = buildNormSummary(profile, allActivities);
 
       return c.json({
-        user,
+        user: Object.assign({}, user, {
+          profile: Object.assign({}, user.profile, { norm }),
+        }),
         profile,
         activities,
         trainCount,
@@ -163,7 +180,6 @@ const app = new Hono<{ Bindings: Env }>()
     }
   })
 
-  // Update user profile
   .patch('/:userId/profile', arktypeValidator('json', helpers.adminProfileUpdateSchema), async (c) => {
     const auth = getAuth(c);
     if (!auth?.userId) return c.json({ error: '認証されていません' }, 401);
@@ -220,7 +236,6 @@ const app = new Hono<{ Bindings: Env }>()
     return c.json({ success: true, updatedMetadata }, 200);
   })
 
-  // Delete user
   .delete('/:userId', async (c) => {
     const auth = getAuth(c);
     if (!auth?.userId) return c.json({ error: '認証されていません' }, 401);

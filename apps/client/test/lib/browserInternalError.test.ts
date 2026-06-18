@@ -13,7 +13,7 @@ describe('isIgnoredBrowserInternalError', () => {
         error: null,
         filename: 'global code',
         message: "TypeError: null is not an object (evaluating 'this.viewportDominantIFrameElement().contentWindow')",
-      }),
+      })
     ).toBe(true);
   });
 

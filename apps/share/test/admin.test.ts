@@ -51,6 +51,34 @@ describe('AdminUser', () => {
     expect(isValid(result)).toBe(true);
   });
 
+  test('should accept optional norm summary in profile', () => {
+    const result = AdminUser({
+      id: 'user_123',
+      firstName: 'John',
+      lastName: 'Doe',
+      imageUrl: 'https://example.com/image.png',
+      emailAddress: 'john@example.com',
+      profile: {
+        role: 'member',
+        roleLabel: '部員',
+        grade: 0,
+        gradeLabel: '無級',
+        year: 'b1',
+        yearLabel: '1回生',
+        joinedAt: 2024,
+        getGradeAt: '2024-01-01',
+        birthday: '2001-02-03',
+        norm: {
+          current: 12,
+          required: 20,
+          progress: 60,
+          isMet: false,
+        },
+      },
+    });
+    expect(isValid(result)).toBe(true);
+  });
+
   test('should reject missing required fields', () => {
     const result = AdminUser({
       firstName: 'John',

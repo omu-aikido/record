@@ -1,5 +1,4 @@
 import { activity } from '../../db/schema';
-import { arktypeValidator } from '@hono/arktype-validator';
 import { dbClient } from '../../db/drizzle';
 import { Hono } from 'hono';
 import { type } from 'arktype';
@@ -50,7 +49,24 @@ const getDashboardStats = async (env: Env, secretKey: string) => {
 // Norms - Training Progress
 // ============================================================
 
-async function getUsersNorm(env: Env, clerkUsers: User[]) {
+export function buildNormSummary(
+  profile: { grade?: number | string | null } | null,
+  userActivities: Array<{ period: number }>
+) {
+  const totalPeriod = userActivities.reduce((sum, a) => sum + a.period, 0);
+  const current = Math.floor(totalPeriod / 1.5);
+  const required = grade.timeForNextGrade(profile?.grade ?? 0);
+  const progress = required > 0 ? Math.min(100, Math.round((current / required) * 100)) : 100;
+
+  return {
+    current,
+    required,
+    progress,
+    isMet: current >= required,
+  };
+}
+
+export async function getUsersNorm(env: Env, clerkUsers: User[]) {
   const db = dbClient(env);
 
   const validProfiles = clerkUsers
@@ -82,21 +98,14 @@ async function getUsersNorm(env: Env, clerkUsers: User[]) {
 
   return validProfiles.map((profile) => {
     const userActivities = activityData.filter((a) => a.userId === profile.id);
-    const totalPeriod = userActivities.reduce((sum, a) => sum + a.period, 0);
-    const current = Math.floor(totalPeriod / 1.5);
-    const required = grade.timeForNextGrade(profile.grade ?? 0);
-    const progress = required > 0 ? Math.min(100, Math.round((current / required) * 100)) : 100;
+    const summary = buildNormSummary(profile, userActivities);
 
-    return {
+    return Object.assign({}, summary, {
       userId: profile.id,
-      current,
-      required,
-      progress,
-      isMet: current >= required,
       grade: Number(profile.grade ?? 0),
       gradeLabel: grade.translateGrade(profile.grade ?? 0),
       lastPromotionDate: profile.getGradeAt ?? null,
-    };
+    });
   });
 }
 
@@ -104,28 +113,9 @@ async function getUsersNorm(env: Env, clerkUsers: User[]) {
 // Routes
 // ============================================================
 
-const app = new Hono<{ Bindings: Env }>()
-  .get('/dashboard', async (c) => {
-    const stats = await getDashboardStats(c.env, c.env.CLERK_SECRET_KEY);
-    return c.json(stats);
-  })
-  .get('/norms', arktypeValidator('query', helpers.accountsQuerySchema), async (c) => {
-    const clerkClient = createClerkClient({
-      secretKey: c.env.CLERK_SECRET_KEY,
-    });
-    const { query, limit } = c.req.valid('query');
-    const userLimit = Number(limit ?? 20);
-
-    const clerkUsers = await clerkClient.users.getUserList({
-      limit: userLimit,
-      query: query ?? '',
-      orderBy: 'created_at',
-    });
-
-    const users = clerkUsers.data.map((u) => helpers.toAdminUser(u));
-    const norms = await getUsersNorm(c.env, clerkUsers.data);
-
-    return c.json({ users, norms, search: query ?? '' });
-  });
+const app = new Hono<{ Bindings: Env }>().get('/dashboard', async (c) => {
+  const stats = await getDashboardStats(c.env, c.env.CLERK_SECRET_KEY);
+  return c.json(stats);
+});
 
 export default app;

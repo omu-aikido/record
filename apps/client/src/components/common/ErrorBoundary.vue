@@ -35,9 +35,9 @@
 </template>
 
 <script setup lang="ts">
+import { isIgnoredBrowserInternalError } from '@/lib/browserInternalError';
 import { useRouter } from 'vue-router';
 import { onErrorCaptured, onMounted, onUnmounted, ref } from 'vue';
-import { isIgnoredBrowserInternalError } from '@/lib/browserInternalError';
 
 const router = useRouter();
 

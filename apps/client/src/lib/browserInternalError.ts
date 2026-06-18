@@ -32,8 +32,8 @@ const getErrorParts = (input: unknown): string[] => {
       candidate.filename ?? '',
       candidate.error?.message ?? '',
       candidate.error?.stack ?? '',
-      typeof reason === 'string' ? reason : reason?.message ?? '',
-      typeof reason === 'string' ? '' : reason?.stack ?? '',
+      typeof reason === 'string' ? reason : (reason?.message ?? ''),
+      typeof reason === 'string' ? '' : (reason?.stack ?? ''),
     ];
   }
 

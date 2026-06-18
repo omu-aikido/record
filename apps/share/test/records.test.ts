@@ -1,11 +1,6 @@
 import { describe, test, expect } from 'bun:test';
 import { ArkErrors } from 'arktype';
-import {
-  recordQuerySchema,
-  createActivitySchema,
-  deleteActivitiesSchema,
-  rankingQuerySchema,
-} from '../index';
+import { recordQuerySchema, createActivitySchema, deleteActivitiesSchema, rankingQuerySchema } from '../index';
 
 function isValid(result: unknown): boolean {
   return !(result instanceof ArkErrors);

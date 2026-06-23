@@ -248,6 +248,8 @@ describe('profile helpers', () => {
 
   test('formatDateSlash converts profile dates for display', () => {
     expect(formatDateSlash('2001-02-03')).toBe('2001/02/03');
+    expect(formatDateSlash('2001-02-03T09:30:00Z')).toBe('2001/02/03');
+    expect(formatDateSlash('invalid-date')).toBe('-');
     expect(formatDateSlash(null)).toBe('-');
   });
 });

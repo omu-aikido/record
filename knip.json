@@ -1,11 +1,18 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "workspaces": {
-    "apps/client": {},
-    "apps/server": {},
-    "apps/share": {}
+    "apps/client": {
+      "entry": ["test/**/*.ts"]
+    },
+    "apps/server": {
+      "entry": ["test/**/*.ts"]
+    },
+    "apps/share": {
+      "entry": ["test/**/*.ts"]
+    }
   },
-  "ignoreFiles": [".direnv/**", "./**/env.d.ts", "**/test/**"],
-  "ignoreDependencies": ["@vue/tsconfig"],
-  "ignoreBinaries": ["turso"]
+  "ignoreIssues": {
+    "**/test/**": ["files"]
+  },
+  "ignoreBinaries": ["turso", "sqlite3"]
 }

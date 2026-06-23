@@ -4,8 +4,8 @@ import { Hono } from 'hono';
 import { type } from 'arktype';
 import { createClerkClient, type User } from '@clerk/backend';
 import * as drizzleOrm from 'drizzle-orm';
-import * as grade from 'share';
 import * as helpers from './helpers';
+import * as share from 'share';
 
 // ============================================================
 // Dashboard - Inactive Users
@@ -50,20 +50,10 @@ const getDashboardStats = async (env: Env, secretKey: string) => {
 // ============================================================
 
 export function buildNormSummary(
-  profile: { grade?: number | string | null } | null,
-  userActivities: Array<{ period: number }>
+  profile: share.PromotionProgressProfile | null,
+  userActivities: share.PromotionProgressActivity[]
 ) {
-  const totalPeriod = userActivities.reduce((sum, a) => sum + a.period, 0);
-  const current = Math.floor(totalPeriod / 1.5);
-  const required = grade.timeForNextGrade(profile?.grade ?? 0);
-  const progress = required > 0 ? Math.min(100, Math.round((current / required) * 100)) : 100;
-
-  return {
-    current,
-    required,
-    progress,
-    isMet: current >= required,
-  };
+  return share.buildPromotionProgress(profile, userActivities);
 }
 
 export async function getUsersNorm(env: Env, clerkUsers: User[]) {
@@ -86,9 +76,8 @@ export async function getUsersNorm(env: Env, clerkUsers: User[]) {
   if (validProfiles.length === 0) return [];
 
   const conditions = validProfiles.map((profile) => {
-    // Use getGradeAt if available, otherwise fallback to joinedAt
-    const gradeDate = profile.getGradeAt ?? String(profile.joinedAt ?? new Date().getFullYear());
-    return drizzleOrm.and(drizzleOrm.eq(activity.userId, profile.id), drizzleOrm.gt(activity.date, gradeDate));
+    const gradeDate = share.resolvePromotionSince(profile);
+    return drizzleOrm.and(drizzleOrm.eq(activity.userId, profile.id), drizzleOrm.gte(activity.date, gradeDate));
   });
 
   const activityData = await db
@@ -103,7 +92,7 @@ export async function getUsersNorm(env: Env, clerkUsers: User[]) {
     return Object.assign({}, summary, {
       userId: profile.id,
       grade: Number(profile.grade ?? 0),
-      gradeLabel: grade.translateGrade(profile.grade ?? 0),
+      gradeLabel: share.translateGrade(profile.grade ?? 0),
       lastPromotionDate: profile.getGradeAt ?? null,
     });
   });

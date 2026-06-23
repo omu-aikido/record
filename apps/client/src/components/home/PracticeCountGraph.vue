@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { PracticeCountData } from 'share';
-import { timeForNextGrade, translateGrade } from 'share';
+import { buildPromotionProgressFromPracticeCount, translateGrade } from 'share';
 
 interface Props {
   practiceData: PracticeCountData | null;
@@ -42,19 +42,19 @@ const promotionType = computed(() => {
   return grade <= 1 ? (grade === 0 ? '昇級' : '昇段') : '昇級';
 });
 
-const requiredCount = computed(() => timeForNextGrade(props.currentGrade));
+const promotionProgress = computed(() => {
+  if (!props.practiceData) return null;
+  return buildPromotionProgressFromPracticeCount(props.currentGrade, props.practiceData.practiceCount);
+});
+
+const requiredCount = computed(() => promotionProgress.value?.required ?? 0);
 
 const needToNextGrade = computed(() => {
-  if (!props.practiceData) return 0;
-  return Math.max(0, requiredCount.value - props.practiceData.practiceCount);
+  if (!promotionProgress.value) return 0;
+  return Math.max(0, promotionProgress.value.required - promotionProgress.value.current);
 });
 
-const progressPercentage = computed(() => {
-  if (!props.practiceData || !requiredCount.value) return 0;
-  const percentage = (props.practiceData.practiceCount / requiredCount.value) * 100;
-  const result = Math.min(Math.round(percentage), 100);
-  return isNaN(result) ? 0 : result;
-});
+const progressPercentage = computed(() => promotionProgress.value?.progress ?? 0);
 
 const progressComment = computed(() => {
   const progressComments = [
@@ -114,7 +114,8 @@ const progressComment = computed(() => {
             >への{{ promotionType }}まで <span class="font-bold">{{ requiredCount }}日分</span>の稽古が必要です。
           </p>
           <p class="mt-2">
-            現在、<span class="text-green-500 font-medium">{{ practiceData.practiceCount }}日</span>達成しています。
+            現在、<span class="text-green-500 font-medium">{{ promotionProgress?.current ?? 0 }}日</span
+            >達成しています。
           </p>
           <p class="text-xs text-subtext mt-1">※ 1.5時間の稽古を1日分として換算</p>
         </div>

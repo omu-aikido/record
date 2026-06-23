@@ -14,6 +14,7 @@ export { grade, translateGrade, timeForNextGrade } from './src/grade';
 
 export {
   buildPromotionProgress,
+  buildPromotionProgressFromPracticeCount,
   countPracticeDays,
   resolvePromotionSince,
   type PromotionProgressActivity,

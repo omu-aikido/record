@@ -34,6 +34,21 @@ export function countPracticeDays(totalPeriod: number): number {
   return Math.floor(Math.max(0, totalPeriod) / 1.5);
 }
 
+export function buildPromotionProgressFromPracticeCount(
+  grade: PromotionProgressProfile['grade'],
+  current: number
+): PromotionProgressSummary {
+  const required = timeForNextGrade(grade ?? 0);
+  const progress = required > 0 ? Math.min(100, Math.round((current / required) * 100)) : 100;
+
+  return {
+    current,
+    required,
+    progress,
+    isMet: current >= required,
+  };
+}
+
 export function buildPromotionProgress(
   profile: PromotionProgressProfile | null | undefined,
   activities: PromotionProgressActivity[]
@@ -43,13 +58,6 @@ export function buildPromotionProgress(
     return !activity.date || activity.date >= since ? sum + (activity.period || 0) : sum;
   }, 0);
   const current = countPracticeDays(totalPeriod);
-  const required = timeForNextGrade(profile?.grade ?? 0);
-  const progress = required > 0 ? Math.min(100, Math.round((current / required) * 100)) : 100;
 
-  return {
-    current,
-    required,
-    progress,
-    isMet: current >= required,
-  };
+  return buildPromotionProgressFromPracticeCount(profile?.grade, current);
 }

@@ -1,6 +1,11 @@
 import { describe, expect, test } from 'bun:test';
 
-import { buildPromotionProgress, countPracticeDays, resolvePromotionSince } from '../src/progress';
+import {
+  buildPromotionProgress,
+  buildPromotionProgressFromPracticeCount,
+  countPracticeDays,
+  resolvePromotionSince,
+} from '../src/progress';
 
 describe('resolvePromotionSince', () => {
   test('returns getGradeAt when present', () => {
@@ -31,6 +36,17 @@ describe('buildPromotionProgress', () => {
         ]
       )
     ).toEqual({
+      current: 3,
+      required: 40,
+      progress: 8,
+      isMet: false,
+    });
+  });
+});
+
+describe('buildPromotionProgressFromPracticeCount', () => {
+  test('builds the same promotion summary from an already counted practice total', () => {
+    expect(buildPromotionProgressFromPracticeCount(0, 3)).toEqual({
       current: 3,
       required: 40,
       progress: 8,

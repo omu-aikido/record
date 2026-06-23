@@ -114,7 +114,8 @@ const progressComment = computed(() => {
             >への{{ promotionType }}まで <span class="font-bold">{{ requiredCount }}日分</span>の稽古が必要です。
           </p>
           <p class="mt-2">
-            現在、<span class="text-green-500 font-medium">{{ promotionProgress?.current ?? 0 }}日</span>達成しています。
+            現在、<span class="text-green-500 font-medium">{{ promotionProgress?.current ?? 0 }}日</span
+            >達成しています。
           </p>
           <p class="text-xs text-subtext mt-1">※ 1.5時間の稽古を1日分として換算</p>
         </div>

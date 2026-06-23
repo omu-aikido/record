@@ -5,7 +5,7 @@
   ],
   "scripts": {
     "build": "turbo build",
-    "dev": "bunx turbo dev",
+    "dev": "bun scripts/dev.mjs",
     "format": "oxfmt --write .",
     "knip": "knip",
     "lint": "oxlint .",

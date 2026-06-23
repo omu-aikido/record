@@ -36,8 +36,8 @@ export function isProfileComplete(profile: AccountMetadataType | null | undefine
 export function formatDateSlash(value: string | null | undefined): string {
   if (!value) return '-';
 
-  const datePart = value.trim().match(/^\d{4}-\d{2}-\d{2}/)?.[0];
+  const datePart = value.trim().match(/^\d{4}-\d{2}-\d{2}/u)?.[0];
   if (!datePart) return '-';
 
-  return datePart.replaceAll('-', '/');
+  return datePart.split('-').join('/');
 }

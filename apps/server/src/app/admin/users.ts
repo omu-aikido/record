@@ -146,17 +146,9 @@ const app = new Hono<{ Bindings: Env }>()
       const activities = allActivities.slice((page - 1) * limit, page * limit);
       const totalHours = allActivities.reduce((sum, a) => sum + (a.period || 0), 0);
       const totalDays = new Set(allActivities.map((a) => a.date)).size;
-
-      const getGradeAtDate = helpers.resolveTrainBaselineDate(profile);
-
-      const trainsAfterGrade = allActivities
-        .filter((a) => helpers.isDoneTrainTargetDate(a.date, getGradeAtDate))
-        .map((a) => a.period)
-        .reduce((sum, period) => sum + period, 0);
-
-      const trainCount = Math.floor(allActivities.map((a) => a.period).reduce((sum, val) => sum + val, 0) / 1.5);
-      const doneTrain = Math.floor(trainsAfterGrade / 1.5);
       const norm = buildNormSummary(profile, allActivities);
+      const trainCount = Math.floor(allActivities.map((a) => a.period).reduce((sum, val) => sum + val, 0) / 1.5);
+      const doneTrain = norm.current;
 
       return c.json({
         user: Object.assign({}, user, {

@@ -1,9 +1,7 @@
-import { Role } from 'share';
-import { translateGrade } from 'share';
-import { translateYear } from 'share';
 import type { User } from '@clerk/backend';
 import { AdminUser, type AdminUserType } from 'share';
 import { ArkErrors, type } from 'arktype';
+import { resolvePromotionSince, Role, translateGrade, translateYear } from 'share';
 
 // ============================================================
 // Schemas
@@ -108,12 +106,8 @@ type GradeDateProfile = {
 };
 
 export function resolveTrainBaselineDate(profile: GradeDateProfile | null | undefined, now = new Date()): Date {
-  if (profile?.getGradeAt) {
-    return new Date(`${profile.getGradeAt}T00:00:00.000Z`);
-  }
-
-  const joinedYear = profile?.joinedAt ?? now.getFullYear();
-  return new Date(Date.UTC(joinedYear, 3, 1));
+  const baseline = resolvePromotionSince(profile ?? { joinedAt: now.getFullYear() });
+  return new Date(`${baseline}T00:00:00.000Z`);
 }
 
 export function isDoneTrainTargetDate(activityDate: string, baselineDate: Date): boolean {

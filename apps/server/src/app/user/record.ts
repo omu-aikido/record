@@ -9,6 +9,7 @@ import * as records from 'share';
 import { activity } from '../../db/schema';
 import { dbClient } from '../../db/drizzle';
 import { calculatePeriodRange, getCurrentUserRanking, getRankingData, maskRankingData } from './ranking';
+import { countPracticeDays, resolvePromotionSince } from 'share';
 
 export const record = new Hono<{ Bindings: Env }>()
   // GET /api/user/record - 活動記録一覧取得
@@ -111,7 +112,7 @@ export const record = new Hono<{ Bindings: Env }>()
     const { getProfile } = await import('../../clerk/profile');
     const profile = await getProfile(c);
 
-    const startDate = profile?.getGradeAt || '1970-01-01';
+    const startDate = resolvePromotionSince(profile);
 
     const result = await db
       .select({
@@ -122,7 +123,7 @@ export const record = new Hono<{ Bindings: Env }>()
 
     const totalPeriod = result[0]?.totalPeriod || 0;
 
-    const practiceCount = Math.floor(totalPeriod / 1.5);
+    const practiceCount = countPracticeDays(totalPeriod);
 
     return c.json({ practiceCount, totalPeriod, since: startDate }, 200);
   })

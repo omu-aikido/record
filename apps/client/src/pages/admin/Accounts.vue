@@ -77,6 +77,7 @@
                 学年
                 <span v-if="sortBy === 'year'" class="ml-1">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
               </th>
+              <th class="th-base md:px-6">級段位取得日</th>
               <th class="th-base md:px-6">誕生日</th>
               <th class="th-base md:px-6 text-center">稽古回数</th>
               <th class="th-base md:px-6 text-center">必要回数</th>
@@ -101,13 +102,14 @@
               <td class="td-base md:px-6 text-center">{{ user.profile.roleLabel }}</td>
               <td class="td-base md:px-6 text-center">{{ user.profile.gradeLabel }}</td>
               <td class="td-base md:px-6 text-center">{{ user.profile.yearLabel }}</td>
+              <td class="td-base md:px-6 text-center">{{ formatDateSlash(user.profile.getGradeAt) }}</td>
               <td class="td-base md:px-6 text-center">{{ formatDateSlash(user.profile.birthday) }}</td>
               <td class="td-base md:px-6 text-center">{{ user.profile.norm?.current ?? '-' }}</td>
               <td class="td-base md:px-6 text-center">{{ user.profile.norm?.required ?? '-' }}</td>
               <td class="td-base md:px-6 text-center">{{ (user.profile.norm?.isMet ?? '-') ? '達成' : '未達成' }}</td>
             </tr>
             <tr v-if="sortedUsers.length === 0">
-              <td colspan="8" class="p-12 text-subtext text-center">ユーザーが見つかりませんでした</td>
+              <td colspan="9" class="p-12 text-subtext text-center">ユーザーが見つかりませんでした</td>
             </tr>
           </tbody>
         </table>
@@ -127,7 +129,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-4 gap-3 text-sm">
+          <div class="grid grid-cols-5 gap-3 text-sm">
             <div>
               <div class="text-sub">生年月日</div>
               <div class="text">{{ formatDateSlash(user.profile.birthday) }}</div>
@@ -143,6 +145,10 @@
             <div>
               <div class="text-sub">級段位</div>
               <div class="text">{{ user.profile.gradeLabel }}</div>
+            </div>
+            <div>
+              <div class="text-sub">取得日</div>
+              <div class="text">{{ formatDateSlash(user.profile.getGradeAt) }}</div>
             </div>
           </div>
 

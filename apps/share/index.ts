@@ -12,6 +12,15 @@ export { updateAccountSchema } from './src/clerkClient';
 
 export { grade, translateGrade, timeForNextGrade } from './src/grade';
 
+export {
+  buildPromotionProgress,
+  countPracticeDays,
+  resolvePromotionSince,
+  type PromotionProgressActivity,
+  type PromotionProgressProfile,
+  type PromotionProgressSummary,
+} from './src/progress';
+
 export { recordQuerySchema, createActivitySchema, deleteActivitiesSchema, rankingQuerySchema } from './src/records';
 export type { RankingEntry, RankingResponse, Activity, PracticeCountData } from './src/records';
 

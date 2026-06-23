@@ -1,6 +1,7 @@
 {
   "name": "tursodb",
   "scripts": {
-    "dev": "turso dev -f record.db -p 8080"
+    "dev": "turso dev -f record.db -p 8080",
+    "generate": "cat migrations/20260331022512_certain_sunspot/migration.sql | sqlite3 record.db"
   }
 }

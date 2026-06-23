@@ -1,28 +1,29 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
   };
-  outputs = {
-    nixpkgs,
-    flake-utils,
-    ...
-  }:
-    flake-utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = import nixpkgs {inherit system;};
-      in {
-        devShell = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            bun
-            nodejs-slim_24
-            turso-cli
-            sqld
-          ];
-          shellWrapper = pkgs.writeShellScript "dev-shell" ''
-            exec ${pkgs.zsh}/bin/zsh \"$@\"
-          '';
-        };
-      }
-    );
+  outputs = {nixpkgs, ...}: let
+    systems = ["x86_64-linux" "aarch64-darwin"];
+    for = f:
+      nixpkgs.lib.genAttrs systems (
+        system: f (import nixpkgs {inherit system;})
+      );
+
+    deps = pkgs:
+      with pkgs; [
+        bun
+        nodejs-slim_24
+        turso-cli
+        sqld
+      ];
+  in {
+    devShells = for (pkgs: {
+      default = pkgs.mkShell {
+        buildInputs = deps pkgs;
+      };
+    });
+    packages = for (pkgs: {
+      default = deps pkgs;
+    });
+  };
 }

@@ -129,14 +129,14 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-5 gap-3 text-sm">
-            <div>
-              <div class="text-sub">生年月日</div>
-              <div class="text">{{ formatDateSlash(user.profile.birthday) }}</div>
-            </div>
+          <div class="grid grid-cols-3 gap-3 text-sm">
             <div>
               <div class="text-sub">学年</div>
               <div class="text">{{ user.profile.yearLabel }}</div>
+            </div>
+            <div>
+              <div class="text-sub">生年月日</div>
+              <div class="text">{{ formatDateSlash(user.profile.birthday) }}</div>
             </div>
             <div>
               <div class="text-sub">役職</div>

@@ -26,15 +26,12 @@ describe('countPracticeDays', () => {
 describe('buildPromotionProgress', () => {
   test('counts only activities on or after the promotion baseline', () => {
     expect(
-      buildPromotionProgress(
-        { grade: 0, getGradeAt: '2024-04-01', joinedAt: 2024 },
-        [
-          { date: '2024-03-31', period: 1.5 },
-          { date: '2024-04-01', period: 1.5 },
-          { date: '2024-04-02', period: 1.5 },
-          { date: '2024-04-03', period: 1.5 },
-        ]
-      )
+      buildPromotionProgress({ grade: 0, getGradeAt: '2024-04-01', joinedAt: 2024 }, [
+        { date: '2024-03-31', period: 1.5 },
+        { date: '2024-04-01', period: 1.5 },
+        { date: '2024-04-02', period: 1.5 },
+        { date: '2024-04-03', period: 1.5 },
+      ])
     ).toEqual({
       current: 3,
       required: 40,

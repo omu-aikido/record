@@ -28,7 +28,6 @@ process.once("SIGTERM", () => {
   shutdown(0);
 });
 
-// eslint-disable-next-line max-lines-per-function
 async function main(): Promise<void> {
   console.log("Starting database...");
   const database = Bun.spawn({

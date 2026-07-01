@@ -34,10 +34,10 @@ export function isProfileComplete(profile: AccountMetadataType | null | undefine
 }
 
 export function formatDateSlash(value: string | null | undefined): string {
-  if (!value) return "-";
+  if (value === null || value === undefined) return "-";
 
   const datePart = value.trim().match(/^\d{4}-\d{2}-\d{2}/u)?.[0];
-  if (!datePart) return "-";
+  if (datePart === null || datePart === undefined) return "-";
 
   return datePart.split("-").join("/");
 }

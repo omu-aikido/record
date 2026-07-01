@@ -83,7 +83,7 @@ export function toAdminUser(user: User): AdminUserType {
 }
 
 export function coerceProfileMetadata(metadata: unknown) {
-  if (!metadata || typeof metadata !== "object") return {};
+  if (typeof metadata !== "object") return {};
   return metadata;
 }
 

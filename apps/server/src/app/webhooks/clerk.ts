@@ -20,6 +20,7 @@ function verifyWebhookSignature(
 ): ClerkWebhookEvent | null {
   const svix = new Webhook(webhookSecret);
   try {
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     return svix.verify(payload, headers) as ClerkWebhookEvent;
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
@@ -28,14 +29,19 @@ function verifyWebhookSignature(
   }
 }
 
-async function handleUserCreated(event: ClerkWebhookEvent, c: Context): Promise<boolean> {
+async function handleUserCreated(
+  event: ClerkWebhookEvent,
+  c: Context<{
+    Bindings: Env;
+  }>
+): Promise<boolean> {
   const { createClerkClient } = await import("@clerk/backend");
   const clerkClient = createClerkClient({
     secretKey: c.env.CLERK_SECRET_KEY,
   });
 
   const meta = event.data.unsafe_metadata;
-  if (!meta || Object.keys(meta).length === 0) {
+  if (Object.keys(meta).length === 0) {
     return true;
   }
 
@@ -59,7 +65,12 @@ async function handleUserCreated(event: ClerkWebhookEvent, c: Context): Promise<
   }
 }
 
-async function handleUserDeleted(event: ClerkWebhookEvent, c: Context): Promise<boolean> {
+async function handleUserDeleted(
+  event: ClerkWebhookEvent,
+  c: Context<{
+    Bindings: Env;
+  }>
+): Promise<boolean> {
   const userId = event.data.id;
   try {
     const db = dbClient(c.env);

@@ -24,6 +24,7 @@ function normalizeRole(value: unknown): AccountMetadataType["role"] {
 function normalizeDateString(value: unknown): AccountMetadataType["getGradeAt"] {
   if (value === null || value === "") return value;
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/u.test(value)) {
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     return value as AccountMetadataType["getGradeAt"];
   }
   return null;
@@ -32,6 +33,7 @@ function normalizeDateString(value: unknown): AccountMetadataType["getGradeAt"] 
 function normalizeYear(value: unknown): AccountMetadataType["year"] {
   if (value === null || value === "") return value;
   if (typeof value === "string" && /^(b[1-4]|m[1-2]|d[1-2])$/u.test(value)) {
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     return value as AccountMetadataType["year"];
   }
   return "";
@@ -64,9 +66,13 @@ function normalizeProfileMetadata(metadata: Record<string, unknown> | null | und
   };
 }
 
-export const getProfile = async (c: Context) => {
+export const getProfile = async (
+  c: Context<{
+    Bindings: Env;
+  }>
+) => {
   const auth = getAuth(c);
-  if (!auth || !auth.isAuthenticated) return null;
+  if (!auth.isAuthenticated) return null;
 
   const clerkClient = createClerkClient({ secretKey: c.env.CLERK_SECRET_KEY });
   const user = await clerkClient.users.getUser(auth.userId);
@@ -77,9 +83,13 @@ export const getProfile = async (c: Context) => {
   return profile;
 };
 
-export const getUser = async (c: Context) => {
+export const getUser = async (
+  c: Context<{
+    Bindings: Env;
+  }>
+) => {
   const auth = getAuth(c);
-  if (!auth || !auth.userId) return null;
+  if (!auth.isAuthenticated) return null;
 
   const clerkClient = createClerkClient({ secretKey: c.env.CLERK_SECRET_KEY });
   const user = await clerkClient.users.getUser(auth.userId);
@@ -87,10 +97,15 @@ export const getUser = async (c: Context) => {
   return user;
 };
 
-export const patchProfile = async (c: Context, data: typeof AccountMetadata.infer) => {
+export const patchProfile = async (
+  c: Context<{
+    Bindings: Env;
+  }>,
+  data: typeof AccountMetadata.infer
+) => {
   const clerkClient = createClerkClient({ secretKey: c.env.CLERK_SECRET_KEY });
   const auth = getAuth(c);
-  if (!auth || !auth.userId) throw new Error("Unauthorized");
+  if (!auth.isAuthenticated) throw new Error("Unauthorized");
 
   const validated = AccountMetadata(data);
   if (validated instanceof ArkErrors) {

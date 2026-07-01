@@ -11,7 +11,7 @@ import { isIgnoredBrowserInternalError } from "./lib/browserInternalError";
 import router from "./router";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-if (!PUBLISHABLE_KEY) {
+if (PUBLISHABLE_KEY === null || PUBLISHABLE_KEY === undefined) {
   throw new Error("VITE_CLERK_PUBLISHABLE_KEY is required");
 }
 

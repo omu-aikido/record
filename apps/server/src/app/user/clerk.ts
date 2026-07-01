@@ -12,7 +12,7 @@ import { AccountMetadata, isProfileComplete, Role, updateAccountSchema } from "s
 export const clerk = new Hono<{ Bindings: Env }>() //
   .get("/account", async (c) => {
     const auth = getAuth(c);
-    if (!auth || !auth.userId) return c.json({ error: "Not Authenticated" }, 401);
+    if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
     const user = await getUser(c);
     if (!user) return c.json({ error: "User not found" }, 404);
     return c.json(user, 200);
@@ -27,7 +27,7 @@ export const clerk = new Hono<{ Bindings: Env }>() //
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: "Not Authenticated" }, 401);
+      if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
 
       const body = c.req.valid("form");
 
@@ -44,10 +44,12 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       try {
         const updatePayload: Parameters<typeof clerkClient.users.updateUser>[1] = {};
 
-        if (username && typeof username === "string") updatePayload.username = username;
-        if (!username) updatePayload.username = "";
-        if (firstName && typeof firstName === "string") updatePayload.firstName = firstName;
-        if (lastName && typeof lastName === "string") updatePayload.lastName = lastName;
+        if (username !== undefined && typeof username === "string") updatePayload.username = username;
+        if (username === undefined) updatePayload.username = "";
+        if (firstName !== undefined && typeof firstName === "string") updatePayload.firstName = firstName;
+        if (firstName === undefined) updatePayload.firstName = "";
+        if (lastName !== undefined && typeof lastName === "string") updatePayload.lastName = lastName;
+        if (lastName === undefined) updatePayload.lastName = "";
         if (Object.keys(updatePayload).length > 0) await clerkClient.users.updateUser(auth.userId, updatePayload);
 
         if (profileImage instanceof File && profileImage.size > 0) {
@@ -78,7 +80,7 @@ export const clerk = new Hono<{ Bindings: Env }>() //
   .get("/profile", async (c) => {
     const auth = getAuth(c);
 
-    if (!auth || !auth.userId) return c.json({ error: "Not Authenticated" }, 401);
+    if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
 
     const profile = await getProfile(c);
 
@@ -132,7 +134,7 @@ export const clerk = new Hono<{ Bindings: Env }>() //
   )
   .get("/menu", async (c) => {
     const auth = getAuth(c);
-    if (!auth || !auth.userId) return c.json({ error: "Not Authenticated" }, 401);
+    if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
 
     const profile = await getProfile(c);
     const role = profile ? Role.parse(profile.role) : undefined;

@@ -78,6 +78,7 @@ export default defineConfig({
       "unicorn/prefer-top-level-await": "off",
       "vite-plus/prefer-vite-plus-imports": "error",
       "typescript/prefer-readonly-parameter-types": "allow",
+      "typescript/consistent-return": "allow",
     },
     ignorePatterns: ["*.config.ts", "**/*.test.ts", "**/*.spec.ts", ".direnv"],
     options: {

@@ -5,7 +5,7 @@ const SAFARI_INTERNAL_ERROR_MARKERS = [
 ];
 
 const getErrorParts = (input: unknown): string[] => {
-  if (!input) {
+  if (input === undefined || input === null) {
     return [];
   }
 

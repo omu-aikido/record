@@ -11,7 +11,7 @@ export function useActivities(filters: Ref<RecordQuery | undefined>) {
   return useQuery({
     queryKey: computed(() => queryKeys.user.record({ query: filters.value ?? {} })),
     queryFn: async () => {
-      const query = filters.value || {};
+      const query = filters.value ?? {};
       const res = await hc.user.record.$get({ query });
       if (!res.ok) throw new Error("Failed to fetch activities");
       const data = await res.json();

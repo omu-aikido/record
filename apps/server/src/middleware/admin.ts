@@ -5,9 +5,14 @@ import { getAuth } from "@hono/clerk-auth";
 import { getProfile } from "../clerk/profile";
 import { Role } from "share";
 
-export const ensureAdmin = async (c: Context, next: Next): Promise<Response | void> => {
+export const ensureAdmin = async (
+  c: Context<{
+    Bindings: Env;
+  }>,
+  next: Next
+): Promise<Response | void> => {
   const auth = getAuth(c);
-  if (!auth || !auth.isAuthenticated) {
+  if (!auth.isAuthenticated) {
     c.status(401);
     return c.json({ error: "Unauthorized" });
   }

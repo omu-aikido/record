@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import { isAdminRole } from "./adminGuard";
+import { getPublicMetadataRole, isAdminRole } from "./adminGuard";
 
 import HomeView from "@/pages/Home.vue";
 import NotFoundView from "@/pages/NotFound.vue";
@@ -79,7 +79,7 @@ const router = createRouter({
 });
 
 interface ClerkUser {
-  publicMetadata: Record<string, unknown>;
+  publicMetadata: unknown;
 }
 
 interface ClerkClient {
@@ -92,6 +92,7 @@ function waitForClerk(): Promise<ClerkClient> {
   return new Promise((resolve) => {
     const checkClerk = () => {
       if (window.Clerk?.loaded) {
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
         resolve(window.Clerk as unknown as ClerkClient);
       } else {
         setTimeout(checkClerk, 100);
@@ -120,7 +121,7 @@ router.beforeEach(async (to, _from) => {
         return { name: "signIn" };
       }
 
-      const roleValue = (clerk.user?.publicMetadata as { role?: string })?.role;
+      const roleValue = getPublicMetadataRole(clerk.user?.publicMetadata);
       const isAdmin = isAdminRole(roleValue);
 
       if (!isAdmin) {

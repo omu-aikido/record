@@ -8,7 +8,7 @@ export function useAuth() {
   const { user, isLoaded: userLoaded } = useUser();
   const { isSignedIn, isLoaded: authLoaded } = useClerkAuth();
 
-  const isAuthenticated = computed(() => isSignedIn.value && !!user.value);
+  const isAuthenticated = computed(() => isSignedIn.value !== undefined && !!user.value);
 
   const isLoading = computed(() => !authLoaded.value || !userLoaded.value);
   const isLoaded = computed(() => authLoaded.value && userLoaded.value);

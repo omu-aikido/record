@@ -3,12 +3,13 @@ import { useClerk } from "@clerk/vue";
 import { type Ref, ref } from "vue";
 
 function extractClerkError(err: unknown): string {
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const clerkError = (err as { errors?: ClerkAPIError[] }).errors?.[0];
-  return clerkError?.longMessage || clerkError?.message || "An error occurred.";
+  return clerkError?.longMessage ?? clerkError?.message ?? "An error occurred.";
 }
 
 function checkClerkLoaded(clerk: ReturnType<typeof useClerk>, error: Ref<string | null>): boolean {
-  if (!clerk.value?.loaded) {
+  if (clerk.value?.loaded === null) {
     error.value = "Authentication service is not available.";
     return false;
   }

@@ -71,6 +71,8 @@ async function resolveManagementRoles(
     helpers.coerceProfileMetadata(adminUser.publicMetadata)
   );
   const adminProfile = adminProfileParse instanceof type.errors ? null : adminProfileParse;
+  if (adminProfile === null || adminProfile.role === undefined)
+    return { adminRole: null, targetCurrentRole: Role.MEMBER };
   const adminRole = adminProfile?.role ? Role.fromString(adminProfile.role) : null;
 
   const targetUser = await clerkClient.users.getUser(targetUserId);
@@ -86,7 +88,7 @@ async function resolveManagementRoles(
 }
 
 function normalizeOptionalDate(dateText: string | null | undefined) {
-  return dateText && dateText !== "null" ? new Date(`${dateText}T00:00:00.000Z`) : null;
+  return typeof dateText === "string" ? new Date(`${dateText}T00:00:00.000Z`) : null;
 }
 
 // ============================================================
@@ -174,14 +176,14 @@ const app = new Hono<{ Bindings: Env }>()
 
   .patch("/:userId/profile", arktypeValidator("json", helpers.adminProfileUpdateSchema), async (c) => {
     const auth = getAuth(c);
-    if (!auth?.userId) return c.json({ error: "認証されていません" }, 401);
+    if (!auth.isAuthenticated) return c.json({ error: "認証されていません" }, 401);
 
     const targetUserId = c.req.param("userId");
     const parsed = c.req.valid("json");
     const { year, grade, role, joinedAt, birthday } = parsed;
 
     const joinedAtError = validateAdminJoinedAt(joinedAt);
-    if (joinedAtError) return c.json({ error: joinedAtError }, 400);
+    if (joinedAtError !== null) return c.json({ error: joinedAtError }, 400);
 
     const clerkClient = createClerkClient({
       secretKey: c.env.CLERK_SECRET_KEY,
@@ -189,11 +191,15 @@ const app = new Hono<{ Bindings: Env }>()
 
     const { adminRole, targetCurrentRole } = await resolveManagementRoles(clerkClient, auth.userId, targetUserId);
 
+    if (adminRole === null) {
+      return c.json({ error: "権限が不足しています" }, 403);
+    }
+
     if (!adminRole?.isManagement()) {
       return c.json({ error: "権限が不足しています" }, 403);
     }
 
-    if (targetCurrentRole && Role.compare(adminRole.role, targetCurrentRole.role) > 0) {
+    if (Role.compare(adminRole.role, targetCurrentRole.role) > 0) {
       return c.json({ error: "現在の権限より上書きできません" }, 403);
     }
 
@@ -230,7 +236,7 @@ const app = new Hono<{ Bindings: Env }>()
 
   .delete("/:userId", async (c) => {
     const auth = getAuth(c);
-    if (!auth?.userId) return c.json({ error: "認証されていません" }, 401);
+    if (!auth.isAuthenticated) return c.json({ error: "認証されていません" }, 401);
 
     const targetUserId = c.req.param("userId");
 
@@ -247,9 +253,10 @@ const app = new Hono<{ Bindings: Env }>()
       helpers.coerceProfileMetadata(adminUser.publicMetadata)
     );
     const adminProfile = adminProfileParse instanceof type.errors ? null : adminProfileParse;
+    if (adminProfile === null || adminProfile.role === undefined) return c.json({ error: "権限が不足しています" }, 404);
     const adminRole = adminProfile?.role ? Role.fromString(adminProfile.role) : null;
 
-    if (!adminRole?.isManagement()) {
+    if (adminRole === null || adminRole?.isManagement()) {
       return c.json({ error: "権限が不足しています" }, 403);
     }
 

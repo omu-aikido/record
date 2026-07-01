@@ -23,7 +23,7 @@ export const record = new Hono<{ Bindings: Env }>()
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: "Unauthorized" }, 401);
+      if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
 
       const query = c.req.valid("query");
       const userId = query.userId ?? auth.userId;
@@ -34,8 +34,8 @@ export const record = new Hono<{ Bindings: Env }>()
 
       const db = dbClient(c.env);
       const conditions = [drizzleOrm.eq(activity.userId, userId)];
-      if (query.startDate) conditions.push(drizzleOrm.gte(activity.date, query.startDate));
-      if (query.endDate) conditions.push(drizzleOrm.lte(activity.date, query.endDate));
+      if (query.startDate !== undefined) conditions.push(drizzleOrm.gte(activity.date, query.startDate));
+      if (query.endDate !== undefined) conditions.push(drizzleOrm.lte(activity.date, query.endDate));
 
       const activities = await db
         .select()
@@ -58,7 +58,7 @@ export const record = new Hono<{ Bindings: Env }>()
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: "Unauthorized" }, 401);
+      if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
 
       const body = c.req.valid("json");
       const db = dbClient(c.env);
@@ -88,7 +88,7 @@ export const record = new Hono<{ Bindings: Env }>()
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: "Unauthorized" }, 401);
+      if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
 
       const body = c.req.valid("json");
       const db = dbClient(c.env);
@@ -105,7 +105,7 @@ export const record = new Hono<{ Bindings: Env }>()
   // GET /api/user/record/count - 稽古回数取得
   .get("/count", async (c) => {
     const auth = getAuth(c);
-    if (!auth || !auth.userId) return c.json({ error: "Unauthorized" }, 401);
+    if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
 
     const db = dbClient(c.env);
 
@@ -138,7 +138,7 @@ export const record = new Hono<{ Bindings: Env }>()
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: "Unauthorized" }, 401);
+      if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
 
       const query = c.req.valid("query");
 

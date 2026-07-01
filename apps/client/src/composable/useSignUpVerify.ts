@@ -33,8 +33,9 @@ export function useSignUpVerify() {
       error.value = "Verification failed. Please try again.";
       return false;
     } catch (err: unknown) {
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       const clerkError = (err as { errors?: ClerkAPIError[] }).errors?.[0];
-      error.value = clerkError?.longMessage || clerkError?.message || "An unknown error occurred.";
+      error.value = clerkError?.longMessage ?? clerkError?.message ?? "An unknown error occurred.";
       return false;
     } finally {
       isLoading.value = false;

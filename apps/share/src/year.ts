@@ -10,7 +10,7 @@ export const year = [
 ];
 
 export function translateYear(year_value: string): string {
-  const raw = String(year_value ?? "").trim();
+  const raw = year_value.trim();
   if (!raw) return "不明";
 
   const code = raw.toLowerCase();

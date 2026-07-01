@@ -63,6 +63,7 @@ const validateStep = (
   formValues: SignUpFormData,
   formErrors: Partial<FormErrors>
 ): boolean => {
+  // oxlint-disable-next-line typescript/strict-void-return typescript/no-unsafe-type-assertion
   Object.keys(formErrors).forEach((key) => delete formErrors[key as keyof FormErrors]);
 
   const schema = getValidationSchema(currentStep);
@@ -72,6 +73,7 @@ const validateStep = (
 
   if (result instanceof ArkErrors) {
     for (const error of result) {
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       formErrors[error.path[0] as keyof FormErrors] = error.message;
     }
     return false;
@@ -104,10 +106,8 @@ const handleClerkSignUp = async (
   clerkErrors: ReturnType<typeof ref<ClerkAPIError[]>>,
   isSignUpCreated: ReturnType<typeof ref<boolean>>
 ): Promise<boolean> => {
-  if (!clerk.value?.loaded || isSignUpCreated.value) {
-    if (!isSignUpCreated.value) {
-      formErrors.general = "Authentication service is not available";
-    }
+  if (clerk.value?.loaded === null || isSignUpCreated.value !== null) {
+    formErrors.general = "Authentication service is not available";
     return false;
   }
 
@@ -122,7 +122,7 @@ const handleClerkSignUp = async (
   delete formErrors.general;
 
   try {
-    if (!clerk.value.client) {
+    if (clerk.value?.client === null || clerk.value?.client === undefined) {
       throw new Error("Clerk client not available");
     }
     const signUpParams = createSignUpParams(formValues);
@@ -136,7 +136,8 @@ const handleClerkSignUp = async (
   } catch (err: unknown) {
     isSignUpCreated.value = false;
     const errorMsg = "User registration failed";
-    if (err && typeof err === "object" && "errors" in err) {
+    if (err !== null && typeof err === "object" && "errors" in err) {
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       clerkErrors.value = (err as { errors: ClerkAPIError[] }).errors;
     } else {
       formErrors.general = errorMsg;

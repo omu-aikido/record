@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite",
-    "preview": "vite preview",
+    "build": "vp build",
+    "dev": "vp dev",
+    "preview": "vp preview",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
@@ -26,7 +26,8 @@
     "@types/bun": "1.3.14",
     "@vitejs/plugin-vue": "6.0.7",
     "@vue/tsconfig": "0.9.1",
-    "vite": "8.0.16",
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
     "vue-tsc": "3.3.5"
   }
 }

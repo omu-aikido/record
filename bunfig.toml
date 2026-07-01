@@ -2,12 +2,14 @@ telemetry = false
 logLevel = "warn"
 
 [install]
-exact = true
+exact = false
 auto = "auto"
 
 linker = "isolated"
 
 minimumReleaseAge = 129600
+peer = false
+
 
 [install.cache]
 disable = false

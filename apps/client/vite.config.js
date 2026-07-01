@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite';
+import { defineConfig, lazyPlugins } from 'vite-plus';
 import path from 'path'; // pathをインポート
 import UnoCSS from 'unocss/vite';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
-  plugins: [vue(), UnoCSS()],
+  plugins: lazyPlugins(() => [vue(), UnoCSS()]),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

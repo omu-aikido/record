@@ -11,8 +11,6 @@
 
     deps = pkgs:
       with pkgs; [
-        bun
-        nodejs-slim_24
         turso-cli
         sqld
       ];

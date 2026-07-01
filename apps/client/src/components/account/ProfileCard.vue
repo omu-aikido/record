@@ -34,7 +34,7 @@
       <div class="flex-between">
         <h3 class="text-lg font-bold text">プロフィール</h3>
         <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="isEditing = true">
-          {{ needsProfileCompletion ? '入力する' : '編集' }}
+          {{ needsProfileCompletion ? "入力する" : "編集" }}
         </button>
       </div>
       <div class="gap-3 text-subtext flex flex-col">
@@ -44,21 +44,21 @@
         </div>
         <div class="py-1 flex items-center justify-between">
           <span class="text-subtext">級段位</span>
-          <span class="font-medium text">{{ translateGrade(profile?.grade ?? '') || '-' }}</span>
+          <span class="font-medium text">{{ translateGrade(profile?.grade ?? "") || "-" }}</span>
         </div>
         <div class="py-1 flex items-center justify-between">
           <span class="text-subtext">取得日</span>
           <span class="font-medium text">
-            {{ profile?.getGradeAt ? new Date(profile.getGradeAt).toLocaleDateString() : '-' }}
+            {{ profile?.getGradeAt ? new Date(profile.getGradeAt).toLocaleDateString() : "-" }}
           </span>
         </div>
         <div class="py-1 flex items-center justify-between">
           <span class="text-subtext">入部年</span>
-          <span class="font-medium text">{{ profile?.joinedAt || '-' }}</span>
+          <span class="font-medium text">{{ profile?.joinedAt || "-" }}</span>
         </div>
         <div class="py-1 flex items-center justify-between">
           <span class="text-subtext">学年</span>
-          <span class="font-medium text">{{ translateYear(profile?.year ?? '') || '-' }}</span>
+          <span class="font-medium text">{{ translateYear(profile?.year ?? "") || "-" }}</span>
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@
             <ListboxButton
               class="rounded-md bg-surface0 border-overlay0 px-3 py-2 pr-10 text text focus:ring-blue-500 relative w-full cursor-default border text-left focus:ring-2 focus:outline-none">
               <span class="block overflow-hidden text-ellipsis whitespace-nowrap">{{
-                translateGrade(formData.grade ?? '')
+                translateGrade(formData.grade ?? "")
               }}</span>
               <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
                 <div class="i-lucide:lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
@@ -166,7 +166,7 @@
 
       <div class="gap-3 pt-2 flex">
         <button type="submit" class="btn-primary w-full" :disabled="isSubmitting">
-          {{ isSubmitting ? '保存中...' : '保存' }}
+          {{ isSubmitting ? "保存中..." : "保存" }}
         </button>
         <button type="button" class="btn-secondary w-full" @click="cancelEdit">キャンセル</button>
       </div>
@@ -175,16 +175,16 @@
 </template>
 
 <script setup lang="ts">
-import { ArkErrors } from 'arktype';
-import hc from '@/lib/honoClient';
-import Input from '@/components/ui/UiInput.vue';
-import { queryKeys } from '@/lib/queryKeys';
-import { AccountMetadata, formatDateSlash, isProfileComplete } from 'share';
-import { computed, reactive, ref, watch } from 'vue';
-import { grade, translateGrade } from 'share';
-import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/vue';
-import { translateYear, year } from 'share';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { ArkErrors } from "arktype";
+import hc from "@/lib/honoClient";
+import Input from "@/components/ui/UiInput.vue";
+import { queryKeys } from "@/lib/queryKeys";
+import { AccountMetadata, formatDateSlash, isProfileComplete } from "share";
+import { computed, reactive, ref, watch } from "vue";
+import { grade, translateGrade } from "share";
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/vue";
+import { translateYear, year } from "share";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 
 interface FormData {
   grade: number | null;
@@ -197,17 +197,17 @@ interface FormData {
 const queryClient = useQueryClient();
 
 const isEditing = ref(false);
-const message = ref('');
+const message = ref("");
 const isError = ref(false);
 const gradeOptions = grade;
 const yearOptions = year;
 
 const formData = reactive<FormData>({
   grade: 0,
-  getGradeAt: '',
+  getGradeAt: "",
   joinedAt: null,
-  year: 'b1',
-  birthday: '',
+  year: "b1",
+  birthday: "",
 });
 
 // Query - Returns { profile: ... } to match server response shape
@@ -215,13 +215,13 @@ const { data: profileData } = useQuery({
   queryKey: queryKeys.user.clerk.profile(),
   queryFn: async () => {
     const res = await hc.user.clerk.profile.$get();
-    if (!res.ok) throw new Error('Failed to fetch profile');
+    if (!res.ok) throw new Error("Failed to fetch profile");
     const data = await res.json();
     if (data.profile) {
       const profileParsed = AccountMetadata(data.profile);
       if (profileParsed instanceof ArkErrors) {
         console.error(profileParsed);
-        throw new Error('Invalid profile data');
+        throw new Error("Invalid profile data");
       }
       return { profile: profileParsed, needsProfileCompletion: Boolean(data.needsProfileCompletion) };
     }
@@ -235,18 +235,18 @@ const needsProfileCompletion = computed(() => profileData.value?.needsProfileCom
 function applyProfileToForm(newProfile: typeof profile.value) {
   if (newProfile) {
     formData.grade = Number(newProfile.grade) || 0;
-    formData.getGradeAt = newProfile.getGradeAt || '';
+    formData.getGradeAt = newProfile.getGradeAt || "";
     formData.joinedAt = newProfile.joinedAt ?? new Date().getFullYear();
-    formData.year = (newProfile.year || 'b1') as `b${number}` | `m${number}` | `d${number}`;
-    formData.birthday = newProfile.birthday || '';
+    formData.year = (newProfile.year || "b1") as `b${number}` | `m${number}` | `d${number}`;
+    formData.birthday = newProfile.birthday || "";
     return;
   }
 
   formData.grade = 0;
-  formData.getGradeAt = '';
+  formData.getGradeAt = "";
   formData.joinedAt = new Date().getFullYear();
-  formData.year = 'b1';
-  formData.birthday = '';
+  formData.year = "b1";
+  formData.birthday = "";
 }
 
 // Sync form data
@@ -266,7 +266,7 @@ const { mutateAsync: updateProfile, isPending: isSubmitting } = useMutation({
     birthday: `${number}-${number}-${number}` | null;
   }) => {
     const res = await hc.user.clerk.profile.$patch({ json });
-    if (!res.ok) throw new Error('プロフィールの更新に失敗しました');
+    if (!res.ok) throw new Error("プロフィールの更新に失敗しました");
     return res.json();
   },
   onSuccess: (responseData) => {
@@ -292,17 +292,17 @@ const { mutateAsync: updateProfile, isPending: isSubmitting } = useMutation({
       }
     }
 
-    message.value = 'プロフィールを更新しました';
+    message.value = "プロフィールを更新しました";
     isEditing.value = false;
   },
   onError: (error) => {
     isError.value = true;
-    message.value = error instanceof Error ? error.message : 'プロフィールの更新に失敗しました';
+    message.value = error instanceof Error ? error.message : "プロフィールの更新に失敗しました";
   },
 });
 
 async function handleSubmit() {
-  message.value = '';
+  message.value = "";
   isError.value = false;
   try {
     const getGradeAtValue = (formData.getGradeAt || null) as `${number}-${number}-${number}` | null;
@@ -325,6 +325,6 @@ async function handleSubmit() {
 function cancelEdit() {
   updateFormData();
   isEditing.value = false;
-  message.value = '';
+  message.value = "";
 }
 </script>

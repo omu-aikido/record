@@ -1,16 +1,16 @@
-import { activity } from '../../db/schema';
-import { arktypeValidator } from '@hono/arktype-validator';
-import { createClerkClient } from '@clerk/backend';
-import { dbClient } from '../../db/drizzle';
-import { getAuth } from '@hono/clerk-auth';
-import { Hono } from 'hono';
-import { notify } from '../../lib/observability';
-import { Role } from 'share';
-import { type } from 'arktype';
-import * as drizzleOrm from 'drizzle-orm';
-import * as helpers from './helpers';
+import { activity } from "../../db/schema";
+import { arktypeValidator } from "@hono/arktype-validator";
+import { createClerkClient } from "@clerk/backend";
+import { dbClient } from "../../db/drizzle";
+import { getAuth } from "@hono/clerk-auth";
+import { Hono } from "hono";
+import { notify } from "../../lib/observability";
+import { Role } from "share";
+import { type } from "arktype";
+import * as drizzleOrm from "drizzle-orm";
+import * as helpers from "./helpers";
 
-import { buildNormSummary, getUsersNorm } from './stats';
+import { buildNormSummary, getUsersNorm } from "./stats";
 
 // ============================================================
 // Helper Functions
@@ -34,8 +34,8 @@ const getMonthlyRanking = (env: Env) => {
   const startDate = new Date(year, month, 1);
   const endDate = new Date(year, month + 1, 0, 23, 59, 59);
 
-  const startDateStr = startDate.toISOString().split('T')[0]!;
-  const endDateStr = endDate.toISOString().split('T')[0]!;
+  const startDateStr = startDate.toISOString().split("T")[0];
+  const endDateStr = endDate.toISOString().split("T")[0];
 
   return db
     .select({
@@ -80,13 +80,13 @@ async function resolveManagementRoles(
   const targetCurrentRole =
     targetProfileParsed instanceof type.errors
       ? Role.MEMBER
-      : (Role.fromString(targetProfileParsed.role ?? 'member') ?? Role.MEMBER);
+      : (Role.fromString(targetProfileParsed.role ?? "member") ?? Role.MEMBER);
 
   return { adminRole, targetCurrentRole };
 }
 
 function normalizeOptionalDate(dateText: string | null | undefined) {
-  return dateText && dateText !== 'null' ? new Date(`${dateText}T00:00:00.000Z`) : null;
+  return dateText && dateText !== "null" ? new Date(`${dateText}T00:00:00.000Z`) : null;
 }
 
 // ============================================================
@@ -95,18 +95,18 @@ function normalizeOptionalDate(dateText: string | null | undefined) {
 
 const app = new Hono<{ Bindings: Env }>()
   // List all users (from accounts.ts)
-  .get('/', arktypeValidator('query', helpers.accountsQuerySchema), async (c) => {
+  .get("/", arktypeValidator("query", helpers.accountsQuerySchema), async (c) => {
     const clerkClient = createClerkClient({
       secretKey: c.env.CLERK_SECRET_KEY,
     });
 
-    const { query, limit } = c.req.valid('query');
+    const { query, limit } = c.req.valid("query");
     const userLimit = Number(limit ?? 20);
 
     const clerkUsers = await clerkClient.users.getUserList({
       limit: userLimit,
-      query: query ?? '',
-      orderBy: 'created_at',
+      query: query ?? "",
+      orderBy: "created_at",
     });
 
     const norms = await getUsersNorm(c.env, clerkUsers.data);
@@ -120,13 +120,13 @@ const app = new Hono<{ Bindings: Env }>()
     });
     const ranking = await getMonthlyRanking(c.env);
 
-    return c.json({ users, query: query ?? '', ranking });
+    return c.json({ users, query: query ?? "", ranking });
   })
 
   // Get single user details
-  .get('/:userId', arktypeValidator('query', helpers.userActivitiesQuerySchema), async (c) => {
-    const userId = c.req.param('userId');
-    const { page: rawPage, limit: rawLimit } = c.req.valid('query');
+  .get("/:userId", arktypeValidator("query", helpers.userActivitiesQuerySchema), async (c) => {
+    const userId = c.req.param("userId");
+    const { page: rawPage, limit: rawLimit } = c.req.valid("query");
     const page = Number(rawPage ?? 1);
     const limit = Number(rawLimit ?? 10);
 
@@ -168,16 +168,16 @@ const app = new Hono<{ Bindings: Env }>()
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e));
       notify(c, error, { statusCode: 404, userId });
-      return c.json({ error: 'User not found' }, 404);
+      return c.json({ error: "User not found" }, 404);
     }
   })
 
-  .patch('/:userId/profile', arktypeValidator('json', helpers.adminProfileUpdateSchema), async (c) => {
+  .patch("/:userId/profile", arktypeValidator("json", helpers.adminProfileUpdateSchema), async (c) => {
     const auth = getAuth(c);
-    if (!auth?.userId) return c.json({ error: '認証されていません' }, 401);
+    if (!auth?.userId) return c.json({ error: "認証されていません" }, 401);
 
-    const targetUserId = c.req.param('userId');
-    const parsed = c.req.valid('json');
+    const targetUserId = c.req.param("userId");
+    const parsed = c.req.valid("json");
     const { year, grade, role, joinedAt, birthday } = parsed;
 
     const joinedAtError = validateAdminJoinedAt(joinedAt);
@@ -190,26 +190,26 @@ const app = new Hono<{ Bindings: Env }>()
     const { adminRole, targetCurrentRole } = await resolveManagementRoles(clerkClient, auth.userId, targetUserId);
 
     if (!adminRole?.isManagement()) {
-      return c.json({ error: '権限が不足しています' }, 403);
+      return c.json({ error: "権限が不足しています" }, 403);
     }
 
     if (targetCurrentRole && Role.compare(adminRole.role, targetCurrentRole.role) > 0) {
-      return c.json({ error: '現在の権限より上書きできません' }, 403);
+      return c.json({ error: "現在の権限より上書きできません" }, 403);
     }
 
     const requestedRole = Role.fromString(role);
     if (!requestedRole || Role.compare(adminRole.role, requestedRole.role) > 0) {
-      return c.json({ error: '権限が不足しています' }, 403);
+      return c.json({ error: "権限が不足しています" }, 403);
     }
 
     const normalizedGetGradeAt = normalizeOptionalDate(parsed.getGradeAt);
     if (normalizedGetGradeAt && Number.isNaN(normalizedGetGradeAt.getTime())) {
-      return c.json({ error: '級段位取得日の形式が正しくありません' }, 400);
+      return c.json({ error: "級段位取得日の形式が正しくありません" }, 400);
     }
 
     const normalizedBirthday = normalizeOptionalDate(birthday);
     if (normalizedBirthday && Number.isNaN(normalizedBirthday.getTime())) {
-      return c.json({ error: '誕生日の形式が正しくありません' }, 400);
+      return c.json({ error: "誕生日の形式が正しくありません" }, 400);
     }
 
     const updatedMetadata = {
@@ -228,14 +228,14 @@ const app = new Hono<{ Bindings: Env }>()
     return c.json({ success: true, updatedMetadata }, 200);
   })
 
-  .delete('/:userId', async (c) => {
+  .delete("/:userId", async (c) => {
     const auth = getAuth(c);
-    if (!auth?.userId) return c.json({ error: '認証されていません' }, 401);
+    if (!auth?.userId) return c.json({ error: "認証されていません" }, 401);
 
-    const targetUserId = c.req.param('userId');
+    const targetUserId = c.req.param("userId");
 
     if (auth.userId === targetUserId) {
-      return c.json({ error: '自分自身を削除することはできません' }, 400);
+      return c.json({ error: "自分自身を削除することはできません" }, 400);
     }
 
     const clerkClient = createClerkClient({
@@ -250,7 +250,7 @@ const app = new Hono<{ Bindings: Env }>()
     const adminRole = adminProfile?.role ? Role.fromString(adminProfile.role) : null;
 
     if (!adminRole?.isManagement()) {
-      return c.json({ error: '権限が不足しています' }, 403);
+      return c.json({ error: "権限が不足しています" }, 403);
     }
 
     try {
@@ -261,10 +261,10 @@ const app = new Hono<{ Bindings: Env }>()
       const targetRole =
         targetProfileParsed instanceof type.errors
           ? Role.MEMBER
-          : (Role.fromString(targetProfileParsed.role ?? 'member') ?? Role.MEMBER);
+          : (Role.fromString(targetProfileParsed.role ?? "member") ?? Role.MEMBER);
 
       if (Role.compare(adminRole.role, targetRole.role) >= 0) {
-        return c.json({ error: '自分以上の権限を持つユーザーは削除できません' }, 403);
+        return c.json({ error: "自分以上の権限を持つユーザーは削除できません" }, 403);
       }
 
       try {
@@ -278,14 +278,14 @@ const app = new Hono<{ Bindings: Env }>()
           targetUserId,
           activityDeleteFailed: true,
         });
-        return c.json({ error: '活動記録の削除に失敗しました' }, 500);
+        return c.json({ error: "活動記録の削除に失敗しました" }, 500);
       }
       await clerkClient.users.deleteUser(targetUserId);
       return c.json({ success: true }, 200);
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e));
       notify(c, error, { statusCode: 500, targetUserId });
-      return c.json({ error: 'ユーザーの削除に失敗しました' }, 500);
+      return c.json({ error: "ユーザーの削除に失敗しました" }, 500);
     }
   });
 

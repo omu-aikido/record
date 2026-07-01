@@ -1,5 +1,5 @@
-import { createClient } from '@libsql/client/web';
-import { drizzle } from 'drizzle-orm/libsql/web';
+import { createClient } from "@libsql/client/web";
+import { drizzle } from "drizzle-orm/libsql/web";
 
 export const dbClient = (env: Env) => {
   const client = createClient({

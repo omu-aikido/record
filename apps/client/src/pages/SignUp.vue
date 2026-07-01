@@ -58,13 +58,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import ProgressIndicator from '@/components/signup/ProgressIndicator.vue';
-import SignUpStepBasic from '@/components/signup/SignUpStepBasic.vue';
-import SignUpStepPersonal from '@/components/signup/SignUpStepPersonal.vue';
-import SignUpStepProfile from '@/components/signup/SignUpStepProfile.vue';
-import { useRouter } from 'vue-router';
-import { useSignUpForm } from '@/composable/useSignUpForm';
+import { onMounted } from "vue";
+import ProgressIndicator from "@/components/signup/ProgressIndicator.vue";
+import SignUpStepBasic from "@/components/signup/SignUpStepBasic.vue";
+import SignUpStepPersonal from "@/components/signup/SignUpStepPersonal.vue";
+import SignUpStepProfile from "@/components/signup/SignUpStepProfile.vue";
+import { useRouter } from "vue-router";
+import { useSignUpForm } from "@/composable/useSignUpForm";
 
 const router = useRouter();
 const currentYear = new Date().getFullYear();
@@ -83,7 +83,7 @@ const {
 } = useSignUpForm(currentYear);
 
 onMounted(() => {
-  document.title = 'サインアップ - 稽古記録';
+  document.title = "サインアップ - 稽古記録";
 });
 
 const handleNext = () => {
@@ -93,11 +93,11 @@ const handleNext = () => {
 };
 
 const handleSubmit = async () => {
-  if (!validateStep('profile')) return;
+  if (!validateStep("profile")) return;
 
   const success = await handleClerkSignUp();
   if (success) {
-    router.push('/sign-up/verify');
+    router.push("/sign-up/verify");
   }
 };
 </script>

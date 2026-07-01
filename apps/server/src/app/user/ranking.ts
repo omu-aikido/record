@@ -1,9 +1,9 @@
-import type { Context } from 'hono';
-import * as drizzleOrm from 'drizzle-orm';
+import type { Context } from "hono";
+import * as drizzleOrm from "drizzle-orm";
 
-import { activity } from '../../db/schema';
-import { dbClient } from '../../db/drizzle';
-import type { RankingEntry } from 'share';
+import { activity } from "../../db/schema";
+import { dbClient } from "../../db/drizzle";
+import type { RankingEntry } from "share";
 
 type RawRankingEntry = {
   userId: string;
@@ -13,7 +13,7 @@ type RawRankingEntry = {
 type PeriodParams = {
   year: number;
   month: number;
-  period: 'monthly' | 'annual' | 'fiscal';
+  period: "monthly" | "annual" | "fiscal";
 };
 
 type PeriodRange = {
@@ -29,7 +29,7 @@ type CurrentUserTotal = {
 
 const toCurrentUserRankingEntry = (rank: number, totalPeriod: number): RankingEntry => ({
   rank,
-  userName: 'あなた',
+  userName: "あなた",
   isCurrentUser: true,
   totalPeriod,
   practiceCount: Math.floor(totalPeriod / 1.5),
@@ -77,7 +77,7 @@ const getHigherUserCount = async (
     .from(activity)
     .where(drizzleOrm.and(drizzleOrm.gte(activity.date, startDate), drizzleOrm.lte(activity.date, endDate)))
     .groupBy(activity.userId)
-    .as('grouped_totals');
+    .as("grouped_totals");
 
   const higherUserCountResult = await db
     .select({
@@ -92,7 +92,7 @@ const getHigherUserCount = async (
 export const calculatePeriodRange = (params: PeriodParams): PeriodRange => {
   const { year, month, period } = params;
 
-  if (period === 'annual') {
+  if (period === "annual") {
     return {
       startDate: `${year}-01-01`,
       endDate: `${year}-12-31`,
@@ -100,7 +100,7 @@ export const calculatePeriodRange = (params: PeriodParams): PeriodRange => {
     };
   }
 
-  if (period === 'fiscal') {
+  if (period === "fiscal") {
     return {
       startDate: `${year}-04-01`,
       endDate: `${year + 1}-03-31`,
@@ -112,11 +112,11 @@ export const calculatePeriodRange = (params: PeriodParams): PeriodRange => {
   const monthStart = new Date(Date.UTC(year, month - 1, 1));
   const monthEnd = new Date(Date.UTC(year, month, 0));
   return {
-    startDate: monthStart.toISOString().split('T')[0] || '',
-    endDate: monthEnd.toISOString().split('T')[0] || '',
-    periodLabel: new Date(year, month - 1, 1).toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: 'long',
+    startDate: monthStart.toISOString().split("T")[0] || "",
+    endDate: monthEnd.toISOString().split("T")[0] || "",
+    periodLabel: new Date(year, month - 1, 1).toLocaleDateString("ja-JP", {
+      year: "numeric",
+      month: "long",
     }),
   };
 };
@@ -197,7 +197,7 @@ export const maskRankingData = (rawData: RawRankingEntry[], currentUserId: strin
 
     return {
       rank: currentRank,
-      userName: isCurrentUser ? 'あなた' : '匿名',
+      userName: isCurrentUser ? "あなた" : "匿名",
       isCurrentUser,
       totalPeriod: entry.totalPeriod,
       practiceCount: Math.floor(entry.totalPeriod / 1.5),

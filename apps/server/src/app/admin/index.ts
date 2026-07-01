@@ -1,12 +1,12 @@
-import { ensureAdmin } from '../../middleware/admin';
-import { Hono } from 'hono';
-import statsApp from './stats';
-import usersApp from './users';
+import { ensureAdmin } from "../../middleware/admin";
+import { Hono } from "hono";
+import statsApp from "./stats";
+import usersApp from "./users";
 
 const adminApp = new Hono<{ Bindings: Env }>()
-  .use('*', ensureAdmin)
-  .route('/', statsApp)
-  .route('/accounts', usersApp)
-  .route('/users', usersApp);
+  .use("*", ensureAdmin)
+  .route("/", statsApp)
+  .route("/accounts", usersApp)
+  .route("/users", usersApp);
 
 export default adminApp;

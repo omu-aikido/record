@@ -1,4 +1,4 @@
-import { ArkErrors, type } from 'arktype';
+import { ArkErrors, type } from "arktype";
 
 export class Role {
   constructor(
@@ -6,11 +6,11 @@ export class Role {
     public ja: string
   ) {}
 
-  static readonly ADMIN = new Role('admin', '管理者');
-  static readonly CAPTAIN = new Role('captain', '主将');
-  static readonly VICE_CAPTAIN = new Role('vice-captain', '副主将');
-  static readonly TREASURER = new Role('treasurer', '会計');
-  static readonly MEMBER = new Role('member', '部員');
+  static readonly ADMIN = new Role("admin", "管理者");
+  static readonly CAPTAIN = new Role("captain", "主将");
+  static readonly VICE_CAPTAIN = new Role("vice-captain", "副主将");
+  static readonly TREASURER = new Role("treasurer", "会計");
+  static readonly MEMBER = new Role("member", "部員");
 
   static readonly ALL = [Role.ADMIN, Role.CAPTAIN, Role.VICE_CAPTAIN, Role.TREASURER, Role.MEMBER];
 
@@ -27,15 +27,15 @@ export class Role {
 
   static fromString(role: string): Role | null {
     switch (role) {
-      case 'admin':
+      case "admin":
         return Role.ADMIN;
-      case 'captain':
+      case "captain":
         return Role.CAPTAIN;
-      case 'vice-captain':
+      case "vice-captain":
         return Role.VICE_CAPTAIN;
-      case 'treasurer':
+      case "treasurer":
         return Role.TREASURER;
-      case 'member':
+      case "member":
         return Role.MEMBER;
       default:
         return null;

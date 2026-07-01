@@ -1,4 +1,4 @@
-import { timeForNextGrade } from './grade';
+import { timeForNextGrade } from "./grade";
 
 export type PromotionProgressProfile = {
   grade?: number | string | null;
@@ -23,11 +23,11 @@ export function resolvePromotionSince(profile: PromotionProgressProfile | null |
     return profile.getGradeAt;
   }
 
-  if (typeof profile?.joinedAt === 'number' && Number.isFinite(profile.joinedAt)) {
+  if (typeof profile?.joinedAt === "number" && Number.isFinite(profile.joinedAt)) {
     return `${profile.joinedAt}-04-01`;
   }
 
-  return '1970-01-01';
+  return "1970-01-01";
 }
 
 export function countPracticeDays(totalPeriod: number): number {
@@ -35,7 +35,7 @@ export function countPracticeDays(totalPeriod: number): number {
 }
 
 export function buildPromotionProgressFromPracticeCount(
-  grade: PromotionProgressProfile['grade'],
+  grade: PromotionProgressProfile["grade"],
   current: number
 ): PromotionProgressSummary {
   const required = timeForNextGrade(grade ?? 0);

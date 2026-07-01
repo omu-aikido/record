@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import ActivityForm from '@/components/record/ActivityForm.vue';
-import ActivityList from '@/components/record/ActivityList.vue';
-import ConfirmDialog from '@/components/ui/ConfirmDialog.vue';
-import { Show } from '@clerk/vue';
-import { computed, ref } from 'vue';
-import { Dialog, DialogPanel, DialogTitle } from '@headlessui/vue';
-import { endOfMonth, format, isSameDay, parseISO, startOfMonth } from 'date-fns';
-import { useActivities, useAddActivity, useDeleteActivity } from '@/composable/useActivity';
+import ActivityForm from "@/components/record/ActivityForm.vue";
+import ActivityList from "@/components/record/ActivityList.vue";
+import ConfirmDialog from "@/components/ui/ConfirmDialog.vue";
+import { Show } from "@clerk/vue";
+import { computed, ref } from "vue";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
+import { endOfMonth, format, isSameDay, parseISO, startOfMonth } from "date-fns";
+import { useActivities, useAddActivity, useDeleteActivity } from "@/composable/useActivity";
 
 // Mutations
 const { mutateAsync: addActivity, isPending: isAddingActivity } = useAddActivity();
@@ -14,17 +14,17 @@ const { mutateAsync: deleteActivity } = useDeleteActivity();
 // State
 const currentMonth = ref(new Date());
 const isModalOpen = ref(false);
-const selectedDate = ref(format(new Date(), 'yyyy-MM-dd'));
+const selectedDate = ref(format(new Date(), "yyyy-MM-dd"));
 const confirmDialogOpen = ref(false);
 const activityToDelete = ref<string | null>(null);
 // Query
 const filters = computed(() => ({
-  startDate: format(startOfMonth(currentMonth.value), 'yyyy-MM-dd'),
-  endDate: format(endOfMonth(currentMonth.value), 'yyyy-MM-dd'),
+  startDate: format(startOfMonth(currentMonth.value), "yyyy-MM-dd"),
+  endDate: format(endOfMonth(currentMonth.value), "yyyy-MM-dd"),
 }));
 const { data: activitiesRaw, isLoading: loading, error: queryError } = useActivities(filters);
 const activities = computed(() => activitiesRaw.value ?? []);
-const error = computed(() => (queryError.value ? '活動記録の取得に失敗しました' : null));
+const error = computed(() => (queryError.value ? "活動記録の取得に失敗しました" : null));
 const handleDelete = (id: string) => {
   activityToDelete.value = id;
   confirmDialogOpen.value = true;
@@ -36,8 +36,8 @@ const handleConfirmDelete = async () => {
       confirmDialogOpen.value = false;
       activityToDelete.value = null;
     } catch (e) {
-      console.error('Failed to delete activity:', e);
-      alert('記録の削除に失敗しました。');
+      console.error("Failed to delete activity:", e);
+      alert("記録の削除に失敗しました。");
     }
   }
 };
@@ -56,8 +56,8 @@ const handleSubmit = async (date: string, period: number) => {
     await addActivity({ date, period });
     closeModal();
   } catch (e) {
-    console.error('Failed to add activity:', e);
-    alert('記録の追加に失敗しました。');
+    console.error("Failed to add activity:", e);
+    alert("記録の追加に失敗しました。");
   }
 };
 const selectedDateActivities = computed(() => {

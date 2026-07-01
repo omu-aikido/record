@@ -57,25 +57,25 @@
                 class="th-base hover:bg-overlay0 md:px-6 cursor-pointer transition-colors select-none"
                 @click="toggleSort('name')">
                 名前
-                <span v-if="sortBy === 'name'" class="ml-1">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                <span v-if="sortBy === 'name'" class="ml-1">{{ sortOrder === "asc" ? "↑" : "↓" }}</span>
               </th>
               <th
                 class="th-base hover:bg-overlay0 md:px-6 cursor-pointer transition-colors select-none"
                 @click="toggleSort('role')">
                 役職
-                <span v-if="sortBy === 'role'" class="ml-1">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                <span v-if="sortBy === 'role'" class="ml-1">{{ sortOrder === "asc" ? "↑" : "↓" }}</span>
               </th>
               <th
                 class="th-base hover:bg-overlay0 md:px-6 cursor-pointer transition-colors select-none"
                 @click="toggleSort('grade')">
                 級段位
-                <span v-if="sortBy === 'grade'" class="ml-1">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                <span v-if="sortBy === 'grade'" class="ml-1">{{ sortOrder === "asc" ? "↑" : "↓" }}</span>
               </th>
               <th
                 class="th-base hover:bg-overlay0 md:px-6 cursor-pointer transition-colors select-none"
                 @click="toggleSort('year')">
                 学年
-                <span v-if="sortBy === 'year'" class="ml-1">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                <span v-if="sortBy === 'year'" class="ml-1">{{ sortOrder === "asc" ? "↑" : "↓" }}</span>
               </th>
               <th class="th-base md:px-6">級段位取得日</th>
               <th class="th-base md:px-6">誕生日</th>
@@ -104,9 +104,9 @@
               <td class="td-base md:px-6 text-center">{{ user.profile.yearLabel }}</td>
               <td class="td-base md:px-6 text-center">{{ formatDateSlash(user.profile.getGradeAt) }}</td>
               <td class="td-base md:px-6 text-center">{{ formatDateSlash(user.profile.birthday) }}</td>
-              <td class="td-base md:px-6 text-center">{{ user.profile.norm?.current ?? '-' }}</td>
-              <td class="td-base md:px-6 text-center">{{ user.profile.norm?.required ?? '-' }}</td>
-              <td class="td-base md:px-6 text-center">{{ (user.profile.norm?.isMet ?? '-') ? '達成' : '未達成' }}</td>
+              <td class="td-base md:px-6 text-center">{{ user.profile.norm?.current ?? "-" }}</td>
+              <td class="td-base md:px-6 text-center">{{ user.profile.norm?.required ?? "-" }}</td>
+              <td class="td-base md:px-6 text-center">{{ (user.profile.norm?.isMet ?? "-") ? "達成" : "未達成" }}</td>
             </tr>
             <tr v-if="sortedUsers.length === 0">
               <td colspan="9" class="p-12 text-subtext text-center">ユーザーが見つかりませんでした</td>
@@ -165,23 +165,23 @@
 </template>
 
 <script setup lang="ts">
-import AdminMenu from '@/components/admin/AdminMenu.vue';
-import hc from '@/lib/honoClient';
-import NormSummary from '@/components/admin/NormSummary.vue';
-import { queryKeys } from '@/lib/queryKeys';
-import { useQuery } from '@tanstack/vue-query';
-import { useRouter } from 'vue-router';
-import { type AdminUserType, formatDateSlash, grade as gradeOptions, Role } from 'share';
-import { computed, ref } from 'vue';
+import AdminMenu from "@/components/admin/AdminMenu.vue";
+import hc from "@/lib/honoClient";
+import NormSummary from "@/components/admin/NormSummary.vue";
+import { queryKeys } from "@/lib/queryKeys";
+import { useQuery } from "@tanstack/vue-query";
+import { useRouter } from "vue-router";
+import { type AdminUserType, formatDateSlash, grade as gradeOptions, Role } from "share";
+import { computed, ref } from "vue";
 
 const ALL_GRADES = 999;
 
 const router = useRouter();
-const searchQuery = ref('');
-const statusFilter = ref<'all' | 'met' | 'unmet'>('all');
+const searchQuery = ref("");
+const statusFilter = ref<"all" | "met" | "unmet">("all");
 const gradeFilter = ref<number>(ALL_GRADES);
-const sortBy = ref<'role' | 'grade' | 'year' | 'name'>('role');
-const sortOrder = ref<'asc' | 'desc'>('asc');
+const sortBy = ref<"role" | "grade" | "year" | "name">("role");
+const sortOrder = ref<"asc" | "desc">("asc");
 
 const {
   data,
@@ -193,22 +193,22 @@ const {
     const res = await hc.admin.accounts.$get({
       query: { query: searchQuery.value, limit: 100 },
     });
-    if (!res.ok) throw new Error('Failed to fetch accounts');
+    if (!res.ok) throw new Error("Failed to fetch accounts");
     return res.json();
   },
 });
 
 const users = computed(() => (data.value?.users ?? []) as AdminUserType[]);
-const error = computed(() => (queryError.value ? 'データの取得に失敗しました' : ''));
+const error = computed(() => (queryError.value ? "データの取得に失敗しました" : ""));
 
-const toggleSort = (field: 'role' | 'grade' | 'year' | 'name') => {
+const toggleSort = (field: "role" | "grade" | "year" | "name") => {
   if (sortBy.value === field) {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
     return;
   }
 
   sortBy.value = field;
-  sortOrder.value = 'asc';
+  sortOrder.value = "asc";
 };
 
 const filteredUsers = computed(() => {
@@ -217,11 +217,11 @@ const filteredUsers = computed(() => {
       return false;
     }
 
-    if (statusFilter.value === 'met' && !user.profile.norm?.isMet) {
+    if (statusFilter.value === "met" && !user.profile.norm?.isMet) {
       return false;
     }
 
-    if (statusFilter.value === 'unmet' && (!user.profile.norm || user.profile.norm.isMet)) {
+    if (statusFilter.value === "unmet" && (!user.profile.norm || user.profile.norm.isMet)) {
       return false;
     }
 
@@ -233,27 +233,27 @@ const sortedUsers = computed(() => {
   // oxlint-disable-next-line unicorn/no-array-sort
   return [...filteredUsers.value].sort((a, b) => {
     switch (sortBy.value) {
-      case 'role': {
-        const roleComparison = Role.compare(a.profile.role || 'member', b.profile.role || 'member');
-        return sortOrder.value === 'asc' ? roleComparison : -roleComparison;
+      case "role": {
+        const roleComparison = Role.compare(a.profile.role || "member", b.profile.role || "member");
+        return sortOrder.value === "asc" ? roleComparison : -roleComparison;
       }
-      case 'grade': {
+      case "grade": {
         const gradeA = a.profile.grade ?? 99;
         const gradeB = b.profile.grade ?? 99;
         const gradeComparison = gradeA - gradeB;
-        return sortOrder.value === 'asc' ? gradeComparison : -gradeComparison;
+        return sortOrder.value === "asc" ? gradeComparison : -gradeComparison;
       }
-      case 'year': {
-        const yearA = a.profile.year || '';
-        const yearB = b.profile.year || '';
+      case "year": {
+        const yearA = a.profile.year || "";
+        const yearB = b.profile.year || "";
         const yearComparison = yearA.localeCompare(yearB);
-        return sortOrder.value === 'asc' ? yearComparison : -yearComparison;
+        return sortOrder.value === "asc" ? yearComparison : -yearComparison;
       }
-      case 'name': {
+      case "name": {
         const nameA = `${a.lastName} ${a.firstName}`;
         const nameB = `${b.lastName} ${b.firstName}`;
-        const nameComparison = nameA.localeCompare(nameB, 'ja');
-        return sortOrder.value === 'asc' ? nameComparison : -nameComparison;
+        const nameComparison = nameA.localeCompare(nameB, "ja");
+        return sortOrder.value === "asc" ? nameComparison : -nameComparison;
       }
       default: {
         return 0;

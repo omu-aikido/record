@@ -1,6 +1,7 @@
-import { Role } from 'share';
+import { Role } from "share";
 
 export function isAdminRole(roleValue: unknown): boolean {
-  const role = Role.fromString(`${roleValue}`);
+  if (typeof roleValue !== "string") return false;
+  const role = Role.fromString(roleValue);
   return role ? role.isManagement() : false;
 }

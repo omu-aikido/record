@@ -1,4 +1,4 @@
-import type { Context, Next } from 'hono';
+import type { Context, Next } from "hono";
 
 export async function requestLogger(c: Context, next: Next): Promise<void | Response> {
   const start = Date.now();
@@ -9,7 +9,7 @@ export async function requestLogger(c: Context, next: Next): Promise<void | Resp
   const status = c.res.status;
 
   // ステータスコードに応じてログレベルを変更
-  const level = status >= 500 ? 'error' : status >= 400 ? 'warn' : 'info';
+  const level = status >= 500 ? "error" : status >= 400 ? "warn" : "info";
 
   console.log({
     level,

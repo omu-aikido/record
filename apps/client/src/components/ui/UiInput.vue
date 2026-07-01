@@ -11,15 +11,15 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  modelValue: '',
-  type: 'text',
-  placeholder: '',
+  modelValue: "",
+  type: "text",
+  placeholder: "",
   disabled: false,
   required: false,
 });
 
 defineEmits<{
-  (e: 'update:modelValue', value: string | number): void;
+  (e: "update:modelValue", value: string | number): void;
 }>();
 
 defineOptions({

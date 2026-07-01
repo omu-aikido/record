@@ -1,7 +1,7 @@
-import { computed } from 'vue';
-import type { Ref } from 'vue';
-import type { UserResource } from '@clerk/vue/types';
-import { useClerk, useAuth as useClerkAuth, useUser } from '@clerk/vue';
+import { computed } from "vue";
+import type { Ref } from "vue";
+import type { UserResource } from "@clerk/vue/types";
+import { useClerk, useAuth as useClerkAuth, useUser } from "@clerk/vue";
 
 export function useAuth() {
   const clerk = useClerk();

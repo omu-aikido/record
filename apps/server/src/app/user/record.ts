@@ -1,35 +1,35 @@
-import { Hono } from 'hono';
+import { Hono } from "hono";
 
-import { arktypeValidator } from '@hono/arktype-validator';
-import { getAuth } from '@hono/clerk-auth';
+import { arktypeValidator } from "@hono/arktype-validator";
+import { getAuth } from "@hono/clerk-auth";
 
-import * as drizzleOrm from 'drizzle-orm';
-import * as records from 'share';
+import * as drizzleOrm from "drizzle-orm";
+import * as records from "share";
 
-import { activity } from '../../db/schema';
-import { dbClient } from '../../db/drizzle';
-import { calculatePeriodRange, getCurrentUserRanking, getRankingData, maskRankingData } from './ranking';
-import { countPracticeDays, resolvePromotionSince } from 'share';
+import { activity } from "../../db/schema";
+import { dbClient } from "../../db/drizzle";
+import { calculatePeriodRange, getCurrentUserRanking, getRankingData, maskRankingData } from "./ranking";
+import { countPracticeDays, resolvePromotionSince } from "share";
 
 export const record = new Hono<{ Bindings: Env }>()
   // GET /api/user/record - 活動記録一覧取得
   .get(
-    '/',
-    arktypeValidator('query', records.recordQuerySchema, (result, c) => {
+    "/",
+    arktypeValidator("query", records.recordQuerySchema, (result, c) => {
       if (!result.success) {
-        return c.json({ error: 'Invalid Query' }, 400);
+        return c.json({ error: "Invalid Query" }, 400);
       }
       return;
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: 'Unauthorized' }, 401);
+      if (!auth || !auth.userId) return c.json({ error: "Unauthorized" }, 401);
 
-      const query = c.req.valid('query');
+      const query = c.req.valid("query");
       const userId = query.userId ?? auth.userId;
 
       if (userId !== auth.userId) {
-        return c.json({ error: 'Forbidden' }, 403);
+        return c.json({ error: "Forbidden" }, 403);
       }
 
       const db = dbClient(c.env);
@@ -49,18 +49,18 @@ export const record = new Hono<{ Bindings: Env }>()
 
   // POST /api/user/record - 活動記録作成
   .post(
-    '/',
-    arktypeValidator('json', records.createActivitySchema, (result, c) => {
+    "/",
+    arktypeValidator("json", records.createActivitySchema, (result, c) => {
       if (!result.success) {
-        return c.json({ error: 'Invalid Activity Data' }, 400);
+        return c.json({ error: "Invalid Activity Data" }, 400);
       }
       return;
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: 'Unauthorized' }, 401);
+      if (!auth || !auth.userId) return c.json({ error: "Unauthorized" }, 401);
 
-      const body = c.req.valid('json');
+      const body = c.req.valid("json");
       const db = dbClient(c.env);
       const now = new Date().toISOString();
 
@@ -79,18 +79,18 @@ export const record = new Hono<{ Bindings: Env }>()
 
   // DELETE /api/user/record - 活動記録削除
   .delete(
-    '/',
-    arktypeValidator('json', records.deleteActivitiesSchema, (result, c) => {
+    "/",
+    arktypeValidator("json", records.deleteActivitiesSchema, (result, c) => {
       if (!result.success) {
-        return c.json({ error: 'Invalid Delete Request' }, 400);
+        return c.json({ error: "Invalid Delete Request" }, 400);
       }
       return;
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: 'Unauthorized' }, 401);
+      if (!auth || !auth.userId) return c.json({ error: "Unauthorized" }, 401);
 
-      const body = c.req.valid('json');
+      const body = c.req.valid("json");
       const db = dbClient(c.env);
 
       await db
@@ -103,13 +103,13 @@ export const record = new Hono<{ Bindings: Env }>()
   )
 
   // GET /api/user/record/count - 稽古回数取得
-  .get('/count', async (c) => {
+  .get("/count", async (c) => {
     const auth = getAuth(c);
-    if (!auth || !auth.userId) return c.json({ error: 'Unauthorized' }, 401);
+    if (!auth || !auth.userId) return c.json({ error: "Unauthorized" }, 401);
 
     const db = dbClient(c.env);
 
-    const { getProfile } = await import('../../clerk/profile');
+    const { getProfile } = await import("../../clerk/profile");
     const profile = await getProfile(c);
 
     const startDate = resolvePromotionSince(profile);
@@ -129,25 +129,25 @@ export const record = new Hono<{ Bindings: Env }>()
   })
   // GET /api/user/record/ranking - キャッシュ最適化されたランキング取得
   .get(
-    '/ranking',
-    arktypeValidator('query', records.rankingQuerySchema, (result, c) => {
+    "/ranking",
+    arktypeValidator("query", records.rankingQuerySchema, (result, c) => {
       if (!result.success) {
-        return c.json({ error: 'Invalid Query Parameters' }, 400);
+        return c.json({ error: "Invalid Query Parameters" }, 400);
       }
       return;
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: 'Unauthorized' }, 401);
+      if (!auth || !auth.userId) return c.json({ error: "Unauthorized" }, 401);
 
-      const query = c.req.valid('query');
+      const query = c.req.valid("query");
 
       // JST (UTC+9) で現在時刻を取得
       const utcNow = new Date();
       const jstNow = new Date(utcNow.getTime() + 9 * 60 * 60 * 1000);
       const targetYear = query.year ?? jstNow.getUTCFullYear();
       const targetMonth = query.month ?? jstNow.getUTCMonth() + 1;
-      const period = (query.period ?? 'monthly') as 'monthly' | 'annual' | 'fiscal';
+      const period = query.period ?? "monthly";
 
       // 日付範囲の算出
       const { startDate, endDate, periodLabel } = calculatePeriodRange({

@@ -126,9 +126,9 @@
 </template>
 
 <script setup lang="ts">
-import Input from '@/components/ui/UiInput.vue';
-import { computed, ref, watch } from 'vue';
-import type * as useSignUpForm from '@/composable/useSignUpForm';
+import Input from "@/components/ui/UiInput.vue";
+import { computed, ref, watch } from "vue";
+import type * as useSignUpForm from "@/composable/useSignUpForm";
 
 const props = defineProps<{
   formValues: Partial<useSignUpForm.SignUpFormData>;
@@ -137,20 +137,20 @@ const props = defineProps<{
   handleNext: () => void;
 }>();
 const emit = defineEmits<{
-  (e: 'update:formValue', key: keyof useSignUpForm.SignUpFormData, value: string | number): void;
+  (e: "update:formValue", key: keyof useSignUpForm.SignUpFormData, value: string | number): void;
 }>();
 const showPassword = ref(false);
 const showPasswordConfirm = ref(false);
-const passwordConfirm = ref('');
-const passwordConfirmError = ref('');
+const passwordConfirm = ref("");
+const passwordConfirmError = ref("");
 const onUpdate = (key: keyof useSignUpForm.SignUpFormData, value: string | number) => {
-  emit('update:formValue', key, value);
+  emit("update:formValue", key, value);
 };
 const validatePasswordMatch = () => {
   if (passwordConfirm.value && passwordConfirm.value !== props.formValues.newPassword) {
-    passwordConfirmError.value = 'パスワードが一致しません';
+    passwordConfirmError.value = "パスワードが一致しません";
   } else {
-    passwordConfirmError.value = '';
+    passwordConfirmError.value = "";
   }
 };
 const canProceed = computed(() => {

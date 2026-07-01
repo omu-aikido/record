@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AdminNormSummaryType } from 'share';
+import type { AdminNormSummaryType } from "share";
 
 defineProps<{ norm: AdminNormSummaryType }>();
 </script>

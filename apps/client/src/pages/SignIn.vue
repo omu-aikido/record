@@ -18,7 +18,7 @@
               <p>{{ error }}</p>
             </div>
             <button type="submit" class="btn-primary mt-4 w-full" :disabled="isLoading">
-              {{ isLoading ? '認証中...' : '認証' }}
+              {{ isLoading ? "認証中..." : "認証" }}
             </button>
           </form>
 
@@ -69,7 +69,7 @@
             </div>
 
             <button type="submit" class="btn-primary mt-6 w-full" :disabled="isLoading">
-              {{ isLoading ? 'サインイン中...' : 'サインイン' }}
+              {{ isLoading ? "サインイン中..." : "サインイン" }}
             </button>
           </form>
 
@@ -119,22 +119,22 @@
 </template>
 
 <script setup lang="ts">
-import { Show } from '@clerk/vue';
-import { onMounted, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { Show } from "@clerk/vue";
+import { onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import { useAuth } from '@/composable/useAuth';
-import { useSignIn } from '@/composable/useSignIn';
+import { useAuth } from "@/composable/useAuth";
+import { useSignIn } from "@/composable/useSignIn";
 
-import Input from '@/components/ui/UiInput.vue';
-import LoadingView from '@/components/signin/LoadingView.vue';
+import Input from "@/components/ui/UiInput.vue";
+import LoadingView from "@/components/signin/LoadingView.vue";
 
 const router = useRouter();
 const route = useRoute();
 const { email, password, code, isLoading, error, needsVerification, signIn, verifyCode, signInWithDiscord } =
   useSignIn();
 const { isAuthenticated } = useAuth();
-const redirectUrl = ref('/');
+const redirectUrl = ref("/");
 
 const handleSuccessfulSignIn = () => {
   setTimeout(() => {
@@ -143,7 +143,7 @@ const handleSuccessfulSignIn = () => {
 };
 
 onMounted(() => {
-  document.title = 'サインイン - 稽古記録';
+  document.title = "サインイン - 稽古記録";
 
   const url = new URL(window.location.href);
   const redirectParam = route.query.redirect_url as string | undefined;

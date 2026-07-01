@@ -21,7 +21,7 @@
           </div>
 
           <button type="submit" class="btn-primary w-full" :disabled="isLoading">
-            {{ isLoading ? '確認中...' : '確認する' }}
+            {{ isLoading ? "確認中..." : "確認する" }}
           </button>
         </form>
       </div>
@@ -30,11 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import Input from '@/components/ui/UiInput.vue';
-import { useClerk } from '@clerk/vue';
-import { useRouter } from 'vue-router';
-import { useSignUpVerify } from '@/composable/useSignUpVerify';
-import { onMounted, watch } from 'vue';
+import Input from "@/components/ui/UiInput.vue";
+import { useClerk } from "@clerk/vue";
+import { useRouter } from "vue-router";
+import { useSignUpVerify } from "@/composable/useSignUpVerify";
+import { onMounted, watch } from "vue";
 
 const router = useRouter();
 const clerk = useClerk();
@@ -43,7 +43,7 @@ const { code, isLoading, error, verifyCode } = useSignUpVerify();
 const handleVerify = async () => {
   const success = await verifyCode();
   if (success) {
-    router.push('/');
+    router.push("/");
   }
 };
 
@@ -53,13 +53,13 @@ const checkSignUpStatus = () => {
 
   const signUp = clerk.value.client?.signUp;
   console.log(signUp);
-  if (!signUp || signUp.status !== 'missing_requirements') {
+  if (!signUp || signUp.status !== "missing_requirements") {
     // router.replace("/sign-up")
   }
 };
 
 onMounted(() => {
-  document.title = '認証コードの確認 - 稽古記録';
+  document.title = "認証コードの確認 - 稽古記録";
   checkSignUpStatus();
 });
 

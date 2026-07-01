@@ -22,19 +22,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { Tab, TabGroup, TabList } from '@headlessui/vue';
-import { useRoute, useRouter } from 'vue-router';
+import { computed } from "vue";
+import { Tab, TabGroup, TabList } from "@headlessui/vue";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
 const tabs = [
-  { name: 'ダッシュボード', path: '/admin' },
-  { name: 'アカウント管理', path: '/admin/accounts' },
+  { name: "ダッシュボード", path: "/admin" },
+  { name: "アカウント管理", path: "/admin/accounts" },
 ];
 const selectedIndex = computed(() => {
   const currentPath = route.path;
-  if (currentPath.startsWith('/admin/users/')) return 1;
+  if (currentPath.startsWith("/admin/users/")) return 1;
   const index = tabs.findIndex((tab) => tab.path === currentPath);
   return index === -1 ? 0 : index;
 });

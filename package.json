@@ -5,7 +5,7 @@
   ],
   "scripts": {
     "build": "turbo build",
-    "dev": "bun scripts/dev.mjs",
+    "dev": "bun scripts/dev.ts",
     "format": "vp fmt --write .",
     "knip": "knip",
     "lint": "vp lint .",

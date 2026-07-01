@@ -99,3 +99,11 @@ TURSO_DB_AUTH_TOKEN=***
 CF_ACCOUNT_ID=***
 CF_API_TOKEN=***
 ```
+
+## Lint and Format
+
+**Vite+** (`vp`): Unified toolchain managing Oxlint + Oxfmt. Config in `vite.config.ts`.
+
+- Lint: `bun run lint` (`vp lint .`)
+- Format: `bun run format` (`vp fmt .`)
+- Both: `bun run check` (`vp check`)

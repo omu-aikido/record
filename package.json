@@ -18,12 +18,11 @@
     "knip": "latest",
     "turbo": "latest",
     "typescript": "^6.0.3",
-    "vite": "^0.2.1",
-    "vite-plus": "^0.2.1"
+    "vite": "^0.2.2",
+    "vite-plus": "^0.2.2"
   },
   "overrides": {
-    "vite": "catalog:",
-    "vitest": "catalog:"
+    "vite": "catalog:"
   },
   "devEngines": {
     "packageManager": {
@@ -44,7 +43,6 @@
     "arktype": "^2.2.1",
     "hono": "^4.12.27",
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-    "vitest": "^4.1.9",
     "vite-plus": "latest"
   }
 }

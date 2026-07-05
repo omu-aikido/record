@@ -14,5 +14,6 @@
   "ignoreIssues": {
     "**/test/**": ["files"]
   },
-  "ignoreBinaries": ["turso", "sqlite3"]
+  "ignoreBinaries": ["turso", "sqlite3"],
+  "ignoreDependencies": ["vite"]
 }

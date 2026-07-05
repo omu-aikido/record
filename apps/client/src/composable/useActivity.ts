@@ -1,4 +1,3 @@
-import type { Activity } from "share";
 import hc from "@/lib/honoClient";
 import type { InferRequestType } from "hono/client";
 import { queryKeys } from "@/lib/queryKeys";
@@ -15,7 +14,7 @@ export function useActivities(filters: Ref<RecordQuery | undefined>) {
       const res = await hc.user.record.$get({ query });
       if (!res.ok) throw new Error("Failed to fetch activities");
       const data = await res.json();
-      return data.activities as Activity[];
+      return data.activities;
     },
   });
 }

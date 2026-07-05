@@ -50,7 +50,7 @@ export function toAdminUser(user: User): AdminUserType {
 
   const gradeRaw = meta?.grade;
   const grade =
-    typeof gradeRaw === "number" ? gradeRaw : typeof gradeRaw === "string" ? parseInt(gradeRaw, 10) || 0 : 0;
+    typeof gradeRaw === "number" ? gradeRaw : typeof gradeRaw === "string" ? Math.trunc(Number(gradeRaw)) || 0 : 0;
 
   const yearStr = typeof meta?.year === "string" ? meta.year : "";
   const joinedAt = typeof meta?.joinedAt === "number" ? meta.joinedAt : null;

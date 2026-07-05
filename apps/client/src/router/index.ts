@@ -92,8 +92,7 @@ function waitForClerk(): Promise<ClerkClient> {
   return new Promise((resolve) => {
     const checkClerk = () => {
       if (window.Clerk?.loaded) {
-        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-        resolve(window.Clerk as unknown as ClerkClient);
+        resolve(window.Clerk);
       } else {
         setTimeout(checkClerk, 100);
       }

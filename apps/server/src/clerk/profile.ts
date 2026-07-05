@@ -48,7 +48,7 @@ function normalizeProfileMetadata(metadata: Record<string, unknown> | null | und
       typeof raw.grade === "number"
         ? raw.grade
         : typeof raw.grade === "string"
-          ? Number.parseInt(raw.grade, 10)
+          ? Math.trunc(Number(raw.grade))
           : raw.grade === null
             ? null
             : null,
@@ -57,7 +57,7 @@ function normalizeProfileMetadata(metadata: Record<string, unknown> | null | und
       typeof raw.joinedAt === "number"
         ? raw.joinedAt
         : typeof raw.joinedAt === "string"
-          ? Number.parseInt(raw.joinedAt, 10)
+          ? Math.trunc(Number(raw.joinedAt))
           : raw.joinedAt === null
             ? null
             : null,
@@ -77,7 +77,7 @@ export const getProfile = async (
   const clerkClient = createClerkClient({ secretKey: c.env.CLERK_SECRET_KEY });
   const user = await clerkClient.users.getUser(auth.userId);
 
-  const profile = AccountMetadata(normalizeProfileMetadata(user.publicMetadata as Record<string, unknown> | undefined));
+  const profile = AccountMetadata(normalizeProfileMetadata(user.publicMetadata));
   if (profile instanceof ArkErrors) return null;
 
   return profile;

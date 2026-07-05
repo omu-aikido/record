@@ -27,12 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import hc from '@/lib/honoClient';
-import ProfileCard from '@/components/account/ProfileCard.vue';
-import { queryKeys } from '@/lib/queryKeys';
-import { useQuery } from '@tanstack/vue-query';
-import UserHeader from '@/components/account/UserHeader.vue';
+import { computed } from "vue";
+import hc from "@/lib/honoClient";
+import ProfileCard from "@/components/account/ProfileCard.vue";
+import { queryKeys } from "@/lib/queryKeys";
+import { useQuery } from "@tanstack/vue-query";
+import UserHeader from "@/components/account/UserHeader.vue";
 
 // Queries
 const {
@@ -43,14 +43,14 @@ const {
   queryKey: queryKeys.user.clerk.account(),
   queryFn: async () => {
     const res = await hc.user.clerk.account.$get();
-    if (!res.ok) throw new Error('Failed to fetch user');
+    if (!res.ok) throw new Error("Failed to fetch user");
     return await res.json();
   },
 });
 
 const user = computed(() => userData.value ?? null);
-const errorMessage = computed(() => (queryError.value ? 'ユーザーデータの読み込みに失敗しました' : ''));
-const successMessage = computed(() => '');
+const errorMessage = computed(() => (queryError.value ? "ユーザーデータの読み込みに失敗しました" : ""));
+const successMessage = computed(() => "");
 
 const fetchUser = () => refetch();
 </script>

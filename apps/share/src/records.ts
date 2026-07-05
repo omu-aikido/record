@@ -1,11 +1,11 @@
-import { type } from 'arktype';
+import { type } from "arktype";
 
 function isStrictIsoDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/u.test(value)) {
     return false;
   }
 
-  const [yearText, monthText, dayText] = value.split('-');
+  const [yearText, monthText, dayText] = value.split("-");
   const year = Number(yearText);
   const month = Number(monthText);
   const day = Number(dayText);
@@ -15,22 +15,22 @@ function isStrictIsoDate(value: string): boolean {
 }
 
 export const recordQuerySchema = type({
-  'userId?': /^user_[\w]{27}$/u,
-  'startDate?': /^\d{4}-\d{2}-\d{2}$/u,
-  'endDate?': /^\d{4}-\d{2}-\d{2}$/u,
+  "userId?": /^user_[\w]{27}$/u,
+  "startDate?": /^\d{4}-\d{2}-\d{2}$/u,
+  "endDate?": /^\d{4}-\d{2}-\d{2}$/u,
 });
 
 export const createActivitySchema = type({
   date: /^\d{4}-\d{2}-\d{2}$/u,
-  period: 'number > 0',
+  period: "number > 0",
 }).narrow((input) => isStrictIsoDate(input.date));
 
-export const deleteActivitiesSchema = type({ ids: 'string[]' });
+export const deleteActivitiesSchema = type({ ids: "string[]" });
 
 export const rankingQuerySchema = type({
-  'year?': type('number.integer | string.integer.parse').narrow((n) => n >= 1900 && n < 2100),
-  'month?': type('number.integer | string.integer.parse').narrow((n) => n >= 1 && n <= 12),
-  'period?': "'monthly' | 'annual' | 'fiscal'",
+  "year?": type("number.integer | string.integer.parse").narrow((n) => n >= 1900 && n < 2100),
+  "month?": type("number.integer | string.integer.parse").narrow((n) => n >= 1 && n <= 12),
+  "period?": "'monthly' | 'annual' | 'fiscal'",
 });
 
 // Ranking Types

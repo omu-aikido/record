@@ -1,4 +1,4 @@
-import type { Context } from 'hono';
+import type { Context } from "hono";
 
 /**
  * Cloudflare Workers Observabilityに対応したエラー通知
@@ -6,7 +6,7 @@ import type { Context } from 'hono';
  */
 export function notify(c: Context, error: Error, metadata?: Record<string, unknown>) {
   const errorLog = {
-    level: 'error',
+    level: "error",
     message: `${c.req.method} ${c.req.url}`,
     error: {
       name: error.name,
@@ -18,9 +18,9 @@ export function notify(c: Context, error: Error, metadata?: Record<string, unkno
       url: c.req.url,
       path: c.req.path,
       headers: {
-        'user-agent': c.req.header('user-agent'),
-        'cf-ray': c.req.header('cf-ray'),
-        'cf-connecting-ip': c.req.header('cf-connecting-ip'),
+        "user-agent": c.req.header("user-agent"),
+        "cf-ray": c.req.header("cf-ray"),
+        "cf-connecting-ip": c.req.header("cf-connecting-ip"),
       },
     },
     metadata,
@@ -33,7 +33,7 @@ export function notify(c: Context, error: Error, metadata?: Record<string, unkno
   }
 
   const rawStatus = (metadata as { statusCode?: unknown }).statusCode;
-  if (typeof rawStatus !== 'number') {
+  if (typeof rawStatus !== "number") {
     console.error(JSON.stringify(errorLog));
     return;
   }

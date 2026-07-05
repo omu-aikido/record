@@ -82,17 +82,17 @@
     <div class="pt-2 flex justify-between">
       <button type="button" class="btn-secondary" :disabled="isSignUpCreated" @click="prevStep">戻る</button>
       <button type="submit" class="btn-primary" :disabled="!canSubmit">
-        {{ isSignUpCreated ? '登録中...' : '登録' }}
+        {{ isSignUpCreated ? "登録中..." : "登録" }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { grade as gradeOptions, year as yearOptions } from 'share';
+import { grade as gradeOptions, year as yearOptions } from "share";
 
-import Input from '@/components/ui/UiInput.vue';
-import type { FormErrors, SignUpFormData } from '@/composable/useSignUpForm';
+import Input from "@/components/ui/UiInput.vue";
+import type { FormErrors, SignUpFormData } from "@/composable/useSignUpForm";
 
 defineProps<{
   formValues: Partial<SignUpFormData>;
@@ -103,10 +103,10 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:formValue', key: keyof SignUpFormData, value: string | number | boolean): void;
+  (e: "update:formValue", key: keyof SignUpFormData, value: string | number | boolean): void;
 }>();
 
 const onUpdate = (key: keyof SignUpFormData, value: string | number | boolean) => {
-  emit('update:formValue', key, value);
+  emit("update:formValue", key, value);
 };
 </script>

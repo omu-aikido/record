@@ -1,6 +1,6 @@
-import { HTTPException } from 'hono/http-exception';
-import { notify } from '../lib/observability';
-import type { Context, Next } from 'hono';
+import { HTTPException } from "hono/http-exception";
+import { notify } from "../lib/observability";
+import type { Context, Next } from "hono";
 
 export async function errorHandler(c: Context, next: Next): Promise<Response> {
   try {
@@ -23,7 +23,7 @@ export async function errorHandler(c: Context, next: Next): Promise<Response> {
     // 500エラーを返す
     return c.json(
       {
-        error: 'Internal Server Error',
+        error: "Internal Server Error",
         message: error.message,
       },
       500

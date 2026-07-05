@@ -1,77 +1,77 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from "vue-router";
 
-import { isAdminRole } from './adminGuard';
+import { getPublicMetadataRole, isAdminRole } from "./adminGuard";
 
-import HomeView from '@/pages/Home.vue';
-import NotFoundView from '@/pages/NotFound.vue';
+import HomeView from "@/pages/Home.vue";
+import NotFoundView from "@/pages/NotFound.vue";
 // Lazy load other views
-const RecordView = () => import('@/pages/Record.vue');
-const SignInView = () => import('@/pages/SignIn.vue');
-const SignUpView = () => import('@/pages/SignUp.vue');
-const SignUpVerifyView = () => import('@/pages/SignUpVerify.vue');
-const UserView = () => import('@/pages/account/User.vue');
-const AdminAccountsView = () => import('@/pages/admin/Accounts.vue');
+const RecordView = () => import("@/pages/Record.vue");
+const SignInView = () => import("@/pages/SignIn.vue");
+const SignUpView = () => import("@/pages/SignUp.vue");
+const SignUpVerifyView = () => import("@/pages/SignUpVerify.vue");
+const UserView = () => import("@/pages/account/User.vue");
+const AdminAccountsView = () => import("@/pages/admin/Accounts.vue");
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/',
-      name: 'home',
+      path: "/",
+      name: "home",
       component: HomeView,
       meta: { requiresAuth: true },
     },
     {
-      path: '/record',
-      name: 'record',
+      path: "/record",
+      name: "record",
       component: RecordView,
       meta: { requiresAuth: true },
     },
     {
-      path: '/sign-in',
-      name: 'signIn',
+      path: "/sign-in",
+      name: "signIn",
       component: SignInView,
       meta: { requiresAuth: false },
     },
     {
-      path: '/sign-up',
-      name: 'signUp',
+      path: "/sign-up",
+      name: "signUp",
       component: SignUpView,
       meta: { requiresAuth: false },
     },
     {
-      path: '/sign-up/verify',
-      name: 'signUpVerify',
+      path: "/sign-up/verify",
+      name: "signUpVerify",
       component: SignUpVerifyView,
       meta: { requiresAuth: false },
     },
     {
-      path: '/account',
-      name: 'accountPortal',
+      path: "/account",
+      name: "accountPortal",
       component: UserView,
       meta: { requiresAuth: true },
     },
     {
-      path: '/admin',
-      name: 'adminDashboard',
-      component: () => import('@/pages/admin/Dashboard.vue'),
+      path: "/admin",
+      name: "adminDashboard",
+      component: () => import("@/pages/admin/Dashboard.vue"),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
-      path: '/admin/accounts',
-      name: 'adminAccounts',
+      path: "/admin/accounts",
+      name: "adminAccounts",
       component: AdminAccountsView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
-      path: '/admin/users/:userId',
-      name: 'adminUserDetail',
-      component: () => import('@/pages/admin/UserDetail.vue'),
+      path: "/admin/users/:userId",
+      name: "adminUserDetail",
+      component: () => import("@/pages/admin/UserDetail.vue"),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
-      path: '/:pathMatch(.*)*',
-      name: 'notFound',
+      path: "/:pathMatch(.*)*",
+      name: "notFound",
       component: NotFoundView,
       meta: { requiresAuth: false },
     },
@@ -79,7 +79,7 @@ const router = createRouter({
 });
 
 interface ClerkUser {
-  publicMetadata: Record<string, unknown>;
+  publicMetadata: unknown;
 }
 
 interface ClerkClient {
@@ -92,7 +92,7 @@ function waitForClerk(): Promise<ClerkClient> {
   return new Promise((resolve) => {
     const checkClerk = () => {
       if (window.Clerk?.loaded) {
-        resolve(window.Clerk as unknown as ClerkClient);
+        resolve(window.Clerk);
       } else {
         setTimeout(checkClerk, 100);
       }
@@ -111,31 +111,31 @@ router.beforeEach(async (to, _from) => {
 
     // 1. 認証が必要だが未ログイン
     if (requiresAuth && !isAuthenticated) {
-      return { name: 'signIn' };
+      return { name: "signIn" };
     }
 
     // 2. 管理者権限チェック
     if (requiresAdmin) {
       if (!isAuthenticated) {
-        return { name: 'signIn' };
+        return { name: "signIn" };
       }
 
-      const roleValue = (clerk.user?.publicMetadata as { role?: string })?.role;
+      const roleValue = getPublicMetadataRole(clerk.user?.publicMetadata);
       const isAdmin = isAdminRole(roleValue);
 
       if (!isAdmin) {
-        return { name: 'home' };
+        return { name: "home" };
       }
     }
 
     // 3. ログイン済みでサインイン/サインアップ画面に行こうとした場合
-    if (isAuthenticated && (to.name === 'signIn' || to.name === 'signUp' || to.name === 'signUpVerify')) {
-      return { name: 'home' };
+    if (isAuthenticated && (to.name === "signIn" || to.name === "signUp" || to.name === "signUpVerify")) {
+      return { name: "home" };
     }
 
     return true;
   } catch (error) {
-    console.error('Router guard error:', error);
+    console.error("Router guard error:", error);
     return true;
   }
 });

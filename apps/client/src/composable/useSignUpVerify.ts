@@ -1,16 +1,16 @@
-import type { ClerkAPIError } from '@clerk/vue/types';
-import { ref } from 'vue';
-import { useClerk } from '@clerk/vue';
+import type { ClerkAPIError } from "@clerk/vue/types";
+import { ref } from "vue";
+import { useClerk } from "@clerk/vue";
 
 export function useSignUpVerify() {
   const clerk = useClerk();
-  const code = ref('');
+  const code = ref("");
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
   const verifyCode = async () => {
     if (!clerk.value?.client?.signUp) {
-      error.value = 'Sign up process not started.';
+      error.value = "Sign up process not started.";
       return false;
     }
 
@@ -22,19 +22,20 @@ export function useSignUpVerify() {
         code: code.value,
       });
 
-      if (signUpAttempt.status === 'complete') {
+      if (signUpAttempt.status === "complete") {
         await clerk.value.setActive({
           session: signUpAttempt.createdSessionId,
         });
         return true;
       }
       // This case should ideally not be reached if the code is correct
-      console.error('Sign up status is not complete:', signUpAttempt);
-      error.value = 'Verification failed. Please try again.';
+      console.error("Sign up status is not complete:", signUpAttempt);
+      error.value = "Verification failed. Please try again.";
       return false;
     } catch (err: unknown) {
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       const clerkError = (err as { errors?: ClerkAPIError[] }).errors?.[0];
-      error.value = clerkError?.longMessage || clerkError?.message || 'An unknown error occurred.';
+      error.value = clerkError?.longMessage ?? clerkError?.message ?? "An unknown error occurred.";
       return false;
     } finally {
       isLoading.value = false;

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { format } from 'date-fns';
-import Input from '../../components/ui/UiInput.vue';
-import { ref, watch } from 'vue';
+import { format } from "date-fns";
+import Input from "../../components/ui/UiInput.vue";
+import { ref, watch } from "vue";
 
 interface Props {
   loading?: boolean;
@@ -9,13 +9,13 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'submit', date: string, period: number): void;
+  (e: "submit", date: string, period: number): void;
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-const newDate = ref(props.initialDate || format(new Date(), 'yyyy-MM-dd'));
+const newDate = ref(props.initialDate || format(new Date(), "yyyy-MM-dd"));
 const newPeriod = ref(1.5);
 
 watch(
@@ -26,8 +26,8 @@ watch(
 );
 
 const handleSubmit = () => {
-  emit('submit', newDate.value, newPeriod.value);
-  newDate.value = format(new Date(), 'yyyy-MM-dd');
+  emit("submit", newDate.value, newPeriod.value);
+  newDate.value = format(new Date(), "yyyy-MM-dd");
   newPeriod.value = 1.5;
 };
 </script>
@@ -49,7 +49,7 @@ const handleSubmit = () => {
         data-testid="period-input" />
 
       <button type="submit" class="btn-primary w-full" :disabled="loading" data-testid="submit-btn">
-        {{ loading ? '保存中...' : '記録を追加' }}
+        {{ loading ? "保存中..." : "記録を追加" }}
       </button>
     </form>
   </div>

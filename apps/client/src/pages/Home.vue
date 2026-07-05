@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import ActivityForm from '@/components/record/ActivityForm.vue';
-import { ArkErrors } from 'arktype';
-import hc from '@/lib/honoClient';
-import type { InferResponseType } from 'hono/client';
-import PracticeCountGraph from '@/components/home/PracticeCountGraph.vue';
-import { queryKeys } from '@/lib/queryKeys';
-import RankingCard from '@/components/home/RankingCard.vue';
-import { Show } from '@clerk/vue';
-import { useAddActivity } from '@/composable/useActivity';
-import { AccountMetadata, isProfileComplete } from 'share';
-import { computed, ref } from 'vue';
-import { useQuery, useQueryClient } from '@tanstack/vue-query';
+import ActivityForm from "@/components/record/ActivityForm.vue";
+import { ArkErrors } from "arktype";
+import hc from "@/lib/honoClient";
+import type { InferResponseType } from "hono/client";
+import PracticeCountGraph from "@/components/home/PracticeCountGraph.vue";
+import { queryKeys } from "@/lib/queryKeys";
+import RankingCard from "@/components/home/RankingCard.vue";
+import { Show } from "@clerk/vue";
+import { useAddActivity } from "@/composable/useActivity";
+import { AccountMetadata, isProfileComplete } from "share";
+import { computed, ref } from "vue";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
 
 // Types
 type ProfileResponse = InferResponseType<typeof hc.user.clerk.profile.$get, 200>;
@@ -22,22 +22,22 @@ const queryClient = useQueryClient();
 // State
 const activityLoading = ref(false);
 const iconMap = {
-  'clipboard-list': 'i-lucide:clipboard-list',
-  user: 'i-lucide:user',
-  settings: 'i-lucide:settings',
-  calendar: 'i-lucide:calendar',
+  "clipboard-list": "i-lucide:clipboard-list",
+  user: "i-lucide:user",
+  settings: "i-lucide:settings",
+  calendar: "i-lucide:calendar",
 };
 // Queries
 const { data: profileData } = useQuery({
   queryKey: queryKeys.user.clerk.profile(),
   queryFn: async () => {
     const res = await hc.user.clerk.profile.$get();
-    if (!res.ok) throw new Error('Failed to fetch profile');
+    if (!res.ok) throw new Error("Failed to fetch profile");
     const data = await res.json();
     if (data.profile) {
       const validated = AccountMetadata(data.profile);
       if (validated instanceof ArkErrors) {
-        throw new TypeError('Invalid profile');
+        throw new TypeError("Invalid profile");
       }
       return { ...data, profile: validated } as ProfileResponse;
     }
@@ -52,14 +52,14 @@ const {
   queryKey: queryKeys.user.record.count(),
   queryFn: async () => {
     const res = await hc.user.record.count.$get();
-    if (!res.ok) throw new Error('Failed to fetch practice count');
+    if (!res.ok) throw new Error("Failed to fetch practice count");
     return res.json() as Promise<PracticeCountResponse>;
   },
 });
 const practiceData = computed(() => practiceDataRaw.value ?? null);
-const error = computed(() => (validationError.value ? '稽古データの取得に失敗しました' : null));
+const error = computed(() => (validationError.value ? "稽古データの取得に失敗しました" : null));
 const currentGrade = computed(() => {
-  if (!profileData.value || !('profile' in profileData.value)) return 0;
+  if (!profileData.value || !("profile" in profileData.value)) return 0;
   return profileData.value.profile?.grade ?? 0;
 });
 const needsProfileCompletion = computed(() => {
@@ -75,12 +75,12 @@ const {
   queryKey: queryKeys.user.record.ranking(),
   queryFn: async () => {
     const res = await hc.user.record.ranking.$get({ query: {} });
-    if (!res.ok) throw new Error('Failed to fetch ranking');
+    if (!res.ok) throw new Error("Failed to fetch ranking");
     return res.json() as Promise<RankingResponse>;
   },
 });
 const rankingData = computed(() => rankingDataRaw.value ?? null);
-const currentRankingError = computed(() => (rankingErrorRaw.value ? '当月ランキングの取得に失敗しました' : null));
+const currentRankingError = computed(() => (rankingErrorRaw.value ? "当月ランキングの取得に失敗しました" : null));
 
 // Combined loading state for ranking card
 const rankingCardLoading = computed(() => rankingLoading.value || lastMonthRankingLoading.value);
@@ -103,19 +103,19 @@ const {
     const res = await hc.user.record.ranking.$get({
       query: { year: Number(lastMonthYear), month: Number(lastMonthMonth) },
     });
-    if (!res.ok) throw new Error('Failed to fetch last month ranking');
+    if (!res.ok) throw new Error("Failed to fetch last month ranking");
     return res.json() as Promise<RankingResponse>;
   },
 });
 const lastMonthRankingData = computed(() => lastMonthRankingDataRaw.value ?? null);
 const lastMonthRankingError = computed(() =>
-  lastMonthRankingErrorRaw.value ? '先月のデータの取得に失敗しました' : null
+  lastMonthRankingErrorRaw.value ? "先月のデータの取得に失敗しました" : null
 );
 const { data: menuData } = useQuery({
   queryKey: queryKeys.user.clerk.menu(),
   queryFn: async () => {
     const res = await hc.user.clerk.menu.$get();
-    if (!res.ok) throw new Error('Failed to fetch menu');
+    if (!res.ok) throw new Error("Failed to fetch menu");
     return res.json() as Promise<MenuResponse>;
   },
 });
@@ -132,22 +132,22 @@ const handleAddActivity = async (date: string, period: number) => {
   }
 };
 const getNavItemClass = (theme: string) => {
-  if (theme === 'blue') return 'hover:border-blue-500';
-  if (theme === 'indigo') return 'hover:border-indigo-500';
-  if (theme === 'green') return 'hover:border-teal-400';
-  return '';
+  if (theme === "blue") return "hover:border-blue-500";
+  if (theme === "indigo") return "hover:border-indigo-500";
+  if (theme === "green") return "hover:border-teal-400";
+  return "";
 };
 const getNavIconClass = (theme: string) => {
-  if (theme === 'blue') return 'bg-blue-500/10 text-blue-500 stroke-blue-500';
-  if (theme === 'indigo') return 'bg-indigo-500/10 text-indigo-500 stroke-indigo-500';
-  if (theme === 'green') return 'bg-green-500/10 text-teal-400 stroke-teal-400';
-  return 'bg-surface1 text-subtext';
+  if (theme === "blue") return "bg-blue-500/10 text-blue-500 stroke-blue-500";
+  if (theme === "indigo") return "bg-indigo-500/10 text-indigo-500 stroke-indigo-500";
+  if (theme === "green") return "bg-green-500/10 text-teal-400 stroke-teal-400";
+  return "bg-surface1 text-subtext";
 };
 const getNavLabelClass = (theme: string) => {
-  if (theme === 'blue') return 'group-hover:text-blue-500';
-  if (theme === 'indigo') return 'group-hover:text-indigo-500';
-  if (theme === 'green') return 'group-hover:text-teal-400';
-  return 'group-hover:text';
+  if (theme === "blue") return "group-hover:text-blue-500";
+  if (theme === "indigo") return "group-hover:text-indigo-500";
+  if (theme === "green") return "group-hover:text-teal-400";
+  return "group-hover:text";
 };
 </script>
 

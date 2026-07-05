@@ -1,98 +1,98 @@
-import { beforeEach, describe, expect, mock, test } from 'bun:test';
+import { beforeEach, describe, expect, mock, test } from "bun:test";
 
 const updateUserMetadataMock = mock(async (_userId: string, payload: Record<string, unknown>) => ({
-  id: 'member-user',
+  id: "member-user",
   publicMetadata: payload.publicMetadata,
 }));
 
 const clerkUsers = {
   getUser: mock(async (userId: string) => {
-    if (userId === 'member-user') {
+    if (userId === "member-user") {
       return {
-        id: 'member-user',
+        id: "member-user",
         publicMetadata: {
-          role: 'member',
+          role: "member",
           grade: null,
           getGradeAt: null,
           joinedAt: null,
-          year: '',
-          birthday: '',
+          year: "",
+          birthday: "",
         },
       };
     }
 
-    throw new Error('user not found');
+    throw new Error("user not found");
   }),
   updateUserMetadata: updateUserMetadataMock,
 };
 
-mock.module('@hono/clerk-auth', () => ({
+mock.module("@hono/clerk-auth", () => ({
   getAuth: () => ({
-    userId: 'member-user',
+    userId: "member-user",
     isAuthenticated: true,
   }),
 }));
 
-mock.module('@clerk/backend', () => ({
+mock.module("@clerk/backend", () => ({
   createClerkClient: () => ({
     users: clerkUsers,
   }),
 }));
 
-mock.module('@/src/lib/observability', () => ({
+mock.module("@/src/lib/observability", () => ({
   notify: mock(() => {}),
 }));
 
-const { clerk } = await import('@/src/app/user/clerk');
+const { clerk } = await import("@/src/app/user/clerk");
 
 const testEnv = {
-  CLERK_SECRET_KEY: 'test-secret',
+  CLERK_SECRET_KEY: "test-secret",
 } as Env;
 
-describe('GET /profile', () => {
+describe("GET /profile", () => {
   beforeEach(() => {
     clerkUsers.getUser.mockClear();
   });
 
-  test('returns editable incomplete profile instead of 404', async () => {
-    const res = await clerk.request('http://localhost/profile', {}, testEnv);
+  test("returns editable incomplete profile instead of 404", async () => {
+    const res = await clerk.request("http://localhost/profile", {}, testEnv);
     const json = await res.json();
 
     expect(res.status).toBe(200);
     expect(json).toMatchObject({
       needsProfileCompletion: true,
       profile: {
-        id: 'member-user',
-        role: 'member',
+        id: "member-user",
+        role: "member",
         grade: null,
         joinedAt: null,
-        year: '',
-        birthday: '',
+        year: "",
+        birthday: "",
       },
     });
   });
 });
 
-describe('PATCH /profile', () => {
+describe("PATCH /profile", () => {
   beforeEach(() => {
     clerkUsers.getUser.mockClear();
     updateUserMetadataMock.mockClear();
   });
 
-  test('updates birthday on profile payload', async () => {
+  test("updates birthday on profile payload", async () => {
     const res = await clerk.request(
-      'http://localhost/profile',
+      "http://localhost/profile",
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'content-type': 'application/json',
+          "content-type": "application/json",
         },
         body: JSON.stringify({
           grade: 0,
           getGradeAt: null,
           joinedAt: 2024,
-          year: 'b1',
-          birthday: '2001-02-03',
+          year: "b1",
+          birthday: "2001-02-03",
         }),
       },
       testEnv
@@ -101,18 +101,18 @@ describe('PATCH /profile', () => {
 
     expect(res.status).toBe(200);
     expect(updateUserMetadataMock).toHaveBeenCalledWith(
-      'member-user',
+      "member-user",
       expect.objectContaining({
         publicMetadata: expect.objectContaining({
-          birthday: '2001-02-03',
+          birthday: "2001-02-03",
         }),
       })
     );
     expect(json).toMatchObject({
       needsProfileCompletion: false,
       profile: {
-        id: 'member-user',
-        birthday: '2001-02-03',
+        id: "member-user",
+        birthday: "2001-02-03",
       },
     });
   });

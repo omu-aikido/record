@@ -1,16 +1,16 @@
-import { Hono } from 'hono';
+import { Hono } from "hono";
 
-import { cors } from 'hono/cors';
-import { secureHeaders } from 'hono/secure-headers';
+import { cors } from "hono/cors";
+import { secureHeaders } from "hono/secure-headers";
 
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
+import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 
-import { errorHandler } from './middleware/errorHandler';
-import { requestLogger } from './middleware/requestLogger';
+import { errorHandler } from "./middleware/errorHandler";
+import { requestLogger } from "./middleware/requestLogger";
 
-import adminApp from './app/admin';
-import userApp from './app/user';
-import { webhooks } from './app/webhooks/clerk';
+import adminApp from "./app/admin";
+import userApp from "./app/user";
+import { webhooks } from "./app/webhooks/clerk";
 
 export default new Hono<{ Bindings: Env }>() //
   .use((c, next) => {
@@ -20,37 +20,38 @@ export default new Hono<{ Bindings: Env }>() //
         scriptSrc: [
           "'self'",
           "'unsafe-inline'",
-          'https://*.clerk.accounts.dev',
-          'https://accounts.omu-aikido.com',
+          "https://*.clerk.accounts.dev",
+          "https://accounts.omu-aikido.com",
           c.env.CLERK_FRONTEND_API_URL,
         ],
         connectSrc: [
           "'self'",
-          'https://*.clerk.accounts.dev',
-          'https://accounts.omu-aikido.com',
+          "https://*.clerk.accounts.dev",
+          "https://accounts.omu-aikido.com",
           c.env.CLERK_FRONTEND_API_URL,
         ],
-        imgSrc: ["'self'", 'https://img.clerk.com', 'data:'],
-        workerSrc: ["'self'", 'blob:'],
+        imgSrc: ["'self'", "https://img.clerk.com", "data:"],
+        workerSrc: ["'self'", "blob:"],
         styleSrc: ["'self'", "'unsafe-inline'"],
       },
-      xFrameOptions: 'DENY',
-      referrerPolicy: 'strict-origin-when-cross-origin',
+      xFrameOptions: "DENY",
+      referrerPolicy: "strict-origin-when-cross-origin",
     })(c, next);
   })
-  .use('*', cors())
-  .use('*', errorHandler)
-  .use('*', requestLogger)
-  .route('/api/webhooks', webhooks)
-  .use('*', (c, next) => {
+  .use("*", cors())
+  .use("*", errorHandler)
+  .use("*", requestLogger)
+  .route("/api/webhooks", webhooks)
+  .use("*", (c, next) => {
     const middleware = clerkMiddleware({
       publishableKey: c.env.CLERK_PUBLISHABLE_KEY,
       secretKey: c.env.CLERK_SECRET_KEY,
     });
+    // oxlint-disable-next-line typescript/no-unsafe-argument
     return middleware(c, next);
   })
-  .basePath('/api')
-  .get('/auth-status', (c) => {
+  .basePath("/api")
+  .get("/auth-status", (c) => {
     const auth = getAuth(c);
     return c.json({
       isAuthenticated: auth?.isAuthenticated ?? false,
@@ -58,5 +59,5 @@ export default new Hono<{ Bindings: Env }>() //
       sessionId: auth?.sessionId ?? null,
     });
   })
-  .route('/admin', adminApp)
-  .route('/user', userApp);
+  .route("/admin", adminApp)
+  .route("/user", userApp);

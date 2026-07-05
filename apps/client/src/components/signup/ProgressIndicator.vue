@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-type SignUpStep = 'basic' | 'personal' | 'profile';
+type SignUpStep = "basic" | "personal" | "profile";
 
 defineProps<{ step: SignUpStep }>();
 </script>

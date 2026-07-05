@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { RankingResponse } from 'share';
+import type { RankingResponse } from "share";
 
 interface Props {
   currentRanking: RankingResponse | null;
@@ -16,10 +16,10 @@ withDefaults(defineProps<Props>(), {
 });
 
 const getRankClass = (rank: number) => {
-  if (rank === 1) return 'text-yellow-400';
-  if (rank === 2) return 'text-slate-400';
-  if (rank === 3) return 'text-orange-400';
-  return '';
+  if (rank === 1) return "text-yellow-400";
+  if (rank === 2) return "text-slate-400";
+  if (rank === 3) return "text-orange-400";
+  return "";
 };
 </script>
 

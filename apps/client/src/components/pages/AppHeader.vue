@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Show } from '@clerk/vue';
-import SidePanel from './SidePanel.vue';
+import { Show } from "@clerk/vue";
+import SidePanel from "./SidePanel.vue";
 </script>
 
 <template>
@@ -26,6 +26,6 @@ header {
 }
 
 img {
-  --at-apply: 'w-8 h-8 m-4';
+  --at-apply: "w-8 h-8 m-4";
 }
 </style>

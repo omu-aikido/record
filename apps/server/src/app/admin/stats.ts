@@ -1,11 +1,11 @@
-import { activity } from '../../db/schema';
-import { dbClient } from '../../db/drizzle';
-import { Hono } from 'hono';
-import { type } from 'arktype';
-import { createClerkClient, type User } from '@clerk/backend';
-import * as drizzleOrm from 'drizzle-orm';
-import * as helpers from './helpers';
-import * as share from 'share';
+import { activity } from "../../db/schema";
+import { dbClient } from "../../db/drizzle";
+import { Hono } from "hono";
+import { type } from "arktype";
+import { createClerkClient, type User } from "@clerk/backend";
+import * as drizzleOrm from "drizzle-orm";
+import * as helpers from "./helpers";
+import * as share from "share";
 
 // ============================================================
 // Dashboard - Inactive Users
@@ -21,7 +21,7 @@ const getDashboardStats = async (env: Env, secretKey: string) => {
   // Define "Inactive" threshold (3 weeks ago)
   const now = helpers.getJST(new Date());
   const threeWeeksAgo = new Date(now.getTime() - 21 * 24 * 60 * 60 * 1000);
-  const threeWeeksAgoStr = threeWeeksAgo.toISOString().split('T')[0]!;
+  const threeWeeksAgoStr = threeWeeksAgo.toISOString().split("T")[0];
 
   // Find users who HAVE activity in the last 3 weeks
   const activeUsersQuery = await db
@@ -102,7 +102,7 @@ export async function getUsersNorm(env: Env, clerkUsers: User[]) {
 // Routes
 // ============================================================
 
-const app = new Hono<{ Bindings: Env }>().get('/dashboard', async (c) => {
+const app = new Hono<{ Bindings: Env }>().get("/dashboard", async (c) => {
   const stats = await getDashboardStats(c.env, c.env.CLERK_SECRET_KEY);
   return c.json(stats);
 });

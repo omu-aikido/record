@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Dialog, DialogDescription, DialogPanel, DialogTitle } from '@headlessui/vue';
+import { Dialog, DialogDescription, DialogPanel, DialogTitle } from "@headlessui/vue";
 
 interface Props {
   open: boolean;
@@ -9,12 +9,12 @@ interface Props {
   cancelText?: string;
 }
 interface Emits {
-  (e: 'confirm'): void;
-  (e: 'cancel'): void;
+  (e: "confirm"): void;
+  (e: "cancel"): void;
 }
 withDefaults(defineProps<Props>(), {
-  confirmText: '削除する',
-  cancelText: 'キャンセル',
+  confirmText: "削除する",
+  cancelText: "キャンセル",
 });
 const emit = defineEmits<Emits>();
 </script>

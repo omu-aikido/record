@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { PracticeCountData } from 'share';
-import { buildPromotionProgressFromPracticeCount, translateGrade } from 'share';
+import { computed } from "vue";
+import type { PracticeCountData } from "share";
+import { buildPromotionProgressFromPracticeCount, translateGrade } from "share";
 
 interface Props {
   practiceData: PracticeCountData | null;
@@ -39,7 +39,7 @@ const nextGrade = (grade: number): number => {
 
 const promotionType = computed(() => {
   const grade = props.currentGrade;
-  return grade <= 1 ? (grade === 0 ? '昇級' : '昇段') : '昇級';
+  return grade <= 1 ? (grade === 0 ? "昇級" : "昇段") : "昇級";
 });
 
 const promotionProgress = computed(() => {
@@ -58,18 +58,18 @@ const progressPercentage = computed(() => promotionProgress.value?.progress ?? 0
 
 const progressComment = computed(() => {
   const progressComments = [
-    'まだ始まったばかりです。焦らずコツコツ続けましょう！',
-    '少し進みました！この調子！',
-    '順調なスタートです。',
-    '良いペースです。',
-    '着実に積み重ねています。',
-    '半分近くまで来ました！',
-    '折り返し地点です。',
-    '後半戦、集中していきましょう！',
-    'ゴールが見えてきました。',
-    'あと少しで達成です！',
-    'もうすぐ目標達成！',
-    '素晴らしい！達成目前です。',
+    "まだ始まったばかりです。焦らずコツコツ続けましょう！",
+    "少し進みました！この調子！",
+    "順調なスタートです。",
+    "良いペースです。",
+    "着実に積み重ねています。",
+    "半分近くまで来ました！",
+    "折り返し地点です。",
+    "後半戦、集中していきましょう！",
+    "ゴールが見えてきました。",
+    "あと少しで達成です！",
+    "もうすぐ目標達成！",
+    "素晴らしい！達成目前です。",
   ];
   const commentIndex = Math.min(11, Math.floor((progressPercentage.value / 100) * 12));
   return progressComments[commentIndex];

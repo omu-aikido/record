@@ -1,11 +1,11 @@
-import type { Context } from 'hono';
-import { eq } from 'drizzle-orm';
-import { Hono } from 'hono';
-import { Webhook } from 'svix';
+import type { Context } from "hono";
+import { eq } from "drizzle-orm";
+import { Hono } from "hono";
+import { Webhook } from "svix";
 
-import { activity } from '../../db/schema';
-import { dbClient } from '../../db/drizzle';
-import { notify } from '../../lib/observability';
+import { activity } from "../../db/schema";
+import { dbClient } from "../../db/drizzle";
+import { notify } from "../../lib/observability";
 
 type ClerkWebhookEvent = {
   type: string;
@@ -20,6 +20,7 @@ function verifyWebhookSignature(
 ): ClerkWebhookEvent | null {
   const svix = new Webhook(webhookSecret);
   try {
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     return svix.verify(payload, headers) as ClerkWebhookEvent;
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
@@ -28,14 +29,19 @@ function verifyWebhookSignature(
   }
 }
 
-async function handleUserCreated(event: ClerkWebhookEvent, c: Context): Promise<boolean> {
-  const { createClerkClient } = await import('@clerk/backend');
+async function handleUserCreated(
+  event: ClerkWebhookEvent,
+  c: Context<{
+    Bindings: Env;
+  }>
+): Promise<boolean> {
+  const { createClerkClient } = await import("@clerk/backend");
   const clerkClient = createClerkClient({
     secretKey: c.env.CLERK_SECRET_KEY,
   });
 
   const meta = event.data.unsafe_metadata;
-  if (!meta || Object.keys(meta).length === 0) {
+  if (Object.keys(meta).length === 0) {
     return true;
   }
 
@@ -47,7 +53,7 @@ async function handleUserCreated(event: ClerkWebhookEvent, c: Context): Promise<
         joinedAt: meta.joinedAt,
         getGradeAt: meta.getGradeAt,
         birthday: meta.birthday,
-        role: 'member',
+        role: "member",
       },
     });
     console.log(`Migrated metadata for user ${event.data.id}`);
@@ -59,7 +65,12 @@ async function handleUserCreated(event: ClerkWebhookEvent, c: Context): Promise<
   }
 }
 
-async function handleUserDeleted(event: ClerkWebhookEvent, c: Context): Promise<boolean> {
+async function handleUserDeleted(
+  event: ClerkWebhookEvent,
+  c: Context<{
+    Bindings: Env;
+  }>
+): Promise<boolean> {
   const userId = event.data.id;
   try {
     const db = dbClient(c.env);
@@ -73,37 +84,37 @@ async function handleUserDeleted(event: ClerkWebhookEvent, c: Context): Promise<
   }
 }
 
-export const webhooks = new Hono<{ Bindings: Env }>().post('/clerk', async (c) => {
+export const webhooks = new Hono<{ Bindings: Env }>().post("/clerk", async (c) => {
   const webhookSecret = c.env.CLERK_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    const error = new Error('CLERK_WEBHOOK_SECRET is not set');
+    const error = new Error("CLERK_WEBHOOK_SECRET is not set");
     notify(c, error, { statusCode: 500 });
-    return c.json({ error: 'Webhook secret not configured' }, 500);
+    return c.json({ error: "Webhook secret not configured" }, 500);
   }
 
   const payload = await c.req.text();
   const headers = {
-    'svix-id': c.req.header('svix-id') ?? '',
-    'svix-timestamp': c.req.header('svix-timestamp') ?? '',
-    'svix-signature': c.req.header('svix-signature') ?? '',
+    "svix-id": c.req.header("svix-id") ?? "",
+    "svix-timestamp": c.req.header("svix-timestamp") ?? "",
+    "svix-signature": c.req.header("svix-signature") ?? "",
   };
 
   const event = verifyWebhookSignature(payload, headers, webhookSecret, c);
   if (!event) {
-    return c.json({ error: 'Invalid signature' }, 400);
+    return c.json({ error: "Invalid signature" }, 400);
   }
 
-  if (event.type === 'user.created') {
+  if (event.type === "user.created") {
     const success = await handleUserCreated(event, c);
     if (!success) {
-      return c.json({ error: 'Failed to update user' }, 500);
+      return c.json({ error: "Failed to update user" }, 500);
     }
   }
 
-  if (event.type === 'user.deleted') {
+  if (event.type === "user.deleted") {
     const success = await handleUserDeleted(event, c);
     if (!success) {
-      return c.json({ error: 'Failed to cleanup user data' }, 500);
+      return c.json({ error: "Failed to cleanup user data" }, 500);
     }
   }
 

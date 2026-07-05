@@ -18,7 +18,7 @@
         </div>
         <div class="min-w-0">
           <h2 class="text-lg font-bold text my-0 truncate">{{ user?.lastName }} {{ user?.firstName }}</h2>
-          <p class="text-base text-subtext my-0 truncate">{{ user?.username ? '@' + user?.username : '' }}</p>
+          <p class="text-base text-subtext my-0 truncate">{{ user?.username ? "@" + user?.username : "" }}</p>
         </div>
       </div>
       <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="isEditing = true">編集</button>
@@ -55,7 +55,7 @@
 
       <div class="gap-3 pt-2 flex">
         <button type="submit" class="btn-primary w-full" :disabled="isSubmitting">
-          {{ isSubmitting ? '保存中...' : '保存' }}
+          {{ isSubmitting ? "保存中..." : "保存" }}
         </button>
         <button type="button" class="btn-secondary w-full" @click="cancelEdit">キャンセル</button>
       </div>
@@ -64,9 +64,9 @@
 </template>
 
 <script setup lang="ts">
-import hc from '@/lib/honoClient';
-import Input from '@/components/ui/UiInput.vue';
-import { computed, reactive, ref, watch } from 'vue';
+import hc from "@/lib/honoClient";
+import Input from "@/components/ui/UiInput.vue";
+import { computed, reactive, ref, watch } from "vue";
 
 const $accountPatch = hc.user.clerk.account.$patch;
 
@@ -83,7 +83,7 @@ const props = defineProps<{ user: ClerkUser | null }>();
 
 const isEditing = ref(false);
 const isSubmitting = ref(false);
-const message = ref('');
+const message = ref("");
 const isError = ref(false);
 const previewImage = ref<string | null>(null);
 const selectedFile = ref<File | null>(null);
@@ -95,22 +95,22 @@ interface FormData {
 }
 
 const formData = reactive<FormData>({
-  username: props.user?.username || '',
-  lastName: props.user?.lastName || '',
-  firstName: props.user?.firstName || '',
+  username: props.user?.username || "",
+  lastName: props.user?.lastName || "",
+  firstName: props.user?.firstName || "",
 });
 
 function isSafeImageUrl(url: string): boolean {
   if (!url) return false;
-  if (typeof url !== 'string') return false;
+  if (typeof url !== "string") return false;
   return (
-    ((url.startsWith('http://') || url.startsWith('https://')) && !url.includes(' ')) || url.startsWith('data:image/')
+    ((url.startsWith("http://") || url.startsWith("https://")) && !url.includes(" ")) || url.startsWith("data:image/")
   );
 }
 
 const safeImageUrl = computed(() => {
   const imageUrl = props.user?.imageUrl;
-  return isSafeImageUrl(imageUrl || '') ? imageUrl : '';
+  return isSafeImageUrl(imageUrl || "") ? imageUrl : "";
 });
 
 const safePreviewImageUrl = computed(() => {
@@ -121,9 +121,9 @@ watch(
   () => props.user,
   (newUser) => {
     if (newUser && !isEditing.value) {
-      formData.username = newUser.username || '';
-      formData.lastName = newUser.lastName || '';
-      formData.firstName = newUser.firstName || '';
+      formData.username = newUser.username || "";
+      formData.lastName = newUser.lastName || "";
+      formData.firstName = newUser.firstName || "";
       previewImage.value = null;
       selectedFile.value = null;
     }
@@ -133,9 +133,9 @@ watch(
 
 function updateFormData() {
   if (props.user) {
-    formData.username = props.user.username || '';
-    formData.lastName = props.user.lastName || '';
-    formData.firstName = props.user.firstName || '';
+    formData.username = props.user.username || "";
+    formData.lastName = props.user.lastName || "";
+    formData.firstName = props.user.firstName || "";
     previewImage.value = null;
     selectedFile.value = null;
   }
@@ -156,7 +156,7 @@ function handleImageChange(event: Event) {
 }
 
 async function handleSubmit() {
-  message.value = '';
+  message.value = "";
   isError.value = false;
   isSubmitting.value = true;
 
@@ -170,14 +170,14 @@ async function handleSubmit() {
       },
     });
 
-    if (!res.ok) throw new Error('アカウント情報の更新に失敗しました');
+    if (!res.ok) throw new Error("アカウント情報の更新に失敗しました");
 
-    message.value = 'アカウント情報を更新しました';
-    emit('updated');
+    message.value = "アカウント情報を更新しました";
+    emit("updated");
 
     setTimeout(() => {
       isEditing.value = false;
-      message.value = '';
+      message.value = "";
     }, 1000);
   } catch (err) {
     isError.value = true;

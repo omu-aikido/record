@@ -44,11 +44,11 @@
 </template>
 
 <script setup lang="ts">
-import AdminMenu from '@/components/admin/AdminMenu.vue';
-import { computed } from 'vue';
-import hc from '@/lib/honoClient';
-import { queryKeys } from '@/lib/queryKeys';
-import { useQuery } from '@tanstack/vue-query';
+import AdminMenu from "@/components/admin/AdminMenu.vue";
+import { computed } from "vue";
+import hc from "@/lib/honoClient";
+import { queryKeys } from "@/lib/queryKeys";
+import { useQuery } from "@tanstack/vue-query";
 
 // Queries
 const {
@@ -59,12 +59,12 @@ const {
   queryKey: queryKeys.admin.dashboard(),
   queryFn: async () => {
     const res = await hc.admin.dashboard.$get();
-    if (!res.ok) throw new Error('Failed to fetch dashboard data');
+    if (!res.ok) throw new Error("Failed to fetch dashboard data");
     return res.json();
   },
 });
 
 const inactiveUsers = computed(() => data.value?.inactiveUsers ?? []);
-const thresholdDate = computed(() => data.value?.thresholdDate ?? '');
-const error = computed(() => (queryError.value ? 'ダッシュボード情報の取得に失敗しました' : ''));
+const thresholdDate = computed(() => data.value?.thresholdDate ?? "");
+const error = computed(() => (queryError.value ? "ダッシュボード情報の取得に失敗しました" : ""));
 </script>

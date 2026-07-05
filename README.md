@@ -11,7 +11,7 @@ Vue 3 SPA + Hono Backend on Cloudflare Workers
 | DB         | Turso, Drizzle ORM                              |
 | Auth       | Clerk                                           |
 | Validation | Arktype, Drizzle-Arktype                        |
-| Build      | Turborepo, Bun                                  |
+| Build      | Vite+, Bun                                      |
 | DevEnv     | Nix                                             |
 
 ## 前提条件
@@ -49,7 +49,7 @@ cat migrations/20260331022512_certain_sunspot/migration.sql | sqlite3 record.db
 ### 3. 開発サーバー起動
 
 ```bash
-bun run dev
+vp run dev
 ```
 
 ブラウザで http://localhost:5173 を開く
@@ -74,7 +74,7 @@ apps/
 ### 1. Frontend ビルド
 
 ```bash
-cd apps/client && bun run build
+vp run build
 ```
 
 ### 2. Backend デプロイ
@@ -99,9 +99,7 @@ cd apps/server && bun run deploy
 
 ### テスト実行
 
-```bash
-bun run test
-```
+現時点では root の統一テストタスクは未定義です。各アプリにテスト script を追加した段階で、`vite.config.ts` の `run.tasks` に統一入口を追加してください。
 
 ## 開発ガイドライン
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Activity } from 'share';
-import { computed } from 'vue';
-import { ja } from 'date-fns/locale';
-import * as dateFns from 'date-fns';
+import type { Activity } from "share";
+import { computed } from "vue";
+import { ja } from "date-fns/locale";
+import * as dateFns from "date-fns";
 
 interface Props {
   activities: readonly Activity[];
@@ -11,8 +11,8 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'changeMonth', date: Date): void;
-  (e: 'selectDate', date: string): void;
+  (e: "changeMonth", date: Date): void;
+  (e: "selectDate", date: string): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -32,27 +32,27 @@ const getActivitiesForDay = (date: Date) => {
 };
 
 const handlePrevMonth = () => {
-  emit('changeMonth', dateFns.subMonths(props.currentMonth, 1));
+  emit("changeMonth", dateFns.subMonths(props.currentMonth, 1));
 };
 
 const handleNextMonth = () => {
-  emit('changeMonth', dateFns.addMonths(props.currentMonth, 1));
+  emit("changeMonth", dateFns.addMonths(props.currentMonth, 1));
 };
 
 const handleDateClick = (date: Date) => {
-  emit('selectDate', dateFns.format(date, 'yyyy-MM-dd'));
+  emit("selectDate", dateFns.format(date, "yyyy-MM-dd"));
 };
 
 const formatHeader = (date: Date) => {
-  return dateFns.format(date, 'yyyy年 M月', { locale: ja });
+  return dateFns.format(date, "yyyy年 M月", { locale: ja });
 };
 
 const getDay = (date: Date) => {
-  return dateFns.format(date, 'd');
+  return dateFns.format(date, "d");
 };
 
 const getWeekday = (date: Date) => {
-  return dateFns.format(date, 'E', { locale: ja });
+  return dateFns.format(date, "E", { locale: ja });
 };
 
 const isSunday = (date: Date) => {

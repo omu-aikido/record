@@ -3,50 +3,50 @@ version: 2
 multi-ecosystem-groups:
   bun-updates:
     schedule:
-      interval: 'daily'
+      interval: "daily"
     commit-message:
-      prefix: 'chore'
+      prefix: "chore"
     open-pull-requests-limit: 10
     labels:
-      - 'dependencies'
+      - "dependencies"
   actions-updates:
     schedule:
-      interval: 'daily'
+      interval: "daily"
     commit-message:
-      prefix: 'chore'
+      prefix: "chore"
     labels:
-      - 'dependencies'
+      - "dependencies"
   nix-updates:
     schedule:
-      interval: 'daily'
+      interval: "daily"
     commit-message:
-      prefix: 'chore'
+      prefix: "chore"
     labels:
-      - 'dependencies'
+      - "dependencies"
 
 updates:
-  - package-ecosystem: 'bun'
+  - package-ecosystem: "bun"
     directories:
-      - '/'
-      - 'apps/*'
+      - "/"
+      - "apps/*"
     patterns:
-      - '*'
-    multi-ecosystem-group: 'bun-updates'
+      - "*"
+    multi-ecosystem-group: "bun-updates"
     schedule:
-      interval: 'daily'
+      interval: "daily"
 
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  - package-ecosystem: "github-actions"
+    directory: "/"
     patterns:
-      - '*'
-    multi-ecosystem-group: 'actions-updates'
+      - "*"
+    multi-ecosystem-group: "actions-updates"
     schedule:
-      interval: 'daily'
+      interval: "daily"
 
-  - package-ecosystem: 'nix'
-    directory: '/'
+  - package-ecosystem: "nix"
+    directory: "/"
     patterns:
-      - '*'
-    multi-ecosystem-group: 'nix-updates'
+      - "*"
+    multi-ecosystem-group: "nix-updates"
     schedule:
-      interval: 'daily'
+      interval: "daily"

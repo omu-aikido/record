@@ -71,9 +71,9 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router';
-import { ref, watch } from 'vue';
-import { Show, SignOutButton, UserAvatar } from '@clerk/vue';
+import { RouterLink } from "vue-router";
+import { ref, watch } from "vue";
+import { Show, SignOutButton, UserAvatar } from "@clerk/vue";
 
 // State
 const isOpen = ref(false);
@@ -88,15 +88,15 @@ const close = () => {
 
 // Inert & Scroll Lock Logic
 watch(isOpen, (value) => {
-  const app = document.querySelector('#app');
+  const app = document.querySelector("#app");
   if (value) {
     // Open
-    if (app) app.setAttribute('inert', '');
-    document.body.style.overflow = 'hidden';
+    if (app) app.setAttribute("inert", "");
+    document.body.style.overflow = "hidden";
   } else {
     // Close
-    if (app) app.removeAttribute('inert');
-    document.body.style.overflow = '';
+    if (app) app.removeAttribute("inert");
+    document.body.style.overflow = "";
   }
 });
 </script>

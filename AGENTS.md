@@ -72,10 +72,10 @@ apps/
 
 ```bash
 # 開発サーバー起動
-bun run dev
+vp run dev
 
 # 本番ビルド
-bun run build
+vp run build
 
 # Frontend のみ起動
 cd apps/client && bun run dev
@@ -99,3 +99,11 @@ TURSO_DB_AUTH_TOKEN=***
 CF_ACCOUNT_ID=***
 CF_API_TOKEN=***
 ```
+
+## Lint and Format
+
+**Vite+** (`vp`): Unified toolchain managing Oxlint + Oxfmt. Config in `vite.config.ts`.
+
+- Lint: `vp lint .`
+- Format: `vp fmt .`
+- Both: `vp check`

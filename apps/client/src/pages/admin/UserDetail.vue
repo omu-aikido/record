@@ -27,10 +27,10 @@
                   <h1 class="heading-2">{{ user.lastName }} {{ user.firstName }}</h1>
                   <div v-if="!isEditing" class="gap-1.5 flex items-center">
                     <span class="badge-gray">
-                      {{ roleLabels[user.profile?.role as string] || '部員' }}
+                      {{ roleLabels[user.profile?.role as string] || "部員" }}
                     </span>
                     <span class="badge-gray">
-                      {{ gradeLabels[user.profile?.grade as number] || '無級' }}
+                      {{ gradeLabels[user.profile?.grade as number] || "無級" }}
                     </span>
                   </div>
                 </div>
@@ -40,7 +40,7 @@
                     <span class="sq-1 bg-subtext rounded-full" />
                     <span>{{ yearLabels[user.profile?.year as string] || user.profile?.year }}</span>
                     <span class="sq-1 bg-subtext rounded-full" />
-                    <span>{{ user.profile?.joinedAt ? `${user.profile.joinedAt}年度入部` : '入部年度未登録' }}</span>
+                    <span>{{ user.profile?.joinedAt ? `${user.profile.joinedAt}年度入部` : "入部年度未登録" }}</span>
                     <span class="sq-1 bg-subtext rounded-full" />
                     <span>誕生日: {{ formatDateSlash(user.profile?.birthday) }}</span>
                   </template>
@@ -107,7 +107,7 @@
             <div class="gap-2 mt-2 flex justify-end">
               <button type="button" class="btn-secondary" @click="cancelEditing">キャンセル</button>
               <button type="submit" class="btn-primary" :disabled="updating">
-                {{ updating ? '更新中...' : '更新' }}
+                {{ updating ? "更新中..." : "更新" }}
               </button>
             </div>
           </form>
@@ -275,7 +275,7 @@
                   キャンセル
                 </button>
                 <button class="btn-danger" :disabled="deleting" @click="handleDeleteUser">
-                  {{ deleting ? '削除中...' : '削除する' }}
+                  {{ deleting ? "削除中..." : "削除する" }}
                 </button>
               </div>
               <p v-if="deleteError" class="text-sm text-red-500">
@@ -290,15 +290,15 @@
 </template>
 
 <script setup lang="ts">
-import AdminMenu from '@/components/admin/AdminMenu.vue';
-import { formatDateSlash } from 'share';
-import hc from '@/lib/honoClient';
-import Input from '@/components/ui/UiInput.vue';
-import NormSummary from '@/components/admin/NormSummary.vue';
-import { queryKeys } from '@/lib/queryKeys';
-import { computed, ref, watch } from 'vue';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { useRoute, useRouter } from 'vue-router';
+import AdminMenu from "@/components/admin/AdminMenu.vue";
+import { formatDateSlash } from "share";
+import hc from "@/lib/honoClient";
+import Input from "@/components/ui/UiInput.vue";
+import NormSummary from "@/components/admin/NormSummary.vue";
+import { queryKeys } from "@/lib/queryKeys";
+import { computed, ref, watch } from "vue";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
@@ -306,33 +306,33 @@ const userId = (Array.isArray(route.params.userId) ? route.params.userId[0] : ro
 
 // Labels configuration
 const roleLabels: Record<string, string> = {
-  admin: '管理者',
-  captain: '主将',
-  'vice-captain': '副主将',
-  treasurer: '会計',
-  member: '部員',
+  admin: "管理者",
+  captain: "主将",
+  "vice-captain": "副主将",
+  treasurer: "会計",
+  member: "部員",
 };
 const gradeLabels: Record<number, string> = {
-  0: '無級',
-  5: '五級',
-  4: '四級',
-  3: '三級',
-  2: '二級',
-  1: '一級',
-  [-1]: '初段',
-  [-2]: '二段',
-  [-3]: '三段',
-  [-4]: '四段',
+  0: "無級",
+  5: "五級",
+  4: "四級",
+  3: "三級",
+  2: "二級",
+  1: "一級",
+  [-1]: "初段",
+  [-2]: "二段",
+  [-3]: "三段",
+  [-4]: "四段",
 };
 const yearLabels: Record<string, string> = {
-  b1: '1回生',
-  b2: '2回生',
-  b3: '3回生',
-  b4: '4回生',
-  m1: '修士1年',
-  m2: '修士2年',
-  d1: '博士1年',
-  d2: '博士2年',
+  b1: "1回生",
+  b2: "2回生",
+  b3: "3回生",
+  b4: "4回生",
+  m1: "修士1年",
+  m2: "修士2年",
+  d1: "博士1年",
+  d2: "博士2年",
 };
 
 // Reactivity via standard refs
@@ -348,12 +348,12 @@ const {
 } = useQuery({
   queryKey: computed(() => queryKeys.admin.users(userId, { page: page.value, limit })),
   queryFn: async () => {
-    if (!userId) throw new Error('Invalid User ID');
-    const res = await hc.admin.users[':userId'].$get({
+    if (!userId) throw new Error("Invalid User ID");
+    const res = await hc.admin.users[":userId"].$get({
       param: { userId },
       query: { page: page.value, limit },
     });
-    if (!res.ok) throw new Error('Failed to fetch user data');
+    if (!res.ok) throw new Error("Failed to fetch user data");
     return res.json();
   },
   placeholderData: (previousData) => previousData,
@@ -379,26 +379,26 @@ const stats = computed(() => {
   };
 });
 
-const error = computed(() => (queryError.value ? 'ユーザー情報の読み込みに失敗しました' : ''));
+const error = computed(() => (queryError.value ? "ユーザー情報の読み込みに失敗しました" : ""));
 
 // Edit form state
 const formData = ref({
-  role: 'member',
+  role: "member",
   grade: 0,
-  year: 'b1',
+  year: "b1",
   joinedAt: null as number | null,
-  getGradeAt: '',
-  birthday: '',
+  getGradeAt: "",
+  birthday: "",
 });
-const updateSuccess = ref('');
-const updateError = ref('');
+const updateSuccess = ref("");
+const updateError = ref("");
 const isEditing = ref(false);
 
 // Delete state
 const showDeleteConfirm = ref(false);
 const showFinalConfirm = ref(false);
-const deleteConfirmName = ref('');
-const deleteError = ref('');
+const deleteConfirmName = ref("");
+const deleteError = ref("");
 
 // Initialize form data when data arrives or changes
 watch(
@@ -406,21 +406,21 @@ watch(
   (newUser) => {
     if (newUser && newUser.profile) {
       formData.value = {
-        role: (newUser.profile.role as string) || 'member',
+        role: (newUser.profile.role as string) || "member",
         grade: Number(newUser.profile.grade || 0),
-        year: (newUser.profile.year as string) || 'b1',
+        year: (newUser.profile.year as string) || "b1",
         joinedAt: newUser.profile.joinedAt ? Number(newUser.profile.joinedAt) : null,
-        getGradeAt: newUser.profile.getGradeAt ? new Date(newUser.profile.getGradeAt).toISOString().split('T')[0]! : '',
-        birthday: newUser.profile.birthday ? new Date(newUser.profile.birthday).toISOString().split('T')[0]! : '',
+        getGradeAt: newUser.profile.getGradeAt ? new Date(newUser.profile.getGradeAt).toISOString().split("T")[0]! : "",
+        birthday: newUser.profile.birthday ? new Date(newUser.profile.birthday).toISOString().split("T")[0]! : "",
       };
     } else {
       formData.value = {
-        role: 'member',
+        role: "member",
         grade: 0,
-        year: 'b1',
+        year: "b1",
         joinedAt: null,
-        getGradeAt: '',
-        birthday: '',
+        getGradeAt: "",
+        birthday: "",
       };
     }
   },
@@ -429,14 +429,14 @@ watch(
 
 const startEditing = () => {
   isEditing.value = true;
-  updateSuccess.value = '';
-  updateError.value = '';
+  updateSuccess.value = "";
+  updateError.value = "";
 };
 
 const cancelEditing = () => {
   isEditing.value = false;
-  updateSuccess.value = '';
-  updateError.value = '';
+  updateSuccess.value = "";
+  updateError.value = "";
 };
 
 const changePage = (newPage: number) => {
@@ -453,37 +453,37 @@ const { mutateAsync: updateProfile, isPending: updating } = useMutation({
     getGradeAt: string | null;
     birthday: string | null;
   }) => {
-    const res = await hc.admin.users[':userId'].profile.$patch({
+    const res = await hc.admin.users[":userId"].profile.$patch({
       param: { userId },
       json: payload,
     });
     if (!res.ok) {
       const errData = (await res.json()) as { error?: string };
-      throw new Error(errData.error || '更新に失敗しました');
+      throw new Error(errData.error || "更新に失敗しました");
     }
     return res.json();
   },
   onSuccess: () => {
     queryClient.invalidateQueries({
-      queryKey: ['admin', 'users'],
+      queryKey: ["admin", "users"],
     });
     queryClient.invalidateQueries({
-      queryKey: ['admin', 'accounts'],
+      queryKey: ["admin", "accounts"],
     });
-    updateSuccess.value = 'プロファイルを更新しました';
+    updateSuccess.value = "プロファイルを更新しました";
     isEditing.value = false;
   },
   onError: (e) => {
-    updateError.value = e instanceof Error ? e.message : '更新中にエラーが発生しました';
+    updateError.value = e instanceof Error ? e.message : "更新中にエラーが発生しました";
   },
 });
 
 const handleUpdateProfile = async () => {
-  updateError.value = '';
-  updateSuccess.value = '';
+  updateError.value = "";
+  updateSuccess.value = "";
 
   if (!userId) {
-    updateError.value = 'ユーザーIDが無効です';
+    updateError.value = "ユーザーIDが無効です";
     return;
   }
 
@@ -505,25 +505,25 @@ const handleUpdateProfile = async () => {
 
 const { mutateAsync: deleteUserMutation, isPending: deleting } = useMutation({
   mutationFn: async () => {
-    const res = await hc.admin.users[':userId'].$delete({ param: { userId } });
+    const res = await hc.admin.users[":userId"].$delete({ param: { userId } });
     if (!res.ok) {
       const errData = (await res.json()) as { error?: string };
-      throw new Error(errData.error || '削除に失敗しました');
+      throw new Error(errData.error || "削除に失敗しました");
     }
     return res.json();
   },
   onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['admin', 'accounts'] });
-    queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-    router.push('/admin/accounts');
+    queryClient.invalidateQueries({ queryKey: ["admin", "accounts"] });
+    queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    router.push("/admin/accounts");
   },
   onError: (e) => {
-    deleteError.value = e instanceof Error ? e.message : '削除中にエラーが発生しました';
+    deleteError.value = e instanceof Error ? e.message : "削除中にエラーが発生しました";
   },
 });
 
 const handleDeleteUser = async () => {
-  deleteError.value = '';
+  deleteError.value = "";
   try {
     await deleteUserMutation();
   } catch {

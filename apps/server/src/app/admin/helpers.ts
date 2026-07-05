@@ -1,41 +1,41 @@
-import type { User } from '@clerk/backend';
-import { AdminUser, type AdminUserType } from 'share';
-import { ArkErrors, type } from 'arktype';
-import { resolvePromotionSince, Role, translateGrade, translateYear } from 'share';
+import type { User } from "@clerk/backend";
+import { AdminUser, type AdminUserType } from "share";
+import { ArkErrors, type } from "arktype";
+import { resolvePromotionSince, Role, translateGrade, translateYear } from "share";
 
 // ============================================================
 // Schemas
 // ============================================================
 
 export const accountsQuerySchema = type({
-  'query?': 'string',
-  'limit?': 'string | number',
-  'page?': 'string | number',
-  'sortBy?': 'string',
-  'sortOrder?': "'asc' | 'desc'",
+  "query?": "string",
+  "limit?": "string | number",
+  "page?": "string | number",
+  "sortBy?": "string",
+  "sortOrder?": "'asc' | 'desc'",
 });
 
 export const userActivitiesQuerySchema = type({
-  'page?': 'string | number',
-  'limit?': 'string | number',
+  "page?": "string | number",
+  "limit?": "string | number",
 });
 
 export const adminProfileUpdateSchema = type({
-  year: 'string',
-  grade: 'number | null',
-  role: 'string',
-  joinedAt: 'number | null',
-  'getGradeAt?': 'string | null',
-  'birthday?': 'string | null',
+  year: "string",
+  grade: "number | null",
+  role: "string",
+  joinedAt: "number | null",
+  "getGradeAt?": "string | null",
+  "birthday?": "string | null",
 });
 
 export const publicMetadataProfileSchema = type({
-  'role?': 'string',
-  'grade?': 'number | string | null',
-  'joinedAt?': 'number | null',
-  'year?': 'string | null',
-  'getGradeAt?': 'string | null',
-  'birthday?': 'string | null',
+  "role?": "string",
+  "grade?": "number | string | null",
+  "joinedAt?": "number | null",
+  "year?": "string | null",
+  "getGradeAt?": "string | null",
+  "birthday?": "string | null",
 });
 
 // ============================================================
@@ -45,17 +45,17 @@ export const publicMetadataProfileSchema = type({
 export function toAdminUser(user: User): AdminUserType {
   const meta = user.publicMetadata as Record<string, unknown> | undefined;
 
-  const roleStr = typeof meta?.role === 'string' ? meta.role : 'member';
+  const roleStr = typeof meta?.role === "string" ? meta.role : "member";
   const roleObj = Role.fromString(roleStr);
 
   const gradeRaw = meta?.grade;
   const grade =
-    typeof gradeRaw === 'number' ? gradeRaw : typeof gradeRaw === 'string' ? parseInt(gradeRaw, 10) || 0 : 0;
+    typeof gradeRaw === "number" ? gradeRaw : typeof gradeRaw === "string" ? Math.trunc(Number(gradeRaw)) || 0 : 0;
 
-  const yearStr = typeof meta?.year === 'string' ? meta.year : '';
-  const joinedAt = typeof meta?.joinedAt === 'number' ? meta.joinedAt : null;
-  const getGradeAt = typeof meta?.getGradeAt === 'string' ? meta.getGradeAt : null;
-  const birthday = typeof meta?.birthday === 'string' ? meta.birthday : null;
+  const yearStr = typeof meta?.year === "string" ? meta.year : "";
+  const joinedAt = typeof meta?.joinedAt === "number" ? meta.joinedAt : null;
+  const getGradeAt = typeof meta?.getGradeAt === "string" ? meta.getGradeAt : null;
+  const birthday = typeof meta?.birthday === "string" ? meta.birthday : null;
 
   const res = AdminUser({
     id: user.id,
@@ -83,7 +83,7 @@ export function toAdminUser(user: User): AdminUserType {
 }
 
 export function coerceProfileMetadata(metadata: unknown) {
-  if (!metadata || typeof metadata !== 'object') return {};
+  if (typeof metadata !== "object") return {};
   return metadata;
 }
 
@@ -97,7 +97,7 @@ export function getJST(date: Date): Date {
 
 export function formatDateToJSTString(date: Date): string {
   const jstDate = getJST(date);
-  return jstDate.toISOString().split('T')[0]!;
+  return jstDate.toISOString().split("T")[0];
 }
 
 type GradeDateProfile = {

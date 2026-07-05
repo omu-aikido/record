@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import AppFooter from './components/pages/AppFooter.vue';
-import AppHeader from './components/pages/AppHeader.vue';
-import ErrorBoundary from './components/common/ErrorBoundary.vue';
+import AppFooter from "./components/pages/AppFooter.vue";
+import AppHeader from "./components/pages/AppHeader.vue";
+import ErrorBoundary from "./components/common/ErrorBoundary.vue";
 </script>
 
 <template>

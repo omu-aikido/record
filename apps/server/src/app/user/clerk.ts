@@ -1,42 +1,42 @@
-import { ArkErrors } from 'arktype';
-import { Hono } from 'hono';
+import { ArkErrors } from "arktype";
+import { Hono } from "hono";
 
-import { arktypeValidator } from '@hono/arktype-validator';
-import { getAuth } from '@hono/clerk-auth';
+import { arktypeValidator } from "@hono/arktype-validator";
+import { getAuth } from "@hono/clerk-auth";
 
-import { notify } from '../../lib/observability';
-import { getProfile, getUser, patchProfile } from '../../clerk/profile';
+import { notify } from "../../lib/observability";
+import { getProfile, getUser, patchProfile } from "../../clerk/profile";
 
-import { AccountMetadata, isProfileComplete, Role, updateAccountSchema } from 'share';
+import { AccountMetadata, isProfileComplete, Role, updateAccountSchema } from "share";
 
 export const clerk = new Hono<{ Bindings: Env }>() //
-  .get('/account', async (c) => {
+  .get("/account", async (c) => {
     const auth = getAuth(c);
-    if (!auth || !auth.userId) return c.json({ error: 'Not Authenticated' }, 401);
+    if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
     const user = await getUser(c);
-    if (!user) return c.json({ error: 'User not found' }, 404);
+    if (!user) return c.json({ error: "User not found" }, 404);
     return c.json(user, 200);
   })
   .patch(
-    '/account',
-    arktypeValidator('form', updateAccountSchema, (result, c) => {
+    "/account",
+    arktypeValidator("form", updateAccountSchema, (result, c) => {
       if (!result.success) {
-        return c.json({ error: 'Invalid account payload' }, 400);
+        return c.json({ error: "Invalid account payload" }, 400);
       }
       return;
     }),
     async (c) => {
       const auth = getAuth(c);
-      if (!auth || !auth.userId) return c.json({ error: 'Not Authenticated' }, 401);
+      if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
 
-      const body = c.req.valid('form');
+      const body = c.req.valid("form");
 
       const username = body.username;
       const firstName = body.firstName;
       const lastName = body.lastName;
       const profileImage = body.profileImage;
 
-      const { createClerkClient } = await import('@clerk/backend');
+      const { createClerkClient } = await import("@clerk/backend");
       const clerkClient = createClerkClient({
         secretKey: c.env.CLERK_SECRET_KEY,
       });
@@ -44,10 +44,12 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       try {
         const updatePayload: Parameters<typeof clerkClient.users.updateUser>[1] = {};
 
-        if (username && typeof username === 'string') updatePayload.username = username;
-        if (!username) updatePayload.username = '';
-        if (firstName && typeof firstName === 'string') updatePayload.firstName = firstName;
-        if (lastName && typeof lastName === 'string') updatePayload.lastName = lastName;
+        if (username !== undefined && typeof username === "string") updatePayload.username = username;
+        if (username === undefined) updatePayload.username = "";
+        if (firstName !== undefined && typeof firstName === "string") updatePayload.firstName = firstName;
+        if (firstName === undefined) updatePayload.firstName = "";
+        if (lastName !== undefined && typeof lastName === "string") updatePayload.lastName = lastName;
+        if (lastName === undefined) updatePayload.lastName = "";
         if (Object.keys(updatePayload).length > 0) await clerkClient.users.updateUser(auth.userId, updatePayload);
 
         if (profileImage instanceof File && profileImage.size > 0) {
@@ -71,14 +73,14 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         notify(c, err, { statusCode: 500 });
-        return c.json({ error: 'Failed to update account' }, 500);
+        return c.json({ error: "Failed to update account" }, 500);
       }
     }
   )
-  .get('/profile', async (c) => {
+  .get("/profile", async (c) => {
     const auth = getAuth(c);
 
-    if (!auth || !auth.userId) return c.json({ error: 'Not Authenticated' }, 401);
+    if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
 
     const profile = await getProfile(c);
 
@@ -98,28 +100,28 @@ export const clerk = new Hono<{ Bindings: Env }>() //
     );
   })
   .patch(
-    '/profile',
-    arktypeValidator('json', AccountMetadata.omit('role'), (result, c) => {
+    "/profile",
+    arktypeValidator("json", AccountMetadata.omit("role"), (result, c) => {
       if (!result.success) {
-        return c.json({ error: 'Invalid profile payload' }, 400);
+        return c.json({ error: "Invalid profile payload" }, 400);
       }
       return;
     }),
     async (c) => {
-      const reqData = c.req.valid('json');
+      const reqData = c.req.valid("json");
       const profile = await getProfile(c);
 
       const newUserData = await patchProfile(c, {
-        role: profile?.role ?? 'member',
+        role: profile?.role ?? "member",
         ...reqData,
       });
 
       if (Object.keys(newUserData.publicMetadata).length === 0)
-        return c.json({ error: 'Failed to update user data.' }, 500);
+        return c.json({ error: "Failed to update user data." }, 500);
 
       const newProfile = AccountMetadata(newUserData.publicMetadata);
 
-      if (newProfile instanceof ArkErrors) return c.json({ error: 'Invalid profile data' }, 400);
+      if (newProfile instanceof ArkErrors) return c.json({ error: "Invalid profile data" }, 400);
 
       return c.json(
         {
@@ -130,9 +132,9 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       );
     }
   )
-  .get('/menu', async (c) => {
+  .get("/menu", async (c) => {
     const auth = getAuth(c);
-    if (!auth || !auth.userId) return c.json({ error: 'Not Authenticated' }, 401);
+    if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
 
     const profile = await getProfile(c);
     const role = profile ? Role.parse(profile.role) : undefined;
@@ -140,35 +142,35 @@ export const clerk = new Hono<{ Bindings: Env }>() //
 
     const menuItems = [
       {
-        id: 'record',
-        title: '活動記録',
-        href: '/record',
-        icon: 'clipboard-list',
-        theme: 'blue',
+        id: "record",
+        title: "活動記録",
+        href: "/record",
+        icon: "clipboard-list",
+        theme: "blue",
       },
       {
-        id: 'account',
-        title: 'アカウント',
-        href: '/account',
-        icon: 'user',
-        theme: 'green',
+        id: "account",
+        title: "アカウント",
+        href: "/account",
+        icon: "user",
+        theme: "green",
       },
       {
-        id: 'schedule',
-        title: 'カレンダー ↗',
-        href: 'https://omu-aikido.com/calendar',
-        icon: 'calendar',
-        theme: 'blue',
+        id: "schedule",
+        title: "カレンダー ↗",
+        href: "https://omu-aikido.com/calendar",
+        icon: "calendar",
+        theme: "blue",
       },
     ];
 
     if (isManagement) {
       menuItems.push({
-        id: 'admin',
-        title: '管理パネル',
-        href: '/admin',
-        icon: 'settings',
-        theme: 'indigo',
+        id: "admin",
+        title: "管理パネル",
+        href: "/admin",
+        icon: "settings",
+        theme: "indigo",
       });
     }
 

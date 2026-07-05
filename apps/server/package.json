@@ -27,6 +27,6 @@
     "@cloudflare/workers-types": "^4.20260629.1",
     "@types/node": "^24.13.2",
     "drizzle-kit": "^1.0.0-rc.4",
-    "wrangler": "^4.105.0"
+    "wrangler": "catalog:"
   }
 }

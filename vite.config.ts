@@ -4,7 +4,7 @@ export default defineConfig({
   run: {
     tasks: {
       build: {
-        command: "vp run --filter './apps/*' --cache build",
+        command: "vp build apps/client",
       },
       typecheck: {
         command: "vp run --filter './apps/*' --cache typecheck",

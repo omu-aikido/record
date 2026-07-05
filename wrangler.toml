@@ -1,0 +1,16 @@
+"$schema" = "node_modules/wrangler/config-schema.json"
+name = "record"
+main = "apps/server/src/index.ts"
+compatibility_date = "2026-03-30"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "apps/client/dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[observability]
+enabled = true
+
+[observability.traces]
+enabled = true

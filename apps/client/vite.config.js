@@ -19,4 +19,11 @@ export default defineConfig({
       },
     },
   },
+  run: {
+    tasks: {
+      typecheck: {
+        command: "vue-tsc --noEmit -p tsconfig.json",
+      },
+    },
+  },
 });

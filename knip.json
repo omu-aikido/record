@@ -15,6 +15,6 @@
     "**/test/**": ["files"]
   },
   "ignoreBinaries": ["turso", "sqlite3"],
-  "ignoreDependencies": ["vite"],
-  "ignoreFiles": ["scripts/dev.ts"]
+  "ignoreDependencies": ["vite", "wrangler"],
+  "ignoreFiles": ["scripts/*"]
 }

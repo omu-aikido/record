@@ -6,7 +6,8 @@
   "scripts": {
     "build": "vp build",
     "dev": "vp dev",
-    "preview": "vp preview"
+    "preview": "vp preview",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@clerk/vue": "^2.4.8",

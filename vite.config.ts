@@ -1,6 +1,21 @@
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
+  run: {
+    tasks: {
+      build: {
+        command: "vp run --filter './apps/*' --cache build",
+      },
+      typecheck: {
+        command: "vp run --filter './apps/*' --cache typecheck",
+      },
+      dev: {
+        command: "bun scripts/dev.ts",
+        cache: false,
+      },
+      knip: "knip",
+    },
+  },
   staged: {
     "*": "vp check --fix",
   },

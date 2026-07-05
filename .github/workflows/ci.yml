@@ -21,8 +21,8 @@ jobs:
         with:
           node-version-file: package.json
           cache: true
-      - run: bun install
-      - run: bun run lint
-      - run: bun run format
-      - run: bun run knip
-      - run: bunx turbo build
+      - run: bun install --frozen-lockfile
+      - run: vp lint .
+      - run: vp fmt --write .
+      - run: vp run knip
+      - run: vp run build

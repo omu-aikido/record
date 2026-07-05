@@ -72,10 +72,10 @@ apps/
 
 ```bash
 # 開発サーバー起動
-bun run dev
+vp run dev
 
 # 本番ビルド
-bun run build
+vp run build
 
 # Frontend のみ起動
 cd apps/client && bun run dev
@@ -104,6 +104,6 @@ CF_API_TOKEN=***
 
 **Vite+** (`vp`): Unified toolchain managing Oxlint + Oxfmt. Config in `vite.config.ts`.
 
-- Lint: `bun run lint` (`vp lint .`)
-- Format: `bun run format` (`vp fmt .`)
-- Both: `bun run check` (`vp check`)
+- Lint: `vp lint .`
+- Format: `vp fmt .`
+- Both: `vp check`

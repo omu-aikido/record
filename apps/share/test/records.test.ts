@@ -158,6 +158,23 @@ describe("deleteActivitiesSchema", () => {
 });
 
 describe("createActivitySchema", () => {
+  test("should accept period values from 0.5 to 8 hours in half-hour increments", () => {
+    for (const period of [0.5, 1, 7.5, 8]) {
+      expect(isValid(createActivitySchema({ date: "2024-01-01", period }))).toBe(true);
+    }
+  });
+
+  test("should reject periods outside range or not on a half-hour increment", () => {
+    for (const period of [0.1, 0, 8.5, 1.25, Number.POSITIVE_INFINITY]) {
+      expect(isValid(createActivitySchema({ date: "2024-01-01", period }))).toBe(false);
+    }
+  });
+
+  test("should reject dates in the future", () => {
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    expect(isValid(createActivitySchema({ date: tomorrow, period: 1.5 }))).toBe(false);
+  });
+
   test("should accept valid date and period", () => {
     const result = createActivitySchema({ date: "2024-01-01", period: 1.5 });
     expect(isValid(result)).toBe(true);

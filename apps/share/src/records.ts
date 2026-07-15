@@ -14,6 +14,11 @@ function isStrictIsoDate(value: string): boolean {
   return date.getUTCFullYear() === year && date.getUTCMonth() + 1 === month && date.getUTCDate() === day;
 }
 
+function isNotFutureDate(value: string): boolean {
+  const today = new Date().toISOString().slice(0, 10);
+  return value <= today;
+}
+
 export const recordQuerySchema = type({
   "userId?": /^user_[\w]{27}$/u,
   "startDate?": /^\d{4}-\d{2}-\d{2}$/u,
@@ -22,8 +27,18 @@ export const recordQuerySchema = type({
 
 export const createActivitySchema = type({
   date: /^\d{4}-\d{2}-\d{2}$/u,
-  period: "number > 0",
-}).narrow((input) => isStrictIsoDate(input.date));
+  period: "number",
+}).narrow((input) => {
+  const { period } = input;
+  return (
+    isStrictIsoDate(input.date) &&
+    isNotFutureDate(input.date) &&
+    Number.isFinite(period) &&
+    period >= 0.5 &&
+    period <= 8 &&
+    Number.isInteger(period * 2)
+  );
+});
 
 export const deleteActivitiesSchema = type({ ids: "string[]" });
 

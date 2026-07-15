@@ -41,7 +41,6 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       const username = body.username;
       const firstName = body.firstName;
       const lastName = body.lastName;
-      const profileImage = body.profileImage;
 
       const { createClerkClient } = await import("@clerk/backend");
       const clerkClient = createClerkClient({
@@ -58,12 +57,6 @@ export const clerk = new Hono<{ Bindings: Env }>() //
         if (lastName !== undefined && typeof lastName === "string") updatePayload.lastName = lastName;
         if (lastName === undefined) updatePayload.lastName = "";
         if (Object.keys(updatePayload).length > 0) await clerkClient.users.updateUser(auth.userId, updatePayload);
-
-        if (profileImage instanceof File && profileImage.size > 0) {
-          await clerkClient.users.updateUserProfileImage(auth.userId, {
-            file: profileImage,
-          });
-        }
 
         const updatedUser = await clerkClient.users.getUser(auth.userId);
 

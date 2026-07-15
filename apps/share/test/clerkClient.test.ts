@@ -7,12 +7,11 @@ function isValid(result: unknown): boolean {
 }
 
 describe("updateAccountSchema", () => {
-  test("should accept valid full object", () => {
+  test("should accept valid textual account fields", () => {
     const result = updateAccountSchema({
       firstName: "John",
       lastName: "Doe",
       username: "johndoe",
-      profileImage: "https://example.com/image.png",
     });
     expect(isValid(result)).toBe(true);
   });
@@ -26,7 +25,6 @@ describe("updateAccountSchema", () => {
     expect(isValid(updateAccountSchema({ firstName: "John" }))).toBe(true);
     expect(isValid(updateAccountSchema({ lastName: "Doe" }))).toBe(true);
     expect(isValid(updateAccountSchema({ username: "johndoe" }))).toBe(true);
-    expect(isValid(updateAccountSchema({ profileImage: "data:image/png;base64,..." }))).toBe(true);
   });
 
   test("should accept omitting optional fields", () => {
@@ -40,11 +38,11 @@ describe("updateAccountSchema", () => {
     expect(isValid(updateAccountSchema({ username: null }))).toBe(false);
   });
 
-  test("should accept any type for profileImage", () => {
-    expect(isValid(updateAccountSchema({ profileImage: "string" }))).toBe(true);
-    expect(isValid(updateAccountSchema({ profileImage: 123 }))).toBe(true);
-    expect(isValid(updateAccountSchema({ profileImage: null }))).toBe(true);
-    expect(isValid(updateAccountSchema({ profileImage: {} }))).toBe(true);
+  test("should reject a profileImage form field", () => {
+    expect(isValid(updateAccountSchema({ profileImage: "data:image/png;base64,..." }))).toBe(false);
+    expect(isValid(updateAccountSchema({ profileImage: 123 }))).toBe(false);
+    expect(isValid(updateAccountSchema({ profileImage: null }))).toBe(false);
+    expect(isValid(updateAccountSchema({ profileImage: {} }))).toBe(false);
   });
 
   test("should reject non-string types for string fields", () => {

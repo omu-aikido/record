@@ -4,6 +4,8 @@ const updateUserMetadataMock = mock(async (_userId: string, payload: Record<stri
   id: "member-user",
   publicMetadata: payload.publicMetadata,
 }));
+const updateUserMock = mock(async () => undefined);
+const updateUserProfileImageMock = mock(async () => undefined);
 
 const clerkUsers = {
   getUser: mock(async (userId: string) => {
@@ -31,6 +33,8 @@ const clerkUsers = {
     throw new Error("user not found");
   }),
   updateUserMetadata: updateUserMetadataMock,
+  updateUser: updateUserMock,
+  updateUserProfileImage: updateUserProfileImageMock,
 };
 
 mock.module("@clerk/hono", () => ({
@@ -141,5 +145,28 @@ describe("PATCH /profile", () => {
         birthday: "2001-02-03",
       },
     });
+  });
+});
+
+describe("PATCH /clerk/account", () => {
+  beforeEach(() => {
+    updateUserMock.mockClear();
+    updateUserProfileImageMock.mockClear();
+  });
+
+  test("rejects a multipart image and never proxies it to Clerk's Backend API", async () => {
+    const body = new FormData();
+    body.set("firstName", "Aiko");
+    body.set("profileImage", new File(["image"], "avatar.png", { type: "image/png" }));
+
+    const res = await clerk.request(
+      "http://localhost/account",
+      { method: "PATCH", body },
+      testEnv
+    );
+
+    expect(res.status).toBe(400);
+    expect(updateUserMock).not.toHaveBeenCalled();
+    expect(updateUserProfileImageMock).not.toHaveBeenCalled();
   });
 });

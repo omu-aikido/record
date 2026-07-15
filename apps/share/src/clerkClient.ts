@@ -1,11 +1,12 @@
 import { type } from "arktype";
 
+const accountFieldNames = new Set(["firstName", "lastName", "username"]);
+
 export const updateAccountSchema = type({
   firstName: "string?",
   lastName: "string?",
   username: "string?",
-  profileImage: "unknown?",
-});
+}).narrow((input) => Object.keys(input).every((key) => accountFieldNames.has(key)));
 
 /** Public fields returned by the authenticated account endpoint. */
 export const accountUserSchema = type({

@@ -35,7 +35,7 @@
               <span class="text-white font-medium text-[0.625rem]">変更</span>
               <input
                 type="file"
-                accept="image/*"
+                accept="image/png,image/jpeg,image/webp"
                 class="inset-0 absolute h-full w-full cursor-pointer opacity-0"
                 @change="handleImageChange" />
             </label>
@@ -66,9 +66,12 @@
 <script setup lang="ts">
 import hc from "@/lib/honoClient";
 import Input from "@/components/ui/UiInput.vue";
+import { validateProfileImage } from "@/composable/profileImage";
+import { useUser } from "@clerk/vue";
 import { computed, reactive, ref, watch } from "vue";
 
 const $accountPatch = hc.user.clerk.account.$patch;
+const { user: clerkUser } = useUser();
 
 const emit = defineEmits<{ updated: [] }>();
 
@@ -146,6 +149,18 @@ function handleImageChange(event: Event) {
   const file = target.files?.[0];
 
   if (file) {
+    const validationError = validateProfileImage(file);
+    if (validationError) {
+      selectedFile.value = null;
+      previewImage.value = null;
+      isError.value = true;
+      message.value = validationError;
+      target.value = "";
+      return;
+    }
+
+    isError.value = false;
+    message.value = "";
     selectedFile.value = file;
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -166,11 +181,15 @@ async function handleSubmit() {
         username: formData.username,
         lastName: formData.lastName,
         firstName: formData.firstName,
-        profileImage: selectedFile.value,
       },
     });
 
     if (!res.ok) throw new Error("アカウント情報の更新に失敗しました");
+
+    if (selectedFile.value) {
+      if (!clerkUser.value) throw new Error("プロフィール画像の更新に失敗しました");
+      await clerkUser.value.setProfileImage({ file: selectedFile.value });
+    }
 
     message.value = "アカウント情報を更新しました";
     emit("updated");

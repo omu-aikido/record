@@ -74,7 +74,7 @@
                 translateGrade(formData.grade ?? "")
               }}</span>
               <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
-                <div class="i-lucide:lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
+                <div class="i-lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
               </span>
             </ListboxButton>
             <transition
@@ -125,7 +125,7 @@
                 translateYear(formData.year)
               }}</span>
               <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
-                <div class="i-lucide:lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
+                <div class="i-lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
               </span>
             </ListboxButton>
             <transition
@@ -220,7 +220,7 @@ const { data: profileData } = useQuery({
     if (data.profile) {
       const profileParsed = AccountMetadata(data.profile);
       if (profileParsed instanceof ArkErrors) {
-        console.error(profileParsed);
+        if (import.meta.env.DEV) console.error("Invalid profile response");
         throw new Error("Invalid profile data");
       }
       return { profile: profileParsed, needsProfileCompletion: Boolean(data.needsProfileCompletion) };
@@ -272,17 +272,10 @@ const { mutateAsync: updateProfile, isPending: isSubmitting } = useMutation({
   onSuccess: (responseData) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.user.clerk.profile() });
 
-    if (responseData.profile) {
-      const validatedProfile = AccountMetadata({
-        role: responseData.profile.role,
-        grade: responseData.profile.grade,
-        getGradeAt: responseData.profile.getGradeAt,
-        joinedAt: responseData.profile.joinedAt,
-        year: responseData.profile.year,
-        birthday: responseData.profile.birthday,
-      });
+    if (typeof responseData === "object" && responseData !== null && "profile" in responseData && responseData.profile) {
+      const validatedProfile = AccountMetadata(responseData.profile);
       if (validatedProfile instanceof ArkErrors) {
-        console.error(validatedProfile);
+        if (import.meta.env.DEV) console.error("Invalid updated profile response");
       } else {
         // Set cache with consistent { profile: ... } shape
         queryClient.setQueryData(queryKeys.user.clerk.profile(), {

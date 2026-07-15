@@ -2,7 +2,7 @@ import { activity } from "../../db/schema";
 import { arktypeValidator } from "@hono/arktype-validator";
 import { createClerkClient } from "@clerk/backend";
 import { dbClient } from "../../db/drizzle";
-import { getAuth } from "@hono/clerk-auth";
+import { getAuth } from "@clerk/hono";
 import { Hono } from "hono";
 import { notify } from "../../lib/observability";
 import { Role } from "share";
@@ -256,7 +256,7 @@ const app = new Hono<{ Bindings: Env }>()
     if (adminProfile === null || adminProfile.role === undefined) return c.json({ error: "権限が不足しています" }, 404);
     const adminRole = adminProfile?.role ? Role.fromString(adminProfile.role) : null;
 
-    if (adminRole === null || adminRole?.isManagement()) {
+    if (adminRole === null || !adminRole?.isManagement()) {
       return c.json({ error: "権限が不足しています" }, 403);
     }
 

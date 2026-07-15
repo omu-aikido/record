@@ -24,7 +24,7 @@
       <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="isEditing = true">編集</button>
     </div>
 
-    <form v-else enctype="multipart/form-data" class="stack" @submit.prevent="handleSubmit">
+    <form v-else class="stack" @submit.prevent="handleSubmit">
       <div class="stack flex-1">
         <div class="gap-4 flex items-start">
           <div
@@ -35,7 +35,7 @@
               <span class="text-white font-medium text-[0.625rem]">変更</span>
               <input
                 type="file"
-                accept="image/*"
+                accept="image/png,image/jpeg,image/webp"
                 class="inset-0 absolute h-full w-full cursor-pointer opacity-0"
                 @change="handleImageChange" />
             </label>
@@ -66,9 +66,12 @@
 <script setup lang="ts">
 import hc from "@/lib/honoClient";
 import Input from "@/components/ui/UiInput.vue";
+import { useUser } from "@clerk/vue";
+import { validateProfileImage } from "@/composable/profileImage";
 import { computed, reactive, ref, watch } from "vue";
 
 const $accountPatch = hc.user.clerk.account.$patch;
+const { user: clerkUser } = useUser();
 
 const emit = defineEmits<{ updated: [] }>();
 
@@ -146,6 +149,18 @@ function handleImageChange(event: Event) {
   const file = target.files?.[0];
 
   if (file) {
+    const validationError = validateProfileImage(file);
+    if (validationError) {
+      selectedFile.value = null;
+      previewImage.value = null;
+      isError.value = true;
+      message.value = validationError;
+      target.value = "";
+      return;
+    }
+
+    isError.value = false;
+    message.value = "";
     selectedFile.value = file;
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -166,11 +181,15 @@ async function handleSubmit() {
         username: formData.username,
         lastName: formData.lastName,
         firstName: formData.firstName,
-        profileImage: selectedFile.value,
       },
     });
 
     if (!res.ok) throw new Error("アカウント情報の更新に失敗しました");
+
+    if (selectedFile.value) {
+      if (!clerkUser.value) throw new Error("プロフィール画像の更新に失敗しました");
+      await clerkUser.value.setProfileImage({ file: selectedFile.value });
+    }
 
     message.value = "アカウント情報を更新しました";
     emit("updated");
@@ -179,9 +198,9 @@ async function handleSubmit() {
       isEditing.value = false;
       message.value = "";
     }, 1000);
-  } catch (err) {
+  } catch {
     isError.value = true;
-    message.value = err instanceof Error ? err.message : String(err);
+    message.value = "アカウント情報の更新に失敗しました。時間をおいて再試行してください";
   } finally {
     isSubmitting.value = false;
   }

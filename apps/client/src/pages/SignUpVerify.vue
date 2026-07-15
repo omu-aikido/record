@@ -52,7 +52,6 @@ const checkSignUpStatus = () => {
   if (!clerk.value?.loaded) return;
 
   const signUp = clerk.value.client?.signUp;
-  console.log(signUp);
   if (!signUp || signUp.status !== "missing_requirements") {
     // router.replace("/sign-up")
   }

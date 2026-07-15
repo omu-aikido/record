@@ -1,16 +1,20 @@
 import { Hono } from "hono";
 
-import { cors } from "hono/cors";
+import { bodyLimit } from "hono/body-limit";
 import { secureHeaders } from "hono/secure-headers";
 
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
-
-import { errorHandler } from "./middleware/errorHandler";
-import { requestLogger } from "./middleware/requestLogger";
+import { clerkMiddleware, getAuth } from "@clerk/hono";
 
 import adminApp from "./app/admin";
 import userApp from "./app/user";
+
 import { webhooks } from "./app/webhooks/clerk";
+
+import { getClerkMiddlewareOptions } from "./middleware/clerk";
+
+import { errorHandler } from "./middleware/errorHandler";
+
+import { requestLogger } from "./middleware/requestLogger";
 
 export default new Hono<{ Bindings: Env }>() //
   .use((c, next) => {
@@ -19,7 +23,6 @@ export default new Hono<{ Bindings: Env }>() //
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'",
           "https://*.clerk.accounts.dev",
           "https://accounts.omu-aikido.com",
           c.env.CLERK_FRONTEND_API_URL,
@@ -33,20 +36,19 @@ export default new Hono<{ Bindings: Env }>() //
         imgSrc: ["'self'", "https://img.clerk.com", "data:"],
         workerSrc: ["'self'", "blob:"],
         styleSrc: ["'self'", "'unsafe-inline'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
       },
       xFrameOptions: "DENY",
       referrerPolicy: "strict-origin-when-cross-origin",
     })(c, next);
   })
-  .use("*", cors())
+  .use("*", bodyLimit({ maxSize: 10 * 1024 * 1024 }))
   .use("*", errorHandler)
   .use("*", requestLogger)
   .route("/api/webhooks", webhooks)
   .use("*", (c, next) => {
-    const middleware = clerkMiddleware({
-      publishableKey: c.env.CLERK_PUBLISHABLE_KEY,
-      secretKey: c.env.CLERK_SECRET_KEY,
-    });
+    const middleware = clerkMiddleware(getClerkMiddlewareOptions(c.env));
     // oxlint-disable-next-line typescript/no-unsafe-argument
     return middleware(c, next);
   })

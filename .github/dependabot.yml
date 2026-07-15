@@ -1,14 +1,6 @@
 version: 2
 
 multi-ecosystem-groups:
-  bun-updates:
-    schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "chore"
-    open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
   actions-updates:
     schedule:
       interval: "daily"
@@ -26,14 +18,24 @@ multi-ecosystem-groups:
 
 updates:
   - package-ecosystem: "bun"
-    directories:
-      - "/"
-      - "apps/*"
-    patterns:
-      - "*"
-    multi-ecosystem-group: "bun-updates"
+    directory: "/"
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 2
+    commit-message:
+      prefix: "chore"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 10
+    ignore:
+      # Dependabot's Bun updater currently misidentifies the catalog override
+      # as the npm vite package and proposes an unrelated major update.
+      - dependency-name: "vite"
+      # Bun resolves these RC packages without changing the dependency files,
+      # which causes Dependabot's update job to fail with NoChangeError.
+      - dependency-name: "drizzle-orm"
+      - dependency-name: "drizzle-kit"
 
   - package-ecosystem: "github-actions"
     directory: "/"

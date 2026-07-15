@@ -27,8 +27,7 @@ export function useAddActivity() {
     mutationFn: async ({ date, period }: { date: string; period: number }) => {
       const res = await hc.user.record.$post({ json: { date, period } });
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(`Failed to add activity: ${data.error}`);
+        throw new Error("Failed to add activity");
       }
       return res.json();
     },

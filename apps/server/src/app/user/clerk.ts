@@ -2,12 +2,13 @@ import { ArkErrors } from "arktype";
 import { Hono } from "hono";
 
 import { arktypeValidator } from "@hono/arktype-validator";
-import { getAuth } from "@hono/clerk-auth";
+import { getAuth } from "@clerk/hono";
 
+import { enforceUserRateLimit } from "../../middleware/rateLimit";
 import { notify } from "../../lib/observability";
 import { getProfile, getUser, patchProfile } from "../../clerk/profile";
 
-import { AccountMetadata, isProfileComplete, Role, updateAccountSchema } from "share";
+import { AccountMetadata, accountUserSchema, isProfileComplete, Role, updateAccountSchema } from "share";
 
 export const clerk = new Hono<{ Bindings: Env }>() //
   .get("/account", async (c) => {
@@ -15,7 +16,14 @@ export const clerk = new Hono<{ Bindings: Env }>() //
     if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
     const user = await getUser(c);
     if (!user) return c.json({ error: "User not found" }, 404);
-    return c.json(user, 200);
+    const publicUser = accountUserSchema.assert({
+      userId: user.id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      imageUrl: user.imageUrl,
+    });
+    return c.json(publicUser, 200);
   })
   .patch(
     "/account",
@@ -29,12 +37,14 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       const auth = getAuth(c);
       if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
 
+      const limited = await enforceUserRateLimit(c, c.env.ACCOUNT_MUTATION_RATE_LIMIT, "account-update");
+      if (limited) return limited;
+
       const body = c.req.valid("form");
 
       const username = body.username;
       const firstName = body.firstName;
       const lastName = body.lastName;
-      const profileImage = body.profileImage;
 
       const { createClerkClient } = await import("@clerk/backend");
       const clerkClient = createClerkClient({
@@ -51,12 +61,6 @@ export const clerk = new Hono<{ Bindings: Env }>() //
         if (lastName !== undefined && typeof lastName === "string") updatePayload.lastName = lastName;
         if (lastName === undefined) updatePayload.lastName = "";
         if (Object.keys(updatePayload).length > 0) await clerkClient.users.updateUser(auth.userId, updatePayload);
-
-        if (profileImage instanceof File && profileImage.size > 0) {
-          await clerkClient.users.updateUserProfileImage(auth.userId, {
-            file: profileImage,
-          });
-        }
 
         const updatedUser = await clerkClient.users.getUser(auth.userId);
 
@@ -108,6 +112,9 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       return;
     }),
     async (c) => {
+      const limited = await enforceUserRateLimit(c, c.env.ACCOUNT_MUTATION_RATE_LIMIT, "profile-update");
+      if (limited) return limited;
+
       const reqData = c.req.valid("json");
       const profile = await getProfile(c);
 

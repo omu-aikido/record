@@ -17,7 +17,7 @@ const clerkUsers = {
   deleteUser: mock(async () => {}),
 };
 
-mock.module("@hono/clerk-auth", () => ({
+mock.module("@clerk/hono", () => ({
   getAuth: (c: { req: { header: (key: string) => string | null } }) => {
     const userId = c.req.header("x-user-id");
     if (!userId) return null;

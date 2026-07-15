@@ -1,13 +1,14 @@
 import { Hono } from "hono";
 
 import { arktypeValidator } from "@hono/arktype-validator";
-import { getAuth } from "@hono/clerk-auth";
+import { getAuth } from "@clerk/hono";
 
 import * as drizzleOrm from "drizzle-orm";
 import * as records from "share";
 
 import { activity } from "../../db/schema";
 import { dbClient } from "../../db/drizzle";
+import { enforceUserRateLimit } from "../../middleware/rateLimit";
 import { calculatePeriodRange, getCurrentUserRanking, getRankingData, maskRankingData } from "./ranking";
 import { countPracticeDays, resolvePromotionSince } from "share";
 
@@ -60,6 +61,9 @@ export const record = new Hono<{ Bindings: Env }>()
       const auth = getAuth(c);
       if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
 
+      const limited = await enforceUserRateLimit(c, c.env.ACTIVITY_MUTATION_RATE_LIMIT, "activity-create");
+      if (limited) return limited;
+
       const body = c.req.valid("json");
       const db = dbClient(c.env);
       const now = new Date().toISOString();
@@ -89,6 +93,9 @@ export const record = new Hono<{ Bindings: Env }>()
     async (c) => {
       const auth = getAuth(c);
       if (!auth.isAuthenticated) return c.json({ error: "Unauthorized" }, 401);
+
+      const limited = await enforceUserRateLimit(c, c.env.BULK_DELETE_RATE_LIMIT, "activity-delete");
+      if (limited) return limited;
 
       const body = c.req.valid("json");
       const db = dbClient(c.env);

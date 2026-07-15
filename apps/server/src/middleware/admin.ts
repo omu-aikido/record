@@ -1,6 +1,6 @@
 import type { Context, Next } from "hono";
 
-import { getAuth } from "@hono/clerk-auth";
+import { getAuth } from "@clerk/hono";
 
 import { getProfile } from "../clerk/profile";
 import { Role } from "share";
@@ -11,8 +11,8 @@ export const ensureAdmin = async (
   }>,
   next: Next
 ): Promise<Response | void> => {
-  const auth = getAuth(c);
-  if (!auth.isAuthenticated) {
+  const auth = getAuth(c, { acceptsToken: "session_token" });
+  if (!auth.isAuthenticated || !auth.userId) {
     c.status(401);
     return c.json({ error: "Unauthorized" });
   }

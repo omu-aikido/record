@@ -1,15 +1,25 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
+import type { RateLimit } from "@cloudflare/workers-types";
 
 const updateUserMetadataMock = mock(async (_userId: string, payload: Record<string, unknown>) => ({
   id: "member-user",
   publicMetadata: payload.publicMetadata,
 }));
+const updateUserMock = mock(async () => undefined);
+const updateUserProfileImageMock = mock(async () => undefined);
 
 const clerkUsers = {
   getUser: mock(async (userId: string) => {
     if (userId === "member-user") {
       return {
         id: "member-user",
+        username: "aikido-user",
+        firstName: "Aiko",
+        lastName: "Do",
+        imageUrl: "https://img.example/avatar.png",
+        privateMetadata: { secret: "do-not-return" },
+        unsafeMetadata: { internal: "do-not-return" },
+        emailAddresses: [{ emailAddress: "aikido@example.com" }],
         publicMetadata: {
           role: "member",
           grade: null,
@@ -24,9 +34,11 @@ const clerkUsers = {
     throw new Error("user not found");
   }),
   updateUserMetadata: updateUserMetadataMock,
+  updateUser: updateUserMock,
+  updateUserProfileImage: updateUserProfileImageMock,
 };
 
-mock.module("@hono/clerk-auth", () => ({
+mock.module("@clerk/hono", () => ({
   getAuth: () => ({
     userId: "member-user",
     isAuthenticated: true,
@@ -45,9 +57,21 @@ mock.module("@/src/lib/observability", () => ({
 
 const { clerk } = await import("@/src/app/user/clerk");
 
+const allowedAccountLimiter: RateLimit = {
+  limit: async () => ({ success: true }),
+};
 const testEnv = {
   CLERK_SECRET_KEY: "test-secret",
+  ACCOUNT_MUTATION_RATE_LIMIT: allowedAccountLimiter,
 } as Env;
+
+const accountLimitCalls: Array<{ key: string }> = [];
+const deniedAccountLimiter: RateLimit = {
+  limit: async (options) => {
+    accountLimitCalls.push(options);
+    return { success: false };
+  },
+};
 
 describe("GET /profile", () => {
   beforeEach(() => {
@@ -70,6 +94,25 @@ describe("GET /profile", () => {
         birthday: "",
       },
     });
+  });
+});
+
+describe("GET /clerk/account", () => {
+  test("returns only the public account DTO", async () => {
+    const res = await clerk.request("http://localhost/account", {}, testEnv);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json).toEqual({
+      userId: "member-user",
+      username: "aikido-user",
+      firstName: "Aiko",
+      lastName: "Do",
+      imageUrl: "https://img.example/avatar.png",
+    });
+    expect(json).not.toHaveProperty("privateMetadata");
+    expect(json).not.toHaveProperty("unsafeMetadata");
+    expect(json).not.toHaveProperty("emailAddresses");
   });
 });
 
@@ -115,5 +158,45 @@ describe("PATCH /profile", () => {
         birthday: "2001-02-03",
       },
     });
+  });
+});
+
+describe("PATCH /clerk/account", () => {
+  beforeEach(() => {
+    updateUserMock.mockClear();
+    updateUserProfileImageMock.mockClear();
+    accountLimitCalls.length = 0;
+  });
+
+  test("rejects a multipart image and never proxies it to Clerk's Backend API", async () => {
+    const body = new FormData();
+    body.set("firstName", "Aiko");
+    body.set("profileImage", new File(["image"], "avatar.png", { type: "image/png" }));
+
+    const res = await clerk.request(
+      "http://localhost/account",
+      { method: "PATCH", body },
+      testEnv
+    );
+
+    expect(res.status).toBe(400);
+    expect(updateUserMock).not.toHaveBeenCalled();
+    expect(updateUserProfileImageMock).not.toHaveBeenCalled();
+  });
+
+  test("rate-limits before invoking Clerk account updates", async () => {
+    const body = new FormData();
+    body.set("firstName", "Aiko");
+
+    const res = await clerk.request(
+      "http://localhost/account",
+      { method: "PATCH", body },
+      { ...testEnv, ACCOUNT_MUTATION_RATE_LIMIT: deniedAccountLimiter }
+    );
+
+    expect(res.status).toBe(429);
+    expect(res.headers.get("Retry-After")).toBe("60");
+    expect(accountLimitCalls).toEqual([{ key: "member-user:account-update" }]);
+    expect(updateUserMock).not.toHaveBeenCalled();
   });
 });

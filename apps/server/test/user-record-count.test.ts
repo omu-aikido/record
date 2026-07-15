@@ -4,7 +4,7 @@ const whereMock = mock(async () => [{ totalPeriod: 4.5 }]);
 const fromMock = mock(() => ({ where: whereMock }));
 const selectMock = mock(() => ({ from: fromMock }));
 
-mock.module("@hono/clerk-auth", () => ({
+mock.module("@clerk/hono", () => ({
   getAuth: () => ({
     userId: "member-user",
     isAuthenticated: true,

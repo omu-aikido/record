@@ -272,15 +272,8 @@ const { mutateAsync: updateProfile, isPending: isSubmitting } = useMutation({
   onSuccess: (responseData) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.user.clerk.profile() });
 
-    if (responseData.profile) {
-      const validatedProfile = AccountMetadata({
-        role: responseData.profile.role,
-        grade: responseData.profile.grade,
-        getGradeAt: responseData.profile.getGradeAt,
-        joinedAt: responseData.profile.joinedAt,
-        year: responseData.profile.year,
-        birthday: responseData.profile.birthday,
-      });
+    if (typeof responseData === "object" && responseData !== null && "profile" in responseData && responseData.profile) {
+      const validatedProfile = AccountMetadata(responseData.profile);
       if (validatedProfile instanceof ArkErrors) {
         if (import.meta.env.DEV) console.error("Invalid updated profile response");
       } else {

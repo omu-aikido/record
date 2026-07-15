@@ -29,7 +29,7 @@ export function useSignUpVerify() {
         return true;
       }
       // This case should ideally not be reached if the code is correct
-      console.error("Sign up status is not complete:", signUpAttempt);
+      if (import.meta.env.DEV) console.error("Sign up verification did not complete");
       error.value = "Verification failed. Please try again.";
       return false;
     } catch (err: unknown) {

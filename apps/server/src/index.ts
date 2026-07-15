@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 
-import { cors } from "hono/cors";
+import { bodyLimit } from "hono/body-limit";
 import { secureHeaders } from "hono/secure-headers";
 
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
@@ -20,7 +20,6 @@ export default new Hono<{ Bindings: Env }>() //
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'",
           "https://*.clerk.accounts.dev",
           "https://accounts.omu-aikido.com",
           c.env.CLERK_FRONTEND_API_URL,
@@ -34,12 +33,14 @@ export default new Hono<{ Bindings: Env }>() //
         imgSrc: ["'self'", "https://img.clerk.com", "data:"],
         workerSrc: ["'self'", "blob:"],
         styleSrc: ["'self'", "'unsafe-inline'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
       },
       xFrameOptions: "DENY",
       referrerPolicy: "strict-origin-when-cross-origin",
     })(c, next);
   })
-  .use("*", cors())
+  .use("*", bodyLimit({ maxSize: 10 * 1024 * 1024 }))
   .use("*", errorHandler)
   .use("*", requestLogger)
   .route("/api/webhooks", webhooks)

@@ -220,7 +220,7 @@ const { data: profileData } = useQuery({
     if (data.profile) {
       const profileParsed = AccountMetadata(data.profile);
       if (profileParsed instanceof ArkErrors) {
-        console.error(profileParsed);
+        if (import.meta.env.DEV) console.error("Invalid profile response");
         throw new Error("Invalid profile data");
       }
       return { profile: profileParsed, needsProfileCompletion: Boolean(data.needsProfileCompletion) };
@@ -282,7 +282,7 @@ const { mutateAsync: updateProfile, isPending: isSubmitting } = useMutation({
         birthday: responseData.profile.birthday,
       });
       if (validatedProfile instanceof ArkErrors) {
-        console.error(validatedProfile);
+        if (import.meta.env.DEV) console.error("Invalid updated profile response");
       } else {
         // Set cache with consistent { profile: ... } shape
         queryClient.setQueryData(queryKeys.user.clerk.profile(), {

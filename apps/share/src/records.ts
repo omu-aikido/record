@@ -40,7 +40,7 @@ export const createActivitySchema = type({
   );
 });
 
-export const deleteActivitiesSchema = type({ ids: "string[]" });
+export const deleteActivitiesSchema = type({ ids: "string[]" }).narrow((input) => input.ids.length <= 100);
 
 export const rankingQuerySchema = type({
   "year?": type("number.integer | string.integer.parse").narrow((n) => n >= 1900 && n < 2100),

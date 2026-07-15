@@ -2,7 +2,7 @@ import { ArkErrors } from "arktype";
 import { Hono } from "hono";
 
 import { arktypeValidator } from "@hono/arktype-validator";
-import { getAuth } from "@hono/clerk-auth";
+import { getAuth } from "@clerk/hono";
 
 import { notify } from "../../lib/observability";
 import { getProfile, getUser, patchProfile } from "../../clerk/profile";

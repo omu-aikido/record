@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 
 import { arktypeValidator } from "@hono/arktype-validator";
-import { getAuth } from "@hono/clerk-auth";
+import { getAuth } from "@clerk/hono";
 
 import * as drizzleOrm from "drizzle-orm";
 import * as records from "share";

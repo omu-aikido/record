@@ -2,7 +2,7 @@ import { activity } from "../../db/schema";
 import { arktypeValidator } from "@hono/arktype-validator";
 import { createClerkClient } from "@clerk/backend";
 import { dbClient } from "../../db/drizzle";
-import { getAuth } from "@hono/clerk-auth";
+import { getAuth } from "@clerk/hono";
 import { Hono } from "hono";
 import { notify } from "../../lib/observability";
 import { Role } from "share";

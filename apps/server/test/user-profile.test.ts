@@ -33,7 +33,7 @@ const clerkUsers = {
   updateUserMetadata: updateUserMetadataMock,
 };
 
-mock.module("@hono/clerk-auth", () => ({
+mock.module("@clerk/hono", () => ({
   getAuth: () => ({
     userId: "member-user",
     isAuthenticated: true,

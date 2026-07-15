@@ -2,7 +2,7 @@ import { ArkErrors } from "arktype";
 import type { Context } from "hono";
 
 import { createClerkClient } from "@clerk/backend";
-import { getAuth } from "@hono/clerk-auth";
+import { getAuth } from "@clerk/hono";
 
 import { AccountMetadata, type AccountMetadataType } from "share";
 

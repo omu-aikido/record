@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { secureHeaders } from "hono/secure-headers";
 
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
+import { clerkMiddleware, getAuth } from "@clerk/hono";
 
 import { errorHandler } from "./middleware/errorHandler";
 import { requestLogger } from "./middleware/requestLogger";

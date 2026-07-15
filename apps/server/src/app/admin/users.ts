@@ -256,7 +256,7 @@ const app = new Hono<{ Bindings: Env }>()
     if (adminProfile === null || adminProfile.role === undefined) return c.json({ error: "権限が不足しています" }, 404);
     const adminRole = adminProfile?.role ? Role.fromString(adminProfile.role) : null;
 
-    if (adminRole === null || adminRole?.isManagement()) {
+    if (adminRole === null || !adminRole?.isManagement()) {
       return c.json({ error: "権限が不足しています" }, 403);
     }
 

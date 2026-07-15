@@ -16,6 +16,8 @@ import { errorHandler } from "./middleware/errorHandler";
 
 import { requestLogger } from "./middleware/requestLogger";
 
+import { getPublicVersion } from "./version";
+
 export default new Hono<{ Bindings: Env }>() //
   .use((c, next) => {
     return secureHeaders({
@@ -46,13 +48,21 @@ export default new Hono<{ Bindings: Env }>() //
   .use("*", bodyLimit({ maxSize: 10 * 1024 * 1024 }))
   .use("*", errorHandler)
   .use("*", requestLogger)
+  .use("*", async (c, next) => {
+    const version = getPublicVersion(c.env.CF_VERSION_METADATA);
+    c.header("X-Record-Version", version.tag ?? version.shortId);
+    await next();
+  })
   .route("/api/webhooks", webhooks)
+  .basePath("/api")
+  .get("/status", (c) => {
+    return c.json({ version: getPublicVersion(c.env.CF_VERSION_METADATA) });
+  })
   .use("*", (c, next) => {
     const middleware = clerkMiddleware(getClerkMiddlewareOptions(c.env));
     // oxlint-disable-next-line typescript/no-unsafe-argument
     return middleware(c, next);
   })
-  .basePath("/api")
   .get("/auth-status", (c) => {
     const auth = getAuth(c);
     return c.json({

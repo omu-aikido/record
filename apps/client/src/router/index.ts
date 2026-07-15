@@ -9,6 +9,7 @@ const RecordView = () => import("@/pages/Record.vue");
 const SignInView = () => import("@/pages/SignIn.vue");
 const SignUpView = () => import("@/pages/SignUp.vue");
 const SignUpVerifyView = () => import("@/pages/SignUpVerify.vue");
+const ReleasesView = () => import("@/pages/Releases.vue");
 const UserView = () => import("@/pages/account/User.vue");
 const AdminAccountsView = () => import("@/pages/admin/Accounts.vue");
 
@@ -43,6 +44,12 @@ const router = createRouter({
       path: "/sign-up/verify",
       name: "signUpVerify",
       component: SignUpVerifyView,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: "/releases",
+      name: "releases",
+      component: ReleasesView,
       meta: { requiresAuth: false },
     },
     {

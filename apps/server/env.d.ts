@@ -5,6 +5,7 @@ declare global {
       CLERK_SECRET_KEY: string;
       CLERK_WEBHOOK_SECRET: string;
       CLERK_FRONTEND_API_URL: string;
+      CLERK_AUTHORIZED_PARTIES: string;
       TURSO_AUTH_TOKEN: string;
       TURSO_DATABASE_URL: string;
     }

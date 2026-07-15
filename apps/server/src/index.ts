@@ -7,6 +7,7 @@ import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 
 import { errorHandler } from "./middleware/errorHandler";
 import { requestLogger } from "./middleware/requestLogger";
+import { getClerkMiddlewareOptions } from "./middleware/clerk";
 
 import adminApp from "./app/admin";
 import userApp from "./app/user";
@@ -43,10 +44,7 @@ export default new Hono<{ Bindings: Env }>() //
   .use("*", requestLogger)
   .route("/api/webhooks", webhooks)
   .use("*", (c, next) => {
-    const middleware = clerkMiddleware({
-      publishableKey: c.env.CLERK_PUBLISHABLE_KEY,
-      secretKey: c.env.CLERK_SECRET_KEY,
-    });
+    const middleware = clerkMiddleware(getClerkMiddlewareOptions(c.env));
     // oxlint-disable-next-line typescript/no-unsafe-argument
     return middleware(c, next);
   })

@@ -3,9 +3,13 @@ import type { RateLimit } from "@cloudflare/workers-types";
 import { Hono } from "hono";
 
 let userId: string | null = "member-user";
+const getAuthCalls: unknown[][] = [];
 
 mock.module("@clerk/hono", () => ({
-  getAuth: () => ({ isAuthenticated: true, userId }),
+  getAuth: (...args: unknown[]) => {
+    getAuthCalls.push(args);
+    return { isAuthenticated: true, userId };
+  },
 }));
 
 const { enforceUserRateLimit } = await import("@/src/middleware/rateLimit");
@@ -35,6 +39,7 @@ describe("enforceUserRateLimit", () => {
     allowed = true;
     downstreamCalls = 0;
     limitCalls.length = 0;
+    getAuthCalls.length = 0;
   });
 
   test("uses the authenticated user and operation as the rate-limit key, then allows downstream work", async () => {
@@ -47,6 +52,7 @@ describe("enforceUserRateLimit", () => {
     );
 
     expect(response.status).toBe(200);
+    expect(getAuthCalls).toEqual([[expect.anything(), { acceptsToken: "session_token" }]]);
     expect(limitCalls).toEqual([{ key: "member-user:account-update" }]);
     expect(downstreamCalls).toBe(1);
   });

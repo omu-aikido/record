@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
+import type { RateLimit } from "@cloudflare/workers-types";
 
 const updateUserMetadataMock = mock(async (_userId: string, payload: Record<string, unknown>) => ({
   id: "member-user",
@@ -59,6 +60,14 @@ const { clerk } = await import("@/src/app/user/clerk");
 const testEnv = {
   CLERK_SECRET_KEY: "test-secret",
 } as Env;
+
+const accountLimitCalls: Array<{ key: string }> = [];
+const deniedAccountLimiter: RateLimit = {
+  limit: async (options) => {
+    accountLimitCalls.push(options);
+    return { success: false };
+  },
+};
 
 describe("GET /profile", () => {
   beforeEach(() => {
@@ -152,6 +161,7 @@ describe("PATCH /clerk/account", () => {
   beforeEach(() => {
     updateUserMock.mockClear();
     updateUserProfileImageMock.mockClear();
+    accountLimitCalls.length = 0;
   });
 
   test("rejects a multipart image and never proxies it to Clerk's Backend API", async () => {
@@ -168,5 +178,20 @@ describe("PATCH /clerk/account", () => {
     expect(res.status).toBe(400);
     expect(updateUserMock).not.toHaveBeenCalled();
     expect(updateUserProfileImageMock).not.toHaveBeenCalled();
+  });
+
+  test("rate-limits before invoking Clerk account updates", async () => {
+    const body = new FormData();
+    body.set("firstName", "Aiko");
+
+    const res = await clerk.request(
+      "http://localhost/account",
+      { method: "PATCH", body },
+      { ...testEnv, ACCOUNT_MUTATION_RATE_LIMIT: deniedAccountLimiter }
+    );
+
+    expect(res.status).toBe(429);
+    expect(accountLimitCalls).toEqual([{ key: "member-user:account-update" }]);
+    expect(updateUserMock).not.toHaveBeenCalled();
   });
 });

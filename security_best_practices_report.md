@@ -4,7 +4,7 @@
 
 ## エグゼクティブサマリー
 
-レビュー時点では Critical / High の確定所見はなく、Medium 4件、Low 3件を確認しました。この報告書の所見のうち、SEC-001〜006 は本ブランチで対処済みです。SEC-007 はリクエストサイズと一括削除件数を制限しましたが、プロフィール画像の MIME type / 個別サイズ制限とレート制限は未対応です。
+レビュー時点では Critical / High の確定所見はなく、Medium 4件、Low 3件を確認しました。本ブランチでは SEC-001〜007 のコード上の対策を実施しました。Cloudflare の rate limit は濫用抑止であり、ロケーション単位かつ最終整合的なため、厳密な回数保証や課金制御には使えません。また、Clerk のプロフィール画像アップロードと CAPTCHA を含む本番 E2E はデプロイ後に確認が必要です。
 
 優先度が高いのは、Clerk セッショントークンの `azp`（authorized party）を検証していないこと、Clerk Backend API の `User` オブジェクトをそのままブラウザへ返していること、活動記録 API がクライアントの上限をサーバー側で強制していないことです。いずれも直ちに匿名の第三者が侵入できる類ではありませんが、認証境界、バックエンド専用データ、ランキングの完全性という重要な境界が将来の設定変更や悪用に弱い状態です。
 
@@ -172,22 +172,23 @@
 - workspace ごとの typecheck:
   - `apps/share`: 成功
   - `apps/server`: 成功
-  - `apps/client`: 成功
-- `bun test --isolate`: 171 pass / 0 fail
+  - `apps/client`: 失敗（既存の `apps/client/src/composable/useActivity.ts:31` で `data` が `unknown`、TS18046）。このタスクでは機能コードを変更しないため未修正。
+- `bun test --isolate`: 183 pass / 0 fail
+- `git diff --check`: 成功
 - 管理者のユーザー削除テストで発見した authorization 条件の反転も修正済みです。
-- `vp run typecheck`: sandbox の共有メモリ IPC 作成失敗で実行できなかったため、上記3 workspace を個別実行しました。
+- `vp run typecheck`: sandbox の共有メモリ IPC 作成失敗で実行できなかったため、上記3 workspace を個別実行しました。したがって全workspace型検査は未完了です。
 
 ## 実装状況（2026-07-15）
 
 | ID      | 状態           | 実施内容                                                                                                                                             |
 | ------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SEC-001 | 一部対応       | `CLERK_AUTHORIZED_PARTIES` を必須化し、ユーザー・管理APIで `userId` のないトークンを拒否。`@hono/clerk-auth` から `@clerk/hono` への移行は別途必要。 |
+| SEC-001 | 対応済み       | `@hono/clerk-auth` から `@clerk/hono` へ移行し、`CLERK_AUTHORIZED_PARTIES` を必須化。ユーザー・管理APIは `getAuth(c, { acceptsToken: "session_token" })` と有効な `userId` を要求する。 |
 | SEC-002 | 対応済み       | account API を必要最小限の共有 DTO に変更し、private metadata 等を返さないAPIテストを追加。                                                          |
 | SEC-003 | 対応済み       | `period` を 0.5〜8 時間・30分単位、日付を JST 基準で未来禁止にサーバー側でも制約。                                                                   |
 | SEC-004 | コード対応済み | CSP の `script-src` から `'unsafe-inline'` を除去し、`base-uri` と `form-action` を追加。本番の Clerk / CAPTCHA を含むE2E確認が残る。                |
 | SEC-005 | 対応済み       | 同一 origin 構成のため全許可 CORS ミドルウェアを削除。                                                                                               |
 | SEC-006 | 対応済み       | 認証・プロフィールオブジェクトの生ログを削除し、開発時もメッセージだけを出力。                                                                       |
-| SEC-007 | 一部対応       | Worker 全体に 10 MiB の body limit、一括削除を100件までに制限。画像の MIME type / 個別サイズとユーザー単位 rate limit は未対応。                     |
+| SEC-007 | コード対応済み | Worker 全体に 10 MiB の body limit、一括削除を100件までに制限。画像は Worker を経由せず Clerk SDK で直接アップロードし、クライアントでは PNG/JPEG/WebP と 2 MiB をUXとして検証する。MIME type だけで画像内容の安全性は証明できないが、Worker は画像バイトを受け取らず、Clerk がアップロード処理を担う。アカウント更新（5回/60秒）、活動作成（20回/60秒）、一括削除（5回/60秒）には `userId:operation` キーの Cloudflare binding を適用する。binding はロケーション単位・最終整合的であり、厳密な上限保証ではない。 |
 
 ## 推奨修正順
 

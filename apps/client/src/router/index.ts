@@ -50,7 +50,7 @@ const router = createRouter({
       path: "/releases",
       name: "releases",
       component: ReleasesView,
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: true },
     },
     {
       path: "/account",

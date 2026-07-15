@@ -7,7 +7,7 @@ import { getAuth } from "@hono/clerk-auth";
 import { notify } from "../../lib/observability";
 import { getProfile, getUser, patchProfile } from "../../clerk/profile";
 
-import { AccountMetadata, isProfileComplete, Role, updateAccountSchema } from "share";
+import { AccountMetadata, accountUserSchema, isProfileComplete, Role, updateAccountSchema } from "share";
 
 export const clerk = new Hono<{ Bindings: Env }>() //
   .get("/account", async (c) => {
@@ -15,7 +15,14 @@ export const clerk = new Hono<{ Bindings: Env }>() //
     if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
     const user = await getUser(c);
     if (!user) return c.json({ error: "User not found" }, 404);
-    return c.json(user, 200);
+    const publicUser = accountUserSchema.assert({
+      userId: user.id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      imageUrl: user.imageUrl,
+    });
+    return c.json(publicUser, 200);
   })
   .patch(
     "/account",

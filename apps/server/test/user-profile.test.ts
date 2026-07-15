@@ -10,6 +10,13 @@ const clerkUsers = {
     if (userId === "member-user") {
       return {
         id: "member-user",
+        username: "aikido-user",
+        firstName: "Aiko",
+        lastName: "Do",
+        imageUrl: "https://img.example/avatar.png",
+        privateMetadata: { secret: "do-not-return" },
+        unsafeMetadata: { internal: "do-not-return" },
+        emailAddresses: [{ emailAddress: "aikido@example.com" }],
         publicMetadata: {
           role: "member",
           grade: null,
@@ -70,6 +77,25 @@ describe("GET /profile", () => {
         birthday: "",
       },
     });
+  });
+});
+
+describe("GET /clerk/account", () => {
+  test("returns only the public account DTO", async () => {
+    const res = await clerk.request("http://localhost/account", {}, testEnv);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json).toEqual({
+      userId: "member-user",
+      username: "aikido-user",
+      firstName: "Aiko",
+      lastName: "Do",
+      imageUrl: "https://img.example/avatar.png",
+    });
+    expect(json).not.toHaveProperty("privateMetadata");
+    expect(json).not.toHaveProperty("unsafeMetadata");
+    expect(json).not.toHaveProperty("emailAddresses");
   });
 });
 

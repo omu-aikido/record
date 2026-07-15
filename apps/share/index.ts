@@ -8,7 +8,7 @@ export {
 
 export { AdminNormSummary, AdminUser, type AdminNormSummaryType, type AdminUserType } from "./src/admin";
 
-export { updateAccountSchema } from "./src/clerkClient";
+export { accountUserSchema, updateAccountSchema, type AccountUserType } from "./src/clerkClient";
 
 export { grade, translateGrade, timeForNextGrade } from "./src/grade";
 

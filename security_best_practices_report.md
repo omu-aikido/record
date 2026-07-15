@@ -8,6 +8,8 @@
 
 優先度が高いのは、Clerk セッショントークンの `azp`（authorized party）を検証していないこと、Clerk Backend API の `User` オブジェクトをそのままブラウザへ返していること、活動記録 API がクライアントの上限をサーバー側で強制していないことです。いずれも直ちに匿名の第三者が侵入できる類ではありませんが、認証境界、バックエンド専用データ、ランキングの完全性という重要な境界が将来の設定変更や悪用に弱い状態です。
 
+以降の **Medium / Low 所見セクションは初回レビュー時点のスナップショット**です。そこに記載したコード位置・Evidence・Fix は発見時の状態を表しており、実装後のHEADを表すものではありません。対応後の状態は「実装状況（2026-07-15）」、検証の実行結果は「検証結果」を正とします。
+
 一方、以下は確認できました。
 
 - 管理 API とユーザー API はサーバー側ミドルウェアで認証・認可されており、Vue Router のガードだけには依存していません。
@@ -173,7 +175,7 @@
   - `apps/share`: 成功
   - `apps/server`: 成功
   - `apps/client`: 成功
-- `bun test --isolate`: 183 pass / 0 fail
+- `bun test --isolate`: 186 pass / 0 fail
 - `git diff --check`: 成功
 - 管理者のユーザー削除テストで発見した authorization 条件の反転も修正済みです。
 - `vp run typecheck`: sandbox の共有メモリ IPC 作成失敗で実行できなかったため、上記3 workspace を個別実行しました。全workspaceの個別型検査は成功しています。
@@ -188,7 +190,7 @@
 | SEC-004 | コード対応済み | CSP の `script-src` から `'unsafe-inline'` を除去し、`base-uri` と `form-action` を追加。本番の Clerk / CAPTCHA を含むE2E確認が残る。                |
 | SEC-005 | 対応済み       | 同一 origin 構成のため全許可 CORS ミドルウェアを削除。                                                                                               |
 | SEC-006 | 対応済み       | 認証・プロフィールオブジェクトの生ログを削除し、開発時もメッセージだけを出力。                                                                       |
-| SEC-007 | コード対応済み | Worker 全体に 10 MiB の body limit、一括削除を100件までに制限。画像は Worker を経由せず Clerk SDK で直接アップロードし、クライアントでは PNG/JPEG/WebP と 2 MiB をUXとして検証する。MIME type だけで画像内容の安全性は証明できないが、Worker は画像バイトを受け取らず、Clerk がアップロード処理を担う。アカウント更新（5回/60秒）、活動作成（20回/60秒）、一括削除（5回/60秒）には `userId:operation` キーの Cloudflare binding を適用する。binding はロケーション単位・最終整合的であり、厳密な上限保証ではない。 |
+| SEC-007 | コード対応済み | Worker 全体に 10 MiB の body limit、一括削除を100件までに制限。画像は Worker を経由せず Clerk SDK で直接アップロードし、クライアントでは PNG/JPEG/WebP と 2 MiB をUXとして検証する。MIME type だけで画像内容の安全性は証明できないが、Worker は画像バイトを受け取らず、Clerk がアップロード処理を担う。プロフィール更新（5回/60秒）、活動作成（20回/60秒）、一括削除（5回/60秒）には `userId:operation` キーの Cloudflare binding を適用する。binding はロケーション単位・最終整合的であり、厳密な上限保証ではない。 |
 
 ## 推奨修正順
 

@@ -24,7 +24,7 @@
       <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="isEditing = true">編集</button>
     </div>
 
-    <form v-else enctype="multipart/form-data" class="stack" @submit.prevent="handleSubmit">
+    <form v-else class="stack" @submit.prevent="handleSubmit">
       <div class="stack flex-1">
         <div class="gap-4 flex items-start">
           <div
@@ -198,9 +198,9 @@ async function handleSubmit() {
       isEditing.value = false;
       message.value = "";
     }, 1000);
-  } catch (err) {
+  } catch {
     isError.value = true;
-    message.value = err instanceof Error ? err.message : String(err);
+    message.value = "アカウント情報の更新に失敗しました。時間をおいて再試行してください";
   } finally {
     isSubmitting.value = false;
   }

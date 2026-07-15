@@ -191,6 +191,7 @@ describe("PATCH /clerk/account", () => {
     );
 
     expect(res.status).toBe(429);
+    expect(res.headers.get("Retry-After")).toBe("60");
     expect(accountLimitCalls).toEqual([{ key: "member-user:account-update" }]);
     expect(updateUserMock).not.toHaveBeenCalled();
   });

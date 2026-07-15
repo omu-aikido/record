@@ -22,24 +22,32 @@ mock.module("@/src/db/drizzle", () => ({
 
 const { record } = await import("@/src/app/user/record");
 
-const limitCalls: Array<{ key: string }> = [];
-const deniedLimiter: RateLimit = {
+const activityLimitCalls: Array<{ key: string }> = [];
+const deniedActivityLimiter: RateLimit = {
   limit: async (options) => {
-    limitCalls.push(options);
+    activityLimitCalls.push(options);
+    return { success: false };
+  },
+};
+const bulkDeleteLimitCalls: Array<{ key: string }> = [];
+const deniedBulkDeleteLimiter: RateLimit = {
+  limit: async (options) => {
+    bulkDeleteLimitCalls.push(options);
     return { success: false };
   },
 };
 
 const testEnv = {
-  ACTIVITY_MUTATION_RATE_LIMIT: deniedLimiter,
-  BULK_DELETE_RATE_LIMIT: deniedLimiter,
+  ACTIVITY_MUTATION_RATE_LIMIT: deniedActivityLimiter,
+  BULK_DELETE_RATE_LIMIT: deniedBulkDeleteLimiter,
 } as Env;
 
 describe("activity mutation rate-limit routing", () => {
   beforeEach(() => {
     insertMock.mockClear();
     deleteMock.mockClear();
-    limitCalls.length = 0;
+    activityLimitCalls.length = 0;
+    bulkDeleteLimitCalls.length = 0;
   });
 
   test("rejects activity creation before invoking the database insert", async () => {
@@ -54,7 +62,9 @@ describe("activity mutation rate-limit routing", () => {
     );
 
     expect(res.status).toBe(429);
-    expect(limitCalls).toEqual([{ key: "member-user:activity-create" }]);
+    expect(res.headers.get("Retry-After")).toBe("60");
+    expect(activityLimitCalls).toEqual([{ key: "member-user:activity-create" }]);
+    expect(bulkDeleteLimitCalls).toEqual([]);
     expect(insertMock).not.toHaveBeenCalled();
   });
 
@@ -70,7 +80,9 @@ describe("activity mutation rate-limit routing", () => {
     );
 
     expect(res.status).toBe(429);
-    expect(limitCalls).toEqual([{ key: "member-user:activity-delete" }]);
+    expect(res.headers.get("Retry-After")).toBe("60");
+    expect(activityLimitCalls).toEqual([]);
+    expect(bulkDeleteLimitCalls).toEqual([{ key: "member-user:activity-delete" }]);
     expect(deleteMock).not.toHaveBeenCalled();
   });
 });

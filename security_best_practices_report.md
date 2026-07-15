@@ -172,11 +172,11 @@
 - workspace ごとの typecheck:
   - `apps/share`: 成功
   - `apps/server`: 成功
-  - `apps/client`: 失敗（既存の `apps/client/src/composable/useActivity.ts:31` で `data` が `unknown`、TS18046）。このタスクでは機能コードを変更しないため未修正。
+  - `apps/client`: 成功
 - `bun test --isolate`: 183 pass / 0 fail
 - `git diff --check`: 成功
 - 管理者のユーザー削除テストで発見した authorization 条件の反転も修正済みです。
-- `vp run typecheck`: sandbox の共有メモリ IPC 作成失敗で実行できなかったため、上記3 workspace を個別実行しました。したがって全workspace型検査は未完了です。
+- `vp run typecheck`: sandbox の共有メモリ IPC 作成失敗で実行できなかったため、上記3 workspace を個別実行しました。全workspaceの個別型検査は成功しています。
 
 ## 実装状況（2026-07-15）
 

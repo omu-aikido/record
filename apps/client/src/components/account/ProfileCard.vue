@@ -74,7 +74,7 @@
                 translateGrade(formData.grade ?? "")
               }}</span>
               <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
-                <div class="i-lucide:lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
+                <div class="i-lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
               </span>
             </ListboxButton>
             <transition
@@ -125,7 +125,7 @@
                 translateYear(formData.year)
               }}</span>
               <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
-                <div class="i-lucide:lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
+                <div class="i-lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
               </span>
             </ListboxButton>
             <transition

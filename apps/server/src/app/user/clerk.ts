@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { arktypeValidator } from "@hono/arktype-validator";
 import { getAuth } from "@clerk/hono";
 
+import { enforceUserRateLimit } from "../../middleware/rateLimit";
 import { notify } from "../../lib/observability";
 import { getProfile, getUser, patchProfile } from "../../clerk/profile";
 
@@ -35,6 +36,9 @@ export const clerk = new Hono<{ Bindings: Env }>() //
     async (c) => {
       const auth = getAuth(c);
       if (!auth.isAuthenticated) return c.json({ error: "Not Authenticated" }, 401);
+
+      const limited = await enforceUserRateLimit(c, c.env.ACCOUNT_MUTATION_RATE_LIMIT, "account-update");
+      if (limited) return limited;
 
       const body = c.req.valid("form");
 

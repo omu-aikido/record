@@ -112,6 +112,9 @@ export const clerk = new Hono<{ Bindings: Env }>() //
       return;
     }),
     async (c) => {
+      const limited = await enforceUserRateLimit(c, c.env.ACCOUNT_MUTATION_RATE_LIMIT, "profile-update");
+      if (limited) return limited;
+
       const reqData = c.req.valid("json");
       const profile = await getProfile(c);
 

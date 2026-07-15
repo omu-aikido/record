@@ -57,8 +57,12 @@ mock.module("@/src/lib/observability", () => ({
 
 const { clerk } = await import("@/src/app/user/clerk");
 
+const allowedAccountLimiter: RateLimit = {
+  limit: async () => ({ success: true }),
+};
 const testEnv = {
   CLERK_SECRET_KEY: "test-secret",
+  ACCOUNT_MUTATION_RATE_LIMIT: allowedAccountLimiter,
 } as Env;
 
 const accountLimitCalls: Array<{ key: string }> = [];

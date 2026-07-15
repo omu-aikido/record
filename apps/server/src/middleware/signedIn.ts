@@ -3,7 +3,7 @@ import type { Context, Next } from "hono";
 
 export const ensureSignedIn = async (c: Context, next: Next): Promise<Response | void> => {
   const auth = getAuth(c);
-  if (!auth.isAuthenticated) {
+  if (!auth.isAuthenticated || !auth.userId) {
     c.status(401);
     return c.json({ error: "Unauthorized" });
   }

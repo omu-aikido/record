@@ -12,7 +12,7 @@ export const ensureAdmin = async (
   next: Next
 ): Promise<Response | void> => {
   const auth = getAuth(c);
-  if (!auth.isAuthenticated) {
+  if (!auth.isAuthenticated || !auth.userId) {
     c.status(401);
     return c.json({ error: "Unauthorized" });
   }

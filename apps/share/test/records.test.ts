@@ -155,6 +155,11 @@ describe("deleteActivitiesSchema", () => {
     const result = deleteActivitiesSchema({ ids: [1, 2] });
     expect(isValid(result)).toBe(false);
   });
+
+  test("should reject more than 100 ids in one request", () => {
+    const result = deleteActivitiesSchema({ ids: Array.from({ length: 101 }, (_, i) => String(i)) });
+    expect(isValid(result)).toBe(false);
+  });
 });
 
 describe("createActivitySchema", () => {

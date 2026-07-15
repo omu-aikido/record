@@ -15,7 +15,9 @@ function isStrictIsoDate(value: string): boolean {
 }
 
 function isNotFutureDate(value: string): boolean {
-  const today = new Date().toISOString().slice(0, 10);
+  // Activity dates are entered as calendar dates in Japan, so UTC must not
+  // reject the current JST date during the morning hours.
+  const today = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
   return value <= today;
 }
 

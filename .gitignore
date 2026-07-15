@@ -19,8 +19,8 @@ node_modules/
 *.db*
 
 # env
-.env
-.env.production
+.env.*
+!.env.example
 .dev.vars
 
 # logs

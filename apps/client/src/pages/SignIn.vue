@@ -109,6 +109,7 @@
         <hr class="my-6" />
         <div class="mt-4 text-base text-subtext text-center">
           まだアカウントがありませんか?
+          <br />
           <RouterLink to="/sign-up" class="text-blue-500 hover:text-blue-600 underline underline-offset-4">
             サインアップ
           </RouterLink>

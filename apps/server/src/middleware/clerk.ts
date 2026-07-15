@@ -10,7 +10,7 @@ export const getClerkMiddlewareOptions = (env: ClerkEnv): ClerkMiddlewareOptions
     .map((party) => party.trim())
     .filter(Boolean);
 
-  if (!authorizedParties?.length) {
+  if (authorizedParties === undefined || authorizedParties.length === 0) {
     throw new Error("CLERK_AUTHORIZED_PARTIES must contain at least one origin");
   }
 

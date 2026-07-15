@@ -18,13 +18,13 @@ export function translateGrade(grade_value: string | number): string {
   const labelMatch = grade.find((g) => g.name === raw);
   if (labelMatch) return labelMatch.name;
 
-  const grade_value_number = parseInt(raw, 10);
+  const grade_value_number = Math.trunc(Number(raw));
   const grade_data = grade.find((g) => g.grade === grade_value_number);
   return grade_data ? grade_data.name : "不明";
 }
 
 export function timeForNextGrade(grade_value: string | number): number {
-  const grade_value_number = parseInt(String(grade_value), 10);
+  const grade_value_number = Math.trunc(Number(String(grade_value)));
   switch (grade_value_number) {
     case 0:
       return 40;

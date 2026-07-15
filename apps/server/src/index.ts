@@ -5,13 +5,16 @@ import { secureHeaders } from "hono/secure-headers";
 
 import { clerkMiddleware, getAuth } from "@clerk/hono";
 
-import { errorHandler } from "./middleware/errorHandler";
-import { requestLogger } from "./middleware/requestLogger";
-import { getClerkMiddlewareOptions } from "./middleware/clerk";
-
 import adminApp from "./app/admin";
 import userApp from "./app/user";
+
 import { webhooks } from "./app/webhooks/clerk";
+
+import { getClerkMiddlewareOptions } from "./middleware/clerk";
+
+import { errorHandler } from "./middleware/errorHandler";
+
+import { requestLogger } from "./middleware/requestLogger";
 
 export default new Hono<{ Bindings: Env }>() //
   .use((c, next) => {

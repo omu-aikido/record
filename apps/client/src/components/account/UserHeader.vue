@@ -66,8 +66,8 @@
 <script setup lang="ts">
 import hc from "@/lib/honoClient";
 import Input from "@/components/ui/UiInput.vue";
-import { validateProfileImage } from "@/composable/profileImage";
 import { useUser } from "@clerk/vue";
+import { validateProfileImage } from "@/composable/profileImage";
 import { computed, reactive, ref, watch } from "vue";
 
 const $accountPatch = hc.user.clerk.account.$patch;

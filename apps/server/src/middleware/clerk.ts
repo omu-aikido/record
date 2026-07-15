@@ -1,4 +1,4 @@
-import type { ClerkMiddlewareOptions } from "@hono/clerk-auth";
+type ClerkMiddlewareOptions = Parameters<typeof import("@hono/clerk-auth").clerkMiddleware>[0];
 
 type ClerkEnv = Pick<Env, "CLERK_PUBLISHABLE_KEY" | "CLERK_SECRET_KEY"> & {
   CLERK_AUTHORIZED_PARTIES?: string;

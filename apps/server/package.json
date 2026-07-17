@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@clerk/backend": "^3.11.4",
+    "@clerk/backend": "^3.11.5",
     "@clerk/hono": "0.1.50",
     "@hono/arktype-validator": "^2.0.1",
     "@libsql/client": "^0.17.4",

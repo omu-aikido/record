@@ -19,7 +19,7 @@
     "hono": "catalog:",
     "share": "workspace:*",
     "unocss": "^66.7.5",
-    "vue": "^3.5.39",
+    "vue": "^3.5.40",
     "vue-router": "^5.1.0"
   },
   "devDependencies": {

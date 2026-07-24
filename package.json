@@ -3,6 +3,9 @@
   "workspaces": [
     "apps/*"
   ],
+  "scripts": {
+    "test": "bun test --isolate"
+  },
   "devDependencies": {
     "@types/bun": "^1.3.14",
     "knip": "latest",

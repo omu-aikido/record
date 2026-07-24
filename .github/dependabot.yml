@@ -28,6 +28,10 @@ updates:
     labels:
       - "dependencies"
     open-pull-requests-limit: 10
+    groups:
+      dependency-updates:
+        patterns:
+          - "*"
     ignore:
       # Dependabot's Bun updater currently misidentifies the catalog override
       # as the npm vite package and proposes an unrelated major update.

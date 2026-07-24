@@ -24,7 +24,7 @@
     "svix": "^1.98.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260719.1",
+    "@cloudflare/workers-types": "^5.20260721.1",
     "@types/node": "^26.1.1",
     "drizzle-kit": "^1.0.0-rc.4",
     "wrangler": "catalog:"

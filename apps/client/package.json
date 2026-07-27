@@ -10,9 +10,9 @@
     "typecheck": "vue-tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@clerk/vue": "^2.4.18",
+    "@clerk/vue": "^2.4.20",
     "@headlessui/vue": "^1.7.23",
-    "@iconify-json/lucide": "^1.2.118",
+    "@iconify-json/lucide": "^1.2.119",
     "@tanstack/vue-query": "^5.101.4",
     "arktype": "catalog:",
     "date-fns": "^4.4.0",

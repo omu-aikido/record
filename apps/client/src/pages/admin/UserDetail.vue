@@ -310,6 +310,7 @@ const roleLabels: Record<string, string> = {
   captain: "主将",
   "vice-captain": "副主将",
   treasurer: "会計",
+  chief: "主務",
   member: "部員",
 };
 const gradeLabels: Record<number, string> = {

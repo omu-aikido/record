@@ -10,11 +10,12 @@ export class Role {
   static readonly CAPTAIN = new Role("captain", "主将");
   static readonly VICE_CAPTAIN = new Role("vice-captain", "副主将");
   static readonly TREASURER = new Role("treasurer", "会計");
+  static readonly CHIEF = new Role("chief", "主務");
   static readonly MEMBER = new Role("member", "部員");
 
-  static readonly ALL = [Role.ADMIN, Role.CAPTAIN, Role.VICE_CAPTAIN, Role.TREASURER, Role.MEMBER];
+  static readonly ALL = [Role.ADMIN, Role.CAPTAIN, Role.VICE_CAPTAIN, Role.TREASURER, Role.CHIEF, Role.MEMBER];
 
-  static readonly roleEnum = type("'admin'|'captain'|'vice-captain'|'treasurer'|'member'");
+  static readonly roleEnum = type("'admin'|'captain'|'vice-captain'|'treasurer'|'chief'|'member'");
 
   static parse(data: unknown): Role | undefined {
     const out = this.roleEnum(data);
@@ -35,6 +36,8 @@ export class Role {
         return Role.VICE_CAPTAIN;
       case "treasurer":
         return Role.TREASURER;
+      case "chief":
+        return Role.CHIEF;
       case "member":
         return Role.MEMBER;
       default:
@@ -57,6 +60,7 @@ export class Role {
   static compare(a: string, b: string): number {
     const roleA = Role.fromString(a) ?? Role.MEMBER;
     const roleB = Role.fromString(b) ?? Role.MEMBER;
-    return Role.ALL.indexOf(roleA) - Role.ALL.indexOf(roleB);
+    const rank = (role: Role) => (role === Role.CHIEF ? Role.TREASURER : role);
+    return Role.ALL.indexOf(rank(roleA)) - Role.ALL.indexOf(rank(roleB));
   }
 }

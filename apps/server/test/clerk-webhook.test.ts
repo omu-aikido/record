@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 
-const updateUserMock = mock(async () => {});
+const updateUserMetadataMock = mock(async () => {});
 const notifyMock = mock(() => {});
 
 mock.module("svix", () => ({
@@ -16,7 +16,7 @@ mock.module("svix", () => ({
 mock.module("@clerk/backend", () => ({
   createClerkClient: () => ({
     users: {
-      updateUser: updateUserMock,
+      updateUserMetadata: updateUserMetadataMock,
     },
   }),
 }));
@@ -34,7 +34,7 @@ const testEnv = {
 
 describe("POST /clerk", () => {
   beforeEach(() => {
-    updateUserMock.mockClear();
+    updateUserMetadataMock.mockClear();
     notifyMock.mockClear();
   });
 
@@ -67,7 +67,7 @@ describe("POST /clerk", () => {
     );
 
     expect(res.status).toBe(200);
-    expect(updateUserMock).toHaveBeenCalledWith(
+    expect(updateUserMetadataMock).toHaveBeenCalledWith(
       "user_123",
       expect.objectContaining({
         publicMetadata: expect.objectContaining({

@@ -22,6 +22,11 @@ describe("Role static instances", () => {
     expect(Role.TREASURER.ja).toBe("会計");
   });
 
+  test("should have CHIEF role", () => {
+    expect(Role.CHIEF.role).toBe("chief");
+    expect(Role.CHIEF.ja).toBe("主務");
+  });
+
   test("should have MEMBER role", () => {
     expect(Role.MEMBER.role).toBe("member");
     expect(Role.MEMBER.ja).toBe("部員");
@@ -29,12 +34,13 @@ describe("Role static instances", () => {
 });
 
 describe("Role.ALL", () => {
-  test("should contain all 5 roles", () => {
-    expect(Role.ALL).toHaveLength(5);
+  test("should contain all 6 roles", () => {
+    expect(Role.ALL).toHaveLength(6);
     expect(Role.ALL).toContain(Role.ADMIN);
     expect(Role.ALL).toContain(Role.CAPTAIN);
     expect(Role.ALL).toContain(Role.VICE_CAPTAIN);
     expect(Role.ALL).toContain(Role.TREASURER);
+    expect(Role.ALL).toContain(Role.CHIEF);
     expect(Role.ALL).toContain(Role.MEMBER);
   });
 
@@ -43,7 +49,8 @@ describe("Role.ALL", () => {
     expect(Role.ALL[1]).toBe(Role.CAPTAIN);
     expect(Role.ALL[2]).toBe(Role.VICE_CAPTAIN);
     expect(Role.ALL[3]).toBe(Role.TREASURER);
-    expect(Role.ALL[4]).toBe(Role.MEMBER);
+    expect(Role.ALL[4]).toBe(Role.CHIEF);
+    expect(Role.ALL[5]).toBe(Role.MEMBER);
   });
 });
 
@@ -53,6 +60,7 @@ describe("Role.parse()", () => {
     expect(Role.parse("captain")).toBe(Role.CAPTAIN);
     expect(Role.parse("vice-captain")).toBe(Role.VICE_CAPTAIN);
     expect(Role.parse("treasurer")).toBe(Role.TREASURER);
+    expect(Role.parse("chief")).toBe(Role.CHIEF);
     expect(Role.parse("member")).toBe(Role.MEMBER);
   });
 
@@ -82,6 +90,7 @@ describe("Role.fromString()", () => {
     expect(Role.fromString("captain")).toBe(Role.CAPTAIN);
     expect(Role.fromString("vice-captain")).toBe(Role.VICE_CAPTAIN);
     expect(Role.fromString("treasurer")).toBe(Role.TREASURER);
+    expect(Role.fromString("chief")).toBe(Role.CHIEF);
     expect(Role.fromString("member")).toBe(Role.MEMBER);
   });
 
@@ -98,6 +107,7 @@ describe("Role.toString()", () => {
     expect(Role.CAPTAIN.toString()).toBe("captain");
     expect(Role.VICE_CAPTAIN.toString()).toBe("vice-captain");
     expect(Role.TREASURER.toString()).toBe("treasurer");
+    expect(Role.CHIEF.toString()).toBe("chief");
     expect(Role.MEMBER.toString()).toBe("member");
   });
 });
@@ -108,6 +118,7 @@ describe("Role.isManagement()", () => {
     expect(Role.CAPTAIN.isManagement()).toBe(true);
     expect(Role.VICE_CAPTAIN.isManagement()).toBe(true);
     expect(Role.TREASURER.isManagement()).toBe(true);
+    expect(Role.CHIEF.isManagement()).toBe(true);
   });
 
   test("should return false for MEMBER", () => {
@@ -119,6 +130,8 @@ describe("Role.compare()", () => {
   test("should return 0 for same roles", () => {
     expect(Role.compare("admin", "admin")).toBe(0);
     expect(Role.compare("member", "member")).toBe(0);
+    expect(Role.compare("treasurer", "chief")).toBe(0);
+    expect(Role.compare("chief", "treasurer")).toBe(0);
   });
 
   test("should return negative when first role has higher priority", () => {
@@ -131,6 +144,7 @@ describe("Role.compare()", () => {
     expect(Role.compare("member", "admin")).toBeGreaterThan(0);
     expect(Role.compare("captain", "admin")).toBeGreaterThan(0);
     expect(Role.compare("treasurer", "vice-captain")).toBeGreaterThan(0);
+    expect(Role.compare("chief", "vice-captain")).toBeGreaterThan(0);
   });
 
   test("should handle invalid roles as member", () => {
@@ -146,8 +160,8 @@ describe("Role.type", () => {
   });
 
   test("should validate valid role strings", () => {
-    const result = Role.type("admin");
-    expect(result).toBe("admin");
+    const result = Role.type("chief");
+    expect(result).toBe("chief");
   });
 
   test("should reject invalid role strings", () => {

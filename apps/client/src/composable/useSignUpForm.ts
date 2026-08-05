@@ -107,8 +107,12 @@ const handleClerkSignUp = async (
   clerkErrors: ReturnType<typeof ref<ClerkAPIError[]>>,
   isSignUpCreated: ReturnType<typeof ref<boolean>>
 ): Promise<boolean> => {
-  if (clerk.value?.loaded === null || isSignUpCreated.value !== null) {
+  if (clerk.value?.loaded !== true) {
     formErrors.general = "Authentication service is not available";
+    return false;
+  }
+  if (isSignUpCreated.value === true) {
+    formErrors.general = "Sign-up is already in progress";
     return false;
   }
 

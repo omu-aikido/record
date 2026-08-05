@@ -14,6 +14,7 @@ function normalizeRole(value: unknown): AccountMetadataType["role"] {
     value === "captain" ||
     value === "vice-captain" ||
     value === "treasurer" ||
+    value === "chief" ||
     value === "member"
   ) {
     return value;

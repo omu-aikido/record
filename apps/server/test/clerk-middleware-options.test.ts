@@ -9,7 +9,7 @@ describe("getClerkMiddlewareOptions", () => {
         CLERK_PUBLISHABLE_KEY: "pk_test",
         CLERK_SECRET_KEY: "sk_test",
         CLERK_AUTHORIZED_PARTIES: " https://app.example,https://admin.example ",
-      }),
+      })
     ).toEqual({
       publishableKey: "pk_test",
       secretKey: "sk_test",
@@ -22,7 +22,7 @@ describe("getClerkMiddlewareOptions", () => {
       getClerkMiddlewareOptions({
         CLERK_PUBLISHABLE_KEY: "pk_test",
         CLERK_SECRET_KEY: "sk_test",
-      }),
+      })
     ).toThrow("CLERK_AUTHORIZED_PARTIES");
   });
 });

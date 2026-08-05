@@ -6,6 +6,7 @@ import { reactive, readonly, ref } from "vue";
 const formDataSchema = type({
   email: /.+@.+\..+/u,
   newPassword: "10<=string<=100",
+  passwordConfirm: "string",
   firstName: "2<=string<=50",
   lastName: "2<=string<=50",
   username: "6<=string<=50 | '' | undefined",
@@ -25,7 +26,7 @@ type SignUpStep = "basic" | "personal" | "profile";
 const getValidationSchema = (currentStep: SignUpStep) => {
   switch (currentStep) {
     case "basic":
-      return type({ email: /.+@.+\..+/u, newPassword: "10<=string<=100" });
+      return type({ email: /.+@.+\..+/u, newPassword: "10<=string<=100", passwordConfirm: "string" });
     case "personal":
       return type({
         firstName: "1<=string<=50",
@@ -154,6 +155,7 @@ export function useSignUpForm(currentYear: number) {
   const formValues = reactive<SignUpFormData>({
     email: "",
     newPassword: "",
+    passwordConfirm: "",
     firstName: "",
     lastName: "",
     username: undefined,

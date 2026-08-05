@@ -173,11 +173,7 @@ describe("PATCH /clerk/account", () => {
     body.set("firstName", "Aiko");
     body.set("profileImage", new File(["image"], "avatar.png", { type: "image/png" }));
 
-    const res = await clerk.request(
-      "http://localhost/account",
-      { method: "PATCH", body },
-      testEnv
-    );
+    const res = await clerk.request("http://localhost/account", { method: "PATCH", body }, testEnv);
 
     expect(res.status).toBe(400);
     expect(updateUserMock).not.toHaveBeenCalled();

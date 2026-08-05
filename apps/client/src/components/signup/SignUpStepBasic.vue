@@ -68,7 +68,7 @@
     <div class="gap-2 flex flex-col">
       <Input
         id="password-confirm"
-        v-model="passwordConfirm"
+        :model-value="formValues.passwordConfirm"
         name="password-confirm"
         autocomplete="new-password"
         :type="showPasswordConfirm ? 'text' : 'password'"
@@ -77,7 +77,7 @@
         placeholder="パスワードを再入力"
         :disabled="isSignUpCreated"
         :error="passwordConfirmError"
-        @input="validatePasswordMatch">
+        @update:model-value="onUpdate('passwordConfirm', $event)">
         <template #suffix>
           <button
             type="button"
@@ -141,13 +141,12 @@ const emit = defineEmits<{
 }>();
 const showPassword = ref(false);
 const showPasswordConfirm = ref(false);
-const passwordConfirm = ref("");
 const passwordConfirmError = ref("");
 const onUpdate = (key: keyof useSignUpForm.SignUpFormData, value: string | number) => {
   emit("update:formValue", key, value);
 };
 const validatePasswordMatch = () => {
-  if (passwordConfirm.value && passwordConfirm.value !== props.formValues.newPassword) {
+  if (props.formValues.passwordConfirm && props.formValues.passwordConfirm !== props.formValues.newPassword) {
     passwordConfirmError.value = "パスワードが一致しません";
   } else {
     passwordConfirmError.value = "";
@@ -158,8 +157,8 @@ const canProceed = computed(() => {
     props.formValues.email &&
     props.formValues.newPassword &&
     props.formValues.newPassword.length >= 10 &&
-    passwordConfirm.value &&
-    passwordConfirm.value === props.formValues.newPassword
+    props.formValues.passwordConfirm &&
+    props.formValues.passwordConfirm === props.formValues.newPassword
   );
 });
 const handleNextClick = () => {
@@ -169,10 +168,7 @@ const handleNextClick = () => {
 };
 watch(
   () => props.formValues.newPassword,
-  (newPassword) => {
-    if (newPassword && !passwordConfirm.value) {
-      passwordConfirm.value = newPassword;
-    }
+  () => {
     validatePasswordMatch();
   }
 );

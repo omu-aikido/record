@@ -25,11 +25,19 @@ export default new Hono<{ Bindings: Env }>() //
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
+          "'unsafe-inline'",
+          "blob:",
           "https://*.clerk.accounts.dev",
           "https://accounts.omu-aikido.com",
           c.env.CLERK_FRONTEND_API_URL,
         ],
         connectSrc: [
+          "'self'",
+          "https://*.clerk.accounts.dev",
+          "https://accounts.omu-aikido.com",
+          c.env.CLERK_FRONTEND_API_URL,
+        ],
+        frameSrc: [
           "'self'",
           "https://*.clerk.accounts.dev",
           "https://accounts.omu-aikido.com",

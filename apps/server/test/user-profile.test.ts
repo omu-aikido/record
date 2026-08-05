@@ -103,6 +103,9 @@ describe("GET /profile", () => {
       firstName: "Aiko",
       lastName: "Do",
       imageUrl: "https://img.example/avatar.png",
+      privateMetadata: { secret: "do-not-return" },
+      unsafeMetadata: { internal: "do-not-return" },
+      emailAddresses: [{ emailAddress: "aikido@example.com" }],
       publicMetadata: { role: "chief", grade: null, getGradeAt: null, joinedAt: null, year: "", birthday: "" },
     }));
 
@@ -110,7 +113,7 @@ describe("GET /profile", () => {
     const json = await res.json();
 
     expect(res.status).toBe(200);
-    expect(json.profile.role).toBe("chief");
+    expect(json).toMatchObject({ profile: { role: "chief" } });
   });
 });
 

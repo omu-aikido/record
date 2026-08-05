@@ -46,7 +46,7 @@ async function handleUserCreated(
   }
 
   try {
-    await clerkClient.users.updateUser(event.data.id, {
+    await clerkClient.users.updateUserMetadata(event.data.id, {
       publicMetadata: {
         year: meta.year,
         grade: meta.grade,

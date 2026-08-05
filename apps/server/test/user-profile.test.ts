@@ -95,6 +95,23 @@ describe("GET /profile", () => {
       },
     });
   });
+
+  test("preserves the chief role from public metadata", async () => {
+    clerkUsers.getUser.mockImplementationOnce(async () => ({
+      id: "member-user",
+      username: "aikido-user",
+      firstName: "Aiko",
+      lastName: "Do",
+      imageUrl: "https://img.example/avatar.png",
+      publicMetadata: { role: "chief", grade: null, getGradeAt: null, joinedAt: null, year: "", birthday: "" },
+    }));
+
+    const res = await clerk.request("http://localhost/profile", {}, testEnv);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.profile.role).toBe("chief");
+  });
 });
 
 describe("GET /clerk/account", () => {

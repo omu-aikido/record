@@ -2,10 +2,7 @@ import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { Hono } from "hono";
 
 mock.module("@clerk/hono", () => ({
-  getAuth: (
-    c: { req: { header: (key: string) => string | null } },
-    options: { acceptsToken?: string },
-  ) => {
+  getAuth: (c: { req: { header: (key: string) => string | null } }, options: { acceptsToken?: string }) => {
     if (c.req.header("x-token-type") !== options.acceptsToken) {
       return { isAuthenticated: false, userId: null };
     }

@@ -272,7 +272,12 @@ const { mutateAsync: updateProfile, isPending: isSubmitting } = useMutation({
   onSuccess: (responseData) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.user.clerk.profile() });
 
-    if (typeof responseData === "object" && responseData !== null && "profile" in responseData && responseData.profile) {
+    if (
+      typeof responseData === "object" &&
+      responseData !== null &&
+      "profile" in responseData &&
+      responseData.profile
+    ) {
       const validatedProfile = AccountMetadata(responseData.profile);
       if (validatedProfile instanceof ArkErrors) {
         if (import.meta.env.DEV) console.error("Invalid updated profile response");

@@ -8,7 +8,7 @@
           v-model="searchQuery"
           type="text"
           placeholder="名前・メアドで検索..."
-          class="min-w-0 px-3 py-2 bg-base border-overlay0 rounded-md text text-base sm:w-72 focus:ring-blue-500 flex-1 border transition-shadow focus:ring-2 focus:outline-none" />
+          class="min-w-0 px-3 py-2 bg-base border-overlay0 rounded-md text text-base placeholder-subtext sm:w-72 focus:ring-blue-500 flex-1 border transition-shadow focus:ring-2 focus:outline-none" />
       </div>
 
       <div class="flex flex-row items-center gap-2">

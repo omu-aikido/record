@@ -5,7 +5,13 @@ import vueDevTools from "vite-plugin-vue-devtools";
 import { defineConfig, lazyPlugins } from "vite-plus";
 
 export default defineConfig({
-  plugins: lazyPlugins(() => [vue(), UnoCSS(), vueDevTools()]),
+  plugins: lazyPlugins(() => [
+    vue(),
+    UnoCSS(),
+    vueDevTools({
+      launchEditor: "zed",
+    }),
+  ]),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

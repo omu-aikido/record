@@ -20,8 +20,8 @@ function verifyWebhookSignature(
 ): ClerkWebhookEvent | null {
   const svix = new Webhook(webhookSecret);
   try {
-    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    return svix.verify(payload, headers) as ClerkWebhookEvent;
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion typescript/no-confusing-void-expression
+    return svix.verify(payload, headers) as unknown as ClerkWebhookEvent;
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
     notify(c, error, { statusCode: 400 });

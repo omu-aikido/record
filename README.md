@@ -11,16 +11,9 @@ Vue 3 SPA + Hono Backend on Cloudflare Workers
 | DB         | Turso, Drizzle ORM                              |
 | Auth       | Clerk                                           |
 | Validation | Arktype, Drizzle-Arktype                        |
-| Build      | Vite+, Bun                                      |
+| Build      | Vite+                                           |
+| PM         | Bun                                             |
 | DevEnv     | Nix                                             |
-
-## 前提条件
-
-- Bun 1.3.11+
-- Node.js 24+ (Nix利用時)
-- Cloudflare アカウント (デプロイ時)
-- Turso アカウント (DB利用時)
-- Clerk アカウント (認証利用時)
 
 ## セットアップ
 
@@ -38,7 +31,7 @@ bun install
 
 ```bash
 cd apps/database/
-cat migrations/20260331022512_certain_sunspot/migration.sql | sqlite3 record.db
+bun run generate
 ```
 
 ### 2. 環境変数設定
@@ -59,6 +52,7 @@ vp run dev
 ```
 apps/
 ├── client/     # Vue 3 SPA (Vite)
+├── database/   # ローカルTurso DB・マイグレーション
 ├── server/     # Hono API (Cloudflare Workers)
 └── share/      # 共有型・バリデーション
 ```
@@ -77,29 +71,35 @@ apps/
 vp run build
 ```
 
-### 2. Backend デプロイ
+### 2. Backend デプロイ確認（dry-run）
 
 ```bash
 cd apps/server && bun run deploy
 ```
 
+`apps/server` の `deploy` script は `--dry-run` で実行されます。
+
 ### 3. SPA モード
 
-`wrangler.jsonc` の `assets.not_found_handling: "single-page-application"` により、API以外のリクエストはSPAとして配信されます。
+`wrangler.toml` の `[assets].not_found_handling = "single-page-application"` により、API以外のリクエストはSPAとして配信されます。
 
 ## テスト
 
 ### テスト戦略
 
-| アプリ        | テストタイプ           |
-| ------------- | ---------------------- |
-| `apps/share`  | Unit テスト            |
-| `apps/server` | API/Integration テスト |
-| `apps/client` | Component テスト       |
+| アプリ        | テストタイプ             |
+| ------------- | ------------------------ |
+| `apps/share`  | Unit テスト              |
+| `apps/server` | API/Integration テスト   |
+| `apps/client` | Unit / Composable テスト |
 
 ### テスト実行
 
-現時点では root の統一テストタスクは未定義です。各アプリにテスト script を追加した段階で、`vite.config.ts` の `run.tasks` に統一入口を追加してください。
+root の統一テストタスクとして、以下を実行します。
+
+```bash
+bun test --isolate
+```
 
 ## 開発ガイドライン
 

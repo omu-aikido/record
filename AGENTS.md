@@ -22,6 +22,7 @@ apps/
 │       ├── components/  # Vue コンポーネント
 │       ├── assets/      # 静的アセット
 │       └── App.vue      # ルートコンポーネント
+├── database/   # ローカルTurso DB・マイグレーション
 ├── server/     # Backend (Hono/Cloudflare Workers)
 │   └── src/
 │       └── index.ts     # API エントリポイント
@@ -38,7 +39,7 @@ apps/
 | DB         | Turso, Drizzle ORM                              |
 | Auth       | Clerk                                           |
 | Validation | Arktype, Drizzle-Arktype                        |
-| Build      | Turborepo, Bun                                  |
+| Build      | Vite+, Bun                                      |
 
 ## 開発ガイドライン
 
@@ -63,10 +64,8 @@ apps/
 ### テスト
 
 - `apps/share`: Unit テスト (`bun:test`)
-- `apps/server`: Unitテスト・API/Integration テスト（`bun:test`, `hono/testing`,）
-- `apps/client`: Composable テスト
-
-- Unit Test
+- `apps/server`: Unit・API/Integration テスト（`bun:test`, Hono `app.request`）
+- `apps/client`: Unit / Composable テスト (`bun:test`)
 
 ## コマンド
 
@@ -83,21 +82,23 @@ cd apps/client && bun run dev
 # Backend のみ起動
 cd apps/server && bun run dev
 
-# Backend デプロイ
+# Backend デプロイ確認（dry-run）
 cd apps/server && bun run deploy
 ```
 
 ## 環境変数
 
-`.env.local` に以下を設定:
+`.env.example` を参考に、各アプリの環境変数を設定:
 
 ```env
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_***
 CLERK_PUBLISHABLE_KEY=pk_test_***
 CLERK_SECRET_KEY=sk_test_***
-TURSO_DB_URL=libsql://*.turso.io
-TURSO_DB_AUTH_TOKEN=***
-CF_ACCOUNT_ID=***
-CF_API_TOKEN=***
+CLERK_FRONTEND_API_URL=https://your-app.clerk.accounts.dev
+CLERK_AUTHORIZED_PARTIES=https://your-app.example.com
+CLERK_WEBHOOK_SECRET=whsec_***
+TURSO_DATABASE_URL=libsql://*.turso.io
+TURSO_AUTH_TOKEN=***
 ```
 
 ## Lint and Format

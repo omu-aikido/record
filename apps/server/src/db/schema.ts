@@ -6,7 +6,7 @@ export const activity = sqliteTable("activity", {
   userId: text().notNull(),
   date: text().notNull(),
   period: real().default(1.5).notNull(),
-  createAt: text().default("sql`(CURRENT_TIMESTAMP)`").notNull(),
+  createAt: text().notNull(),
   updatedAt: text(),
 });
 

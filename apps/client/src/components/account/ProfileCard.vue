@@ -64,101 +64,15 @@
     </div>
 
     <form v-else class="stack" @submit.prevent="handleSubmit">
-      <div class="gap-1.5 flex flex-col">
-        <label class="form-label block">級段位</label>
-        <Listbox v-model="formData.grade">
-          <div class="mt-1 relative">
-            <ListboxButton
-              class="rounded-md bg-surface0 border-overlay0 px-3 py-2 pr-10 text text focus:ring-blue-500 relative w-full cursor-default border text-left focus:ring-2 focus:outline-none">
-              <span class="block overflow-hidden text-ellipsis whitespace-nowrap">{{
-                translateGrade(formData.grade ?? "")
-              }}</span>
-              <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
-                <div class="i-lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
-              </span>
-            </ListboxButton>
-            <transition
-              leave-active-class="transition-opacity duration-100 ease-in"
-              leave-from-class="opacity-100"
-              leave-to-class="opacity-0">
-              <ListboxOptions
-                class="mt-1 max-h-60 rounded-md bg-surface0 p-1 shadow-md border-overlay0 absolute z-10 w-full overflow-auto border">
-                <ListboxOption
-                  v-for="gradeOption in gradeOptions"
-                  :key="gradeOption.grade"
-                  v-slot="{ active, selected }"
-                  :value="gradeOption.grade">
-                  <li
-                    :class="[
-                      'py-2 px-4 pr-10 text inline-flex items-center cursor-default select-none',
-                      active ? 'bg-overlay' : '',
-                      selected ? 'text-blue-500' : '',
-                    ]">
-                    <span
-                      :class="['block overflow-hidden text-ellipsis whitespace-nowrap', selected ? 'font-medium' : '']">
-                      {{ gradeOption.name }}
-                    </span>
-                    <span v-if="selected" class="right-0 pr-6 absolute">
-                      <div class="i-lucide:check h-4 w-4 text-blue-500" aria-hidden="true" />
-                    </span>
-                  </li>
-                </ListboxOption>
-              </ListboxOptions>
-            </transition>
-          </div>
-        </Listbox>
-      </div>
-
-      <Input v-model="formData.getGradeAt" type="date" label="取得日" />
-
-      <Input v-model="formData.birthday" type="date" label="誕生日" />
-
-      <Input v-model="formData.joinedAt" type="number" label="入部年" min="2020" max="9999" />
-
-      <div class="gap-1.5 flex flex-col">
-        <label class="text-sm font-medium text-subtext block">学年</label>
-        <Listbox v-model="formData.year">
-          <div class="mt-1 relative">
-            <ListboxButton
-              class="rounded-md bg-surface0 border-overlay0 px-3 py-2 pr-10 text text focus:ring-blue-500 relative w-full cursor-default border text-left focus:ring-2 focus:outline-none">
-              <span class="block overflow-hidden text-ellipsis whitespace-nowrap">{{
-                translateYear(formData.year)
-              }}</span>
-              <span class="inset-0 right-0 pr-2 pointer-events-none absolute flex items-center justify-end">
-                <div class="i-lucide:chevrons-up-down w-4 h-4 text-subtext" aria-hidden="true" />
-              </span>
-            </ListboxButton>
-            <transition
-              leave-active-class="transition-opacity duration-100 ease-in"
-              leave-from-class="opacity-100"
-              leave-to-class="opacity-0">
-              <ListboxOptions
-                class="mt-1 max-h-60 rounded-md bg-surface0 p-1 shadow-md border-overlay0 absolute z-10 w-full overflow-auto border">
-                <ListboxOption
-                  v-for="yearOption in yearOptions"
-                  :key="yearOption.year"
-                  v-slot="{ active, selected }"
-                  :value="yearOption.year">
-                  <li
-                    :class="[
-                      'py-2 px-4 pr-10 text inline-flex items-center cursor-default select-none',
-                      active ? 'bg-overlay' : '',
-                      selected ? 'text-blue-500' : '',
-                    ]">
-                    <span
-                      :class="['block overflow-hidden text-ellipsis whitespace-nowrap', selected ? 'font-medium' : '']">
-                      {{ yearOption.name }}
-                    </span>
-                    <span v-if="selected" class="right-0 pr-6 absolute">
-                      <div class="i-lucide:check h-4 w-4 text-blue-500" aria-hidden="true" />
-                    </span>
-                  </li>
-                </ListboxOption>
-              </ListboxOptions>
-            </transition>
-          </div>
-        </Listbox>
-      </div>
+      <ProfileFields
+        v-model:grade="formData.grade"
+        v-model:year="formData.year"
+        v-model:joined-at="formData.joinedAt"
+        v-model:get-grade-at="formData.getGradeAt"
+        v-model:birthday="formData.birthday"
+        :disabled="isSubmitting"
+        order="profile"
+        required />
 
       <p v-if="message" :class="['text-sm font-medium', isError ? 'text-red-500' : 'text-green-500']">
         {{ message }}
@@ -177,13 +91,10 @@
 <script setup lang="ts">
 import { ArkErrors } from "arktype";
 import hc from "@/lib/honoClient";
-import Input from "@/components/ui/UiInput.vue";
+import ProfileFields from "@/components/account/ProfileFields.vue";
 import { queryKeys } from "@/lib/queryKeys";
-import { AccountMetadata, formatDateSlash, isProfileComplete } from "share";
+import { AccountMetadata, formatDateSlash, isProfileComplete, translateGrade, translateYear } from "share";
 import { computed, reactive, ref, watch } from "vue";
-import { grade, translateGrade } from "share";
-import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/vue";
-import { translateYear, year } from "share";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 
 interface FormData {
@@ -199,8 +110,6 @@ const queryClient = useQueryClient();
 const isEditing = ref(false);
 const message = ref("");
 const isError = ref(false);
-const gradeOptions = grade;
-const yearOptions = year;
 
 const formData = reactive<FormData>({
   grade: 0,
@@ -249,8 +158,14 @@ function applyProfileToForm(newProfile: typeof profile.value) {
   formData.birthday = "";
 }
 
-// Sync form data
-watch(profile, (newProfile) => applyProfileToForm(newProfile), { immediate: true });
+// Sync form data without replacing values the user is currently editing.
+watch(
+  profile,
+  (newProfile) => {
+    if (!isEditing.value) applyProfileToForm(newProfile);
+  },
+  { immediate: true }
+);
 
 function updateFormData() {
   applyProfileToForm(profile.value);

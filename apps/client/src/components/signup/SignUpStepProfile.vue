@@ -1,38 +1,26 @@
 <template>
   <div class="stack">
     <div class="gap-4 grid grid-cols-2">
-      <div class="gap-2 flex flex-col">
-        <label for="year" class="text-base font-medium text-subtext">学年</label>
-        <select
-          id="year"
-          :value="formValues.year"
-          :disabled="isSignUpCreated"
-          class="rounded-md border-overlay1 bg-base px-3 py-2 input-base text focus:ring-blue-500 h-fit w-full border transition-shadow duration-200 outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
-          @change="onUpdate('year', ($event.target as HTMLSelectElement).value)">
-          <option v-for="y in yearOptions" :key="y.year" :value="y.year">
-            {{ y.name }}
-          </option>
-        </select>
-        <p v-if="formErrors.year" class="text-sm text-red-500">
-          {{ formErrors.year }}
-        </p>
-      </div>
-      <div class="gap-2 flex flex-col">
-        <label for="grade" class="text-base font-medium text-subtext">級段位</label>
-        <select
-          id="grade"
-          :value="formValues.grade"
-          :disabled="isSignUpCreated"
-          class="rounded-md border-overlay1 bg-base px-3 py-2 input-base text focus:ring-blue-500 h-fit w-full border transition-shadow duration-200 outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
-          @change="onUpdate('grade', Number(($event.target as HTMLSelectElement).value))">
-          <option v-for="g in gradeOptions" :key="g.grade" :value="g.grade">
-            {{ g.name }}
-          </option>
-        </select>
-        <p v-if="formErrors.grade" class="text-sm text-red-500">
-          {{ formErrors.grade }}
-        </p>
-      </div>
+      <UiSelect
+        id="year"
+        name="year"
+        label="学年"
+        :model-value="formValues.year"
+        :options="yearSelectOptions"
+        :disabled="isSignUpCreated"
+        :error="formErrors.year"
+        required
+        @update:model-value="onUpdate('year', $event)" />
+      <UiSelect
+        id="grade"
+        name="grade"
+        label="級段位"
+        :model-value="formValues.grade"
+        :options="gradeSelectOptions"
+        :disabled="isSignUpCreated"
+        :error="formErrors.grade"
+        required
+        @update:model-value="onUpdate('grade', Number($event))" />
     </div>
 
     <Input
@@ -40,9 +28,10 @@
       :model-value="formValues.joinedAt"
       type="number"
       label="入部年度"
+      required
       :disabled="isSignUpCreated"
       :error="formErrors.joinedAt"
-      @update:model-value="onUpdate('joinedAt', Number($event))" />
+      @update:model-value="onUpdate('joinedAt', toNumberOrNull($event))" />
 
     <Input
       id="getGradeAt"
@@ -51,7 +40,7 @@
       label="取得年月日 (任意)"
       :disabled="isSignUpCreated"
       :error="formErrors.getGradeAt"
-      @update:model-value="onUpdate('getGradeAt', $event)" />
+      @update:model-value="onUpdate('getGradeAt', $event ?? null)" />
 
     <Input
       id="birthday"
@@ -61,7 +50,7 @@
       required
       :disabled="isSignUpCreated"
       :error="formErrors.birthday"
-      @update:model-value="onUpdate('birthday', $event)" />
+      @update:model-value="onUpdate('birthday', $event ?? '')" />
 
     <div class="gap-2 flex items-center">
       <input
@@ -92,6 +81,7 @@
 import { grade as gradeOptions, year as yearOptions } from "share";
 
 import Input from "@/components/ui/UiInput.vue";
+import UiSelect from "@/components/ui/UiSelect.vue";
 import type { FormErrors, SignUpFormData } from "@/composable/useSignUpForm";
 
 defineProps<{
@@ -103,10 +93,13 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "update:formValue", key: keyof SignUpFormData, value: string | number | boolean): void;
+  (e: "update:formValue", key: keyof SignUpFormData, value: string | number | boolean | null): void;
 }>();
 
-const onUpdate = (key: keyof SignUpFormData, value: string | number | boolean) => {
+const onUpdate = (key: keyof SignUpFormData, value: string | number | boolean | null) => {
   emit("update:formValue", key, value);
 };
+const toNumberOrNull = (value: string | number | null) => (value === null || value === "" ? null : Number(value));
+const yearSelectOptions = yearOptions.map((option) => ({ label: option.name, value: option.year }));
+const gradeSelectOptions = gradeOptions.map((option) => ({ label: option.name, value: option.grade }));
 </script>

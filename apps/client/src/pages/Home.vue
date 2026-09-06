@@ -7,10 +7,11 @@ import PracticeCountGraph from "@/components/home/PracticeCountGraph.vue";
 import { queryKeys } from "@/lib/queryKeys";
 import RankingCard from "@/components/home/RankingCard.vue";
 import { Show } from "@clerk/vue";
+import UiStatus from "@/components/ui/UiStatus.vue";
 import { useAddActivity } from "@/composable/useActivity";
+import { useQuery } from "@tanstack/vue-query";
 import { AccountMetadata, isProfileComplete } from "share";
 import { computed, ref } from "vue";
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
 
 // Types
 type ProfileResponse = InferResponseType<typeof hc.user.clerk.profile.$get, 200>;
@@ -18,14 +19,16 @@ type PracticeCountResponse = InferResponseType<typeof hc.user.record.count.$get,
 type RankingResponse = InferResponseType<typeof hc.user.record.ranking.$get, 200>;
 type MenuResponse = InferResponseType<typeof hc.user.clerk.menu.$get, 200>;
 const { mutateAsync: addActivity } = useAddActivity();
-const queryClient = useQueryClient();
 // State
 const activityLoading = ref(false);
+const activityError = ref<string | null>(null);
+const activityFormResetKey = ref(0);
 const iconMap = {
   "clipboard-list": "i-lucide:clipboard-list",
   user: "i-lucide:user",
   settings: "i-lucide:settings",
   calendar: "i-lucide:calendar",
+  "tool-case": "i-lucide:tool-case",
 };
 // Queries
 const { data: profileData } = useQuery({
@@ -122,11 +125,12 @@ const { data: menuData } = useQuery({
 const menuItems = computed(() => menuData.value?.menu ?? []);
 const handleAddActivity = async (date: string, period: number) => {
   activityLoading.value = true;
+  activityError.value = null;
   try {
     await addActivity({ date, period });
-    queryClient.invalidateQueries({ queryKey: queryKeys.user.clerk.profile() });
-    queryClient.invalidateQueries({ queryKey: queryKeys.user.record.count() });
-    queryClient.invalidateQueries({ queryKey: queryKeys.user.record.ranking() });
+    activityFormResetKey.value += 1;
+  } catch {
+    activityError.value = "活動記録の追加に失敗しました。時間をおいて再試行してください";
   } finally {
     activityLoading.value = false;
   }
@@ -162,9 +166,12 @@ const getNavLabelClass = (theme: string) => {
           プロフィール情報に未入力があります。誕生日を含む必要項目を登録してください。
         </RouterLink>
 
-        <div v-if="error" class="bg-red-50 text-red-500 p-4 rounded-lg text-sm dark:bg-red-900/10 text-center">
+        <UiStatus
+          v-if="error"
+          status="error"
+          class="bg-red-50 text-red-500 p-4 rounded-lg text-sm dark:bg-red-900/10 text-center">
           {{ error }}
-        </div>
+        </UiStatus>
 
         <PracticeCountGraph
           :practice-data="practiceData"
@@ -179,7 +186,11 @@ const getNavLabelClass = (theme: string) => {
           :current-error="currentRankingError"
           :last-month-error="lastMonthRankingError" />
 
-        <ActivityForm :loading="activityLoading" @submit="handleAddActivity" />
+        <ActivityForm
+          :loading="activityLoading"
+          :error="activityError ?? undefined"
+          :reset-key="activityFormResetKey"
+          @submit="handleAddActivity" />
 
         <hr class="pb-2 border-overlay0 opacity-60" />
 
@@ -191,6 +202,7 @@ const getNavLabelClass = (theme: string) => {
             :to="item.href.startsWith('http') ? undefined : item.href"
             :href="item.href.startsWith('http') ? item.href : undefined"
             :target="item.href.startsWith('http') ? '_blank' : undefined"
+            :rel="item.href.startsWith('http') ? 'noopener noreferrer' : undefined"
             :class="[
               'group gap-3 card text hover:shadow-md flex cursor-pointer flex-col items-center justify-center no-underline transition-colors transition-shadow',
               getNavItemClass(item.theme),

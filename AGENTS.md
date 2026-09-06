@@ -1,109 +1,94 @@
-# AGENTS.md
+## Procedure When Starting Work on the Project
 
-AIコーディングアシスタント向けのプロジェクトガイドライン。
+1. **Check the working location and current changes**
 
-## プロジェクトの憲法
+   ```bash
+   pwd
+   git status --short --branch
+   git worktree list
+   ```
 
-1. **境界の遵守:** `apps/client` から `drizzle-orm` を直接インポートしてはならない。DB操作は常に `apps/server` のAPIを通すこと。
-2. **共有ロジック:** 型定義やバリデーションロジックは可能な限り `apps/share` に記述し、`apps/server` と `apps/client` でインポートして共有すること。
-3. **ビルドの原則:** `apps/client` はSPAとして配信される。SSRは行わない。
-4. **API通信:** Hono RPC (`hc<AppType>`) を使用すること。手動の `fetch` やURL文字列のハードコーディングは禁止。
-5. **認証:** 認証ロジックは Clerk を使用し、Honoのミドルウェア層でガードをかけること。クライアント側での権限チェックはあくまでUX目的であること。
-6. **テスト:** 新しい機能を追加する際は必ず対応するテスト（`apps/share`ならUnit, `apps/server`ならAPI/Integration, `apps/client`ならComponent）をセットで提案すること。
-7. **スタイリング:** UnoCSSを使用する。Tailwind互換のユーティリティクラスを優先する。
-8. **コンポーネント:** HeadlessUIを使用してアクセシビリティを確保する。
+   Do not confuse the target worktree or branch with another one. Do not treat existing changes as your own, and do not discard or overwrite them.
 
-## ディレクトリ構成
+2. **Prepare only the required local configuration**
 
-```
-apps/
-├── client/     # Frontend (Vue 3 SPA)
-│   └── src/
-│       ├── components/  # Vue コンポーネント
-│       ├── assets/      # 静的アセット
-│       └── App.vue      # ルートコンポーネント
-├── server/     # Backend (Hono/Cloudflare Workers)
-│   └── src/
-│       └── index.ts     # API エントリポイント
-└── share/      # 共有コード
-    └── index.ts  # 型定義・バリデーション
-```
+   For work that requires environment variables, confirm the private key and `AGE_IDENTITY_FILE` configuration before proceeding. Do not commit plaintext environment variables or credentials.
 
-## 技術スタック
+   When using a local database, create the database only on the first setup.
 
-| レイヤー   | 技術                                            |
-| ---------- | ----------------------------------------------- |
-| Frontend   | Vue 3, Vite, UnoCSS, HeadlessUI, TanStack Query |
-| Backend    | Hono, Cloudflare Workers                        |
-| DB         | Turso, Drizzle ORM                              |
-| Auth       | Clerk                                           |
-| Validation | Arktype, Drizzle-Arktype                        |
-| Build      | Turborepo, Bun                                  |
+3. **Check the verification state before making changes**
 
-## 開発ガイドライン
+   Select verification commands appropriate to the files or functionality being changed, and, when possible, run them before making changes to establish a baseline. If there are existing failures, record them before starting so they are not mistaken for failures introduced by your changes. Available commands are listed under "Verification."
 
-### API設計
+## Project Invariants
 
-- RESTful原則に従う
-- エンドポイントは `/api/` プレフィックスを付ける
-- レスポンスはJSON形式
+1. **Respect boundaries:** `apps/client` must not import `drizzle-orm` directly. All database operations must go through the API in `apps/server`.
+2. **Shared logic:** Type definitions and validation logic should be placed in `apps/share` whenever possible and shared by importing them from both `apps/server` and `apps/client`.
+3. **Build principle:** `apps/client` is served as an SPA. Do not use SSR.
+4. **API communication:** Use Hono RPC (`hc<AppType>`). Manual `fetch` calls and hard-coded URL strings are prohibited.
+5. **Authentication:** Use Clerk for authentication logic and enforce authorization at the Hono middleware layer. Client-side permission checks are for UX purposes only.
+6. **Tests:** When adding new functionality, always propose corresponding tests together with the change (`apps/share`: Unit, `apps/server`: API/Integration, `apps/client`: Component).
+7. **Styling:** Use UnoCSS. Prefer Tailwind-compatible utility classes.
+8. **Components:** Use HeadlessUI to ensure accessibility.
 
-### コンポーネント設計
+## Development Guidelines
 
-- コンポーネントは `apps/client/src/components/` に配置
-- ファイル名は PascalCase (例: `UserProfile.vue`)
-- Props と Emit は明確に定義
+### API Design
 
-### スタイリング
+- Follow RESTful principles.
+- Prefix endpoints with `/api/`.
+- Use JSON responses (use TanStack Query and Hono RPC).
 
-- UnoCSSのユーティリティクラスを使用
-- TailwindCSS互換記法を使用するが、直書きは避けて、shortcut/ruleなどでセマンティックに作成
-- カスタムテーマが必要な場合は `uno.config.ts` で定義
+### Component Design
 
-### テスト
+- Place components under `apps/client/src/components/`.
+- Use PascalCase file names (e.g. `UserProfile.vue`).
+- Define Props and Emits explicitly.
 
-- `apps/share`: Unit テスト (`bun:test`)
-- `apps/server`: Unitテスト・API/Integration テスト（`bun:test`, `hono/testing`,）
-- `apps/client`: Composable テスト
+### Styling
 
-- Unit Test
+- Use UnoCSS utility classes.
+- Use TailwindCSS-compatible syntax, but avoid writing utility combinations inline where possible; prefer semantic abstractions using shortcuts, rules, and similar mechanisms.
+- Define custom themes in `uno.config.ts` when needed.
 
-## コマンド
+### Testing
+
+- `apps/share`: Unit tests (`bun:test`)
+- `apps/server`: Unit and API/Integration tests (`bun:test`, Hono `app.request`)
+- `apps/client`: Unit / Composable tests (`bun:test`)
+
+## Commands
 
 ```bash
-# 開発サーバー起動
+# Start development servers
 vp run dev
 
-# 本番ビルド
+# Production build
 vp run build
 
-# Frontend のみ起動
+# Start Frontend only
 cd apps/client && bun run dev
 
-# Backend のみ起動
+# Start Backend only
 cd apps/server && bun run dev
 
-# Backend デプロイ
+# Verify Backend deployment (dry-run)
 cd apps/server && bun run deploy
 ```
 
-## 環境変数
+## Verification
 
-`.env.local` に以下を設定:
+Use the repository's existing Vite+ task definitions for verification.
 
-```env
-CLERK_PUBLISHABLE_KEY=pk_test_***
-CLERK_SECRET_KEY=sk_test_***
-TURSO_DB_URL=libsql://*.turso.io
-TURSO_DB_AUTH_TOKEN=***
-CF_ACCOUNT_ID=***
-CF_API_TOKEN=***
-```
+- Build: `vp build apps/client`
+- Typecheck: `vp run --filter './apps/*' --cache typecheck`
+- Lint: `vp lint apps/client/src`
+- Tests: `bun test --isolate`
 
-## Lint and Format
+Prefer these repository-level commands over invoking `vite`, `vue-tsc`,
+or package-local scripts directly unless debugging the command itself.
 
-**Vite+** (`vp`): Unified toolchain managing Oxlint + Oxfmt. Config in `vite.config.ts`.
+A verification is considered clean only when the command succeeds and
+produces no linter warnings introduced by the change.
 
-- Lint: `vp lint .`
-- Format: `vp fmt .`
-- Both: `vp check`
+Lint must complete without warnings in files changed by the task.

@@ -7,7 +7,7 @@
 
       <ProfileCard />
 
-      <div v-if="errorMessage" class="alert-error">{{ errorMessage }}</div>
+      <UiStatus v-if="errorMessage" status="error" :message="errorMessage" class="alert-error" />
       <div v-if="successMessage" class="alert-success">{{ successMessage }}</div>
       <div class="mt-4 pt-4 border-overlay0 border-t">
         <p class="text-sub">
@@ -31,6 +31,7 @@ import { computed } from "vue";
 import hc from "@/lib/honoClient";
 import ProfileCard from "@/components/account/ProfileCard.vue";
 import { queryKeys } from "@/lib/queryKeys";
+import UiStatus from "@/components/ui/UiStatus.vue";
 import { useQuery } from "@tanstack/vue-query";
 import UserHeader from "@/components/account/UserHeader.vue";
 

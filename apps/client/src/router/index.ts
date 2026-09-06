@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, type RouteLocationNormalized } from "vue-router";
 
 import { getPublicMetadataRole, isAdminRole } from "./adminGuard";
 
@@ -89,31 +89,64 @@ interface ClerkUser {
   publicMetadata: unknown;
 }
 
-interface ClerkClient {
+export interface ClerkClient {
   user: ClerkUser | null | undefined;
   loaded: boolean;
 }
 
-// Clerkが利用可能になるまで待つ
-function waitForClerk(): Promise<ClerkClient> {
-  return new Promise((resolve) => {
-    const checkClerk = () => {
-      if (window.Clerk?.loaded) {
-        resolve(window.Clerk);
-      } else {
-        setTimeout(checkClerk, 100);
-      }
-    };
-    checkClerk();
+export interface ClerkWaitOptions {
+  timeoutMs?: number;
+  intervalMs?: number;
+  sleep?: (delayMs: number) => Promise<void>;
+  now?: () => number;
+}
+
+const CLERK_WAIT_TIMEOUT_MS = 5_000;
+const CLERK_POLL_INTERVAL_MS = 100;
+
+const sleep = (delayMs: number) =>
+  new Promise<void>((resolve) => {
+    setTimeout(resolve, delayMs);
   });
+
+// Clerkが利用可能になるまで待つ。ロードに失敗した場合は有限時間で拒否する。
+export function waitForClerk(
+  getClerk: () => ClerkClient | null | undefined = () => window.Clerk,
+  options: ClerkWaitOptions = {}
+): Promise<ClerkClient> {
+  const timeoutMs = options.timeoutMs ?? CLERK_WAIT_TIMEOUT_MS;
+  const intervalMs = options.intervalMs ?? CLERK_POLL_INTERVAL_MS;
+  const wait = options.sleep ?? sleep;
+  const now = options.now ?? Date.now;
+  const deadline = now() + timeoutMs;
+
+  const checkClerk = async (): Promise<ClerkClient> => {
+    const clerk = getClerk();
+    if (clerk?.loaded === true) return clerk;
+
+    const remainingMs = deadline - now();
+    if (remainingMs <= 0) {
+      throw new Error("Clerk failed to load before the timeout");
+    }
+
+    await wait(Math.min(intervalMs, remainingMs));
+    return checkClerk();
+  };
+
+  return checkClerk();
 }
 
 // ナビゲーションガード：Clerkの認証を確認
-router.beforeEach(async (to, _from) => {
+export async function navigationGuard(
+  to: Pick<RouteLocationNormalized, "meta" | "name">,
+  _from: RouteLocationNormalized,
+  waitForClerkFn: () => Promise<ClerkClient> = waitForClerk
+) {
+  const requiresAuth = to.meta.requiresAuth === true;
+  const requiresAdmin = to.meta.requiresAdmin === true;
+
   try {
-    const clerk = await waitForClerk();
-    const requiresAuth = to.meta.requiresAuth === true;
-    const requiresAdmin = to.meta.requiresAdmin === true;
+    const clerk = await waitForClerkFn();
     const isAuthenticated = clerk.user !== null && clerk.user !== undefined;
 
     // 1. 認証が必要だが未ログイン
@@ -143,8 +176,10 @@ router.beforeEach(async (to, _from) => {
     return true;
   } catch (error) {
     console.error("Router guard error:", error);
-    return true;
+    return requiresAuth || requiresAdmin ? { name: "signIn" } : true;
   }
-});
+}
+
+router.beforeEach((to, from) => navigationGuard(to, from));
 
 export default router;

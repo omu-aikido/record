@@ -167,6 +167,13 @@ export const clerk = new Hono<{ Bindings: Env }>() //
         title: "カレンダー ↗",
         href: "https://omu-aikido.com/calendar",
         icon: "calendar",
+        theme: "green",
+      },
+      {
+        id: "apps",
+        title: "便利ツール ↗",
+        href: "https://omu-aikido.com/apps",
+        icon: "tool-case",
         theme: "blue",
       },
     ];

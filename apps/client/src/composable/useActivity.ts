@@ -23,7 +23,9 @@ export function useAddActivity() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    retry: 5,
+    // The activity endpoint is a non-idempotent POST. Retrying after an uncertain
+    // response could create the same activity more than once.
+    retry: false,
     mutationFn: async ({ date, period }: { date: string; period: number }) => {
       const res = await hc.user.record.$post({ json: { date, period } });
       if (!res.ok) {

@@ -36,4 +36,14 @@ describe("useSignUpForm", () => {
     expect(create).toHaveBeenCalledTimes(1);
     expect(prepareEmailAddressVerification).toHaveBeenCalledTimes(1);
   });
+
+  test("rejects an empty required joined year before signup", () => {
+    const form = useSignUpForm(2026);
+    form.setFormValue("joinedAt", null);
+
+    const result = form.validateStep("profile");
+
+    expect(result).toBe(false);
+    expect(form.formErrors.joinedAt).toBeDefined();
+  });
 });

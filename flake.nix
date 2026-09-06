@@ -11,6 +11,7 @@
 
     deps = pkgs:
       with pkgs; [
+        age
         turso-cli
         sqld
       ];
@@ -21,7 +22,10 @@
       };
     });
     packages = for (pkgs: {
-      default = deps pkgs;
+      default = pkgs.symlinkJoin {
+        name = "record-tools";
+        paths = deps pkgs;
+      };
     });
   };
 }

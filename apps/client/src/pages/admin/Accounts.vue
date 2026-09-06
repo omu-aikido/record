@@ -8,7 +8,8 @@
           v-model="searchQuery"
           type="text"
           placeholder="名前・メアドで検索..."
-          class="min-w-0 px-3 py-2 bg-base border-overlay0 rounded-md text text-base sm:w-72 focus:ring-blue-500 flex-1 border transition-shadow focus:ring-2 focus:outline-none" />
+          aria-label="名前・メールアドレスで検索"
+          class="min-w-0 px-3 py-2 bg-base border-overlay0 rounded-md text text-base placeholder-subtext sm:w-72 focus:ring-blue-500 flex-1 border transition-shadow focus:ring-2 focus:outline-none" />
       </div>
 
       <div class="flex flex-row items-center gap-2">
@@ -54,28 +55,68 @@
           <thead class="border-overlay0 border-b">
             <tr>
               <th
+                scope="col"
+                :aria-sort="getAriaSort('name')"
                 class="th-base hover:bg-overlay0 md:px-6 cursor-pointer transition-colors select-none"
-                @click="toggleSort('name')">
-                名前
-                <span v-if="sortBy === 'name'" class="ml-1">{{ sortOrder === "asc" ? "↑" : "↓" }}</span>
+                @click.self="toggleSort('name')">
+                <button
+                  type="button"
+                  class="flex w-full items-center rounded border-none bg-transparent p-0 text-left font-inherit text-inherit cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  :aria-label="getSortAriaLabel('名前', 'name')"
+                  @click="toggleSort('name')">
+                  名前
+                  <span v-if="sortBy === 'name'" aria-hidden="true" class="ml-1">
+                    {{ sortOrder === "asc" ? "↑" : "↓" }}
+                  </span>
+                </button>
               </th>
               <th
+                scope="col"
+                :aria-sort="getAriaSort('role')"
                 class="th-base hover:bg-overlay0 md:px-6 cursor-pointer transition-colors select-none"
-                @click="toggleSort('role')">
-                役職
-                <span v-if="sortBy === 'role'" class="ml-1">{{ sortOrder === "asc" ? "↑" : "↓" }}</span>
+                @click.self="toggleSort('role')">
+                <button
+                  type="button"
+                  class="flex w-full items-center rounded border-none bg-transparent p-0 text-left font-inherit text-inherit cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  :aria-label="getSortAriaLabel('役職', 'role')"
+                  @click="toggleSort('role')">
+                  役職
+                  <span v-if="sortBy === 'role'" aria-hidden="true" class="ml-1">
+                    {{ sortOrder === "asc" ? "↑" : "↓" }}
+                  </span>
+                </button>
               </th>
               <th
+                scope="col"
+                :aria-sort="getAriaSort('grade')"
                 class="th-base hover:bg-overlay0 md:px-6 cursor-pointer transition-colors select-none"
-                @click="toggleSort('grade')">
-                級段位
-                <span v-if="sortBy === 'grade'" class="ml-1">{{ sortOrder === "asc" ? "↑" : "↓" }}</span>
+                @click.self="toggleSort('grade')">
+                <button
+                  type="button"
+                  class="flex w-full items-center rounded border-none bg-transparent p-0 text-left font-inherit text-inherit cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  :aria-label="getSortAriaLabel('級段位', 'grade')"
+                  @click="toggleSort('grade')">
+                  級段位
+                  <span v-if="sortBy === 'grade'" aria-hidden="true" class="ml-1">
+                    {{ sortOrder === "asc" ? "↑" : "↓" }}
+                  </span>
+                </button>
               </th>
               <th
+                scope="col"
+                :aria-sort="getAriaSort('year')"
                 class="th-base hover:bg-overlay0 md:px-6 cursor-pointer transition-colors select-none"
-                @click="toggleSort('year')">
-                学年
-                <span v-if="sortBy === 'year'" class="ml-1">{{ sortOrder === "asc" ? "↑" : "↓" }}</span>
+                @click.self="toggleSort('year')">
+                <button
+                  type="button"
+                  class="flex w-full items-center rounded border-none bg-transparent p-0 text-left font-inherit text-inherit cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  :aria-label="getSortAriaLabel('学年', 'year')"
+                  @click="toggleSort('year')">
+                  学年
+                  <span v-if="sortBy === 'year'" aria-hidden="true" class="ml-1">
+                    {{ sortOrder === "asc" ? "↑" : "↓" }}
+                  </span>
+                </button>
               </th>
               <th class="th-base md:px-6">級段位取得日</th>
               <th class="th-base md:px-6">誕生日</th>
@@ -91,13 +132,17 @@
               class="border-overlay0 hover:bg-overlay0 cursor-pointer border-b transition-colors last:border-b-0"
               @click="openUser(user.id)">
               <td class="td-base md:px-6">
-                <div class="gap-2 flex items-center">
+                <RouterLink
+                  :to="{ name: 'adminUserDetail', params: { userId: user.id } }"
+                  :aria-label="getUserAriaLabel(user)"
+                  class="gap-2 rounded flex items-center no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  @click.stop>
                   <img :src="user.imageUrl" alt="" class="avatar-sm ml-1" />
-                  <div class="flex flex-col">
+                  <span class="flex flex-col">
                     <span class="font-medium text">{{ user.lastName }} {{ user.firstName }}</span>
                     <small class="text-sub">{{ user.emailAddress }}</small>
-                  </div>
-                </div>
+                  </span>
+                </RouterLink>
               </td>
               <td class="td-base md:px-6 text-center">{{ user.profile.roleLabel }}</td>
               <td class="td-base md:px-6 text-center">{{ user.profile.gradeLabel }}</td>
@@ -106,7 +151,12 @@
               <td class="td-base md:px-6 text-center">{{ formatDateSlash(user.profile.birthday) }}</td>
               <td class="td-base md:px-6 text-center">{{ user.profile.norm?.current ?? "-" }}</td>
               <td class="td-base md:px-6 text-center">{{ user.profile.norm?.required ?? "-" }}</td>
-              <td class="td-base md:px-6 text-center">{{ (user.profile.norm?.isMet ?? "-") ? "達成" : "未達成" }}</td>
+              <td class="td-base md:px-6 text-center">
+                <template v-if="user.profile.norm">
+                  {{ user.profile.norm.isMet ? "達成" : "未達成" }}
+                </template>
+                <span v-else class="text-sub">情報なし</span>
+              </td>
             </tr>
             <tr v-if="sortedUsers.length === 0">
               <td colspan="9" class="p-12 text-subtext text-center">ユーザーが見つかりませんでした</td>
@@ -119,6 +169,7 @@
         <button
           v-for="user in sortedUsers"
           :key="user.id"
+          type="button"
           class="card flex flex-col gap-4 text-left"
           @click="openUser(user.id)">
           <div class="gap-3 flex items-center">
@@ -170,14 +221,31 @@ import hc from "@/lib/honoClient";
 import NormSummary from "@/components/admin/NormSummary.vue";
 import { queryKeys } from "@/lib/queryKeys";
 import { useQuery } from "@tanstack/vue-query";
-import { useRouter } from "vue-router";
 import { type AdminUserType, formatDateSlash, grade as gradeOptions, Role } from "share";
-import { computed, ref } from "vue";
+import { computed, onUnmounted, ref, watch } from "vue";
+import { RouterLink, useRouter } from "vue-router";
 
 const ALL_GRADES = 999;
 
 const router = useRouter();
 const searchQuery = ref("");
+const debouncedSearchQuery = ref(searchQuery.value);
+const SEARCH_DEBOUNCE_MS = 300;
+let searchDebounceTimer: ReturnType<typeof setTimeout> | undefined;
+
+watch(searchQuery, (value) => {
+  if (searchDebounceTimer !== undefined) clearTimeout(searchDebounceTimer);
+
+  searchDebounceTimer = setTimeout(() => {
+    debouncedSearchQuery.value = value;
+    searchDebounceTimer = undefined;
+  }, SEARCH_DEBOUNCE_MS);
+});
+
+onUnmounted(() => {
+  if (searchDebounceTimer !== undefined) clearTimeout(searchDebounceTimer);
+});
+
 const statusFilter = ref<"all" | "met" | "unmet">("all");
 const gradeFilter = ref<number>(ALL_GRADES);
 const sortBy = ref<"role" | "grade" | "year" | "name">("role");
@@ -188,10 +256,10 @@ const {
   isLoading: loading,
   error: queryError,
 } = useQuery({
-  queryKey: computed(() => queryKeys.admin.accounts({ query: { query: searchQuery.value, limit: 100 } })),
+  queryKey: computed(() => queryKeys.admin.accounts({ query: { query: debouncedSearchQuery.value, limit: 100 } })),
   queryFn: async () => {
     const res = await hc.admin.accounts.$get({
-      query: { query: searchQuery.value, limit: 100 },
+      query: { query: debouncedSearchQuery.value, limit: 100 },
     });
     if (!res.ok) throw new Error("Failed to fetch accounts");
     return res.json();
@@ -201,7 +269,24 @@ const {
 const users = computed(() => (data.value?.users ?? []) as AdminUserType[]);
 const error = computed(() => (queryError.value ? "データの取得に失敗しました" : ""));
 
-const toggleSort = (field: "role" | "grade" | "year" | "name") => {
+const getUserAriaLabel = (user: AdminUserType) => {
+  const name = `${user.lastName ?? ""} ${user.firstName ?? ""}`.trim();
+  return `${name || user.emailAddress || "ユーザー"}の詳細を開く`;
+};
+
+type SortField = "role" | "grade" | "year" | "name";
+
+const getAriaSort = (field: SortField): "ascending" | "descending" | "none" => {
+  if (sortBy.value !== field) return "none";
+  return sortOrder.value === "asc" ? "ascending" : "descending";
+};
+
+const getSortAriaLabel = (label: string, field: SortField) => {
+  if (sortBy.value !== field) return `${label}で並べ替え`;
+  return `${label}で並べ替え（現在${sortOrder.value === "asc" ? "昇順" : "降順"}）`;
+};
+
+const toggleSort = (field: SortField) => {
   if (sortBy.value === field) {
     sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
     return;

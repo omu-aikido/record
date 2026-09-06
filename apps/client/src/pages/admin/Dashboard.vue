@@ -2,14 +2,13 @@
   <div class="gap-6 px-3 py-4 pb-12 md:px-6 flex flex-col">
     <AdminMenu />
 
-    <div v-if="loading" class="loading-container">
-      <div class="loading-spinner" />
-      <p class="text-sub">Loading...</p>
-    </div>
+    <UiStatus v-if="loading" status="loading" class="loading-container" />
 
-    <div v-else-if="error" class="bg-red-500/10 text-red-500 p-4 rounded-md border-red-500/20 border">
-      {{ error }}
-    </div>
+    <UiStatus
+      v-else-if="error"
+      status="error"
+      :message="error"
+      class="bg-red-500/10 text-red-500 p-4 rounded-md border-red-500/20 border" />
 
     <div v-else class="gap-8 flex flex-col">
       <section class="section">
@@ -18,9 +17,9 @@
           <span class="text-sub">{{ thresholdDate }} 以降の記録なし</span>
         </div>
 
-        <div v-if="inactiveUsers.length === 0" class="p-8 text-subtext text-center">
+        <UiStatus v-if="inactiveUsers.length === 0" status="empty" class="p-8 text-subtext text-center">
           該当する部員はいません。全員活動中です！
-        </div>
+        </UiStatus>
 
         <div v-else class="border-overlay0 flex flex-col overflow-y-auto border-t border-b">
           <div
@@ -48,6 +47,7 @@ import AdminMenu from "@/components/admin/AdminMenu.vue";
 import { computed } from "vue";
 import hc from "@/lib/honoClient";
 import { queryKeys } from "@/lib/queryKeys";
+import UiStatus from "@/components/ui/UiStatus.vue";
 import { useQuery } from "@tanstack/vue-query";
 
 // Queries

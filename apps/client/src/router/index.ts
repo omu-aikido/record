@@ -85,7 +85,7 @@ const router = createRouter({
   ],
 });
 
-export interface ClerkUser {
+interface ClerkUser {
   publicMetadata: unknown;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <DialogRoot v-model:open="isOpen">
     <DialogTrigger as-child>
-      <button class="w-8 h-8 m-4" aria-label="メニューを開く">
+      <button type="button" class="w-8 h-8 m-4" aria-label="メニューを開く">
         <div class="i-lucide:menu" />
       </button>
     </DialogTrigger>
@@ -10,10 +10,11 @@
       <DialogOverlay class="backdrop" />
       <DialogContent class="drawer">
         <DialogTitle class="sr-only">サイドメニュー</DialogTitle>
+        <DialogDescription class="sr-only">メニューを開いてページを移動できます</DialogDescription>
 
         <div class="drawer-header mt-4 mr-4 flex justify-end">
           <DialogClose as-child>
-            <button class="close-btn" aria-label="メニューを閉じる">
+            <button type="button" class="close-btn" aria-label="メニューを閉じる">
               <div class="i-lucide:panel-right-close" />
             </button>
           </DialogClose>
@@ -39,6 +40,7 @@
                 href="https://omu-aikido.com/calendar"
                 class="flex-inline gap-2 text items-center"
                 target="_blank"
+                rel="noopener noreferrer"
                 @click="close">
                 <div class="i-lucide:calendar" />
                 カレンダー ↗
@@ -47,6 +49,7 @@
                 href="https://omu-aikido.com/apps"
                 class="flex-inline gap-2 text items-center"
                 target="_blank"
+                rel="noopener noreferrer"
                 @click="close">
                 <div class="i-lucide:tool-case" />
                 便利ツール ↗
@@ -58,7 +61,7 @@
         <Show when="signed-in">
           <hr class="my-5 mx-2" />
           <SignOutButton>
-            <button class="gap-2 mx-5 text flex w-full items-center">
+            <button type="button" class="gap-2 mx-5 text flex w-full items-center">
               <div class="i-lucide:log-out" />
               ログアウト
             </button>
@@ -75,6 +78,7 @@ import { RouterLink } from "vue-router";
 import {
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogOverlay,
   DialogPortal,
   DialogRoot,

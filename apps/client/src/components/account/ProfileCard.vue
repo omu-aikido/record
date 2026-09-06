@@ -71,6 +71,7 @@
         v-model:get-grade-at="formData.getGradeAt"
         v-model:birthday="formData.birthday"
         :disabled="isSubmitting"
+        order="profile"
         required />
 
       <p v-if="message" :class="['text-sm font-medium', isError ? 'text-red-500' : 'text-green-500']">

@@ -12,6 +12,7 @@ interface Props {
   birthday: string;
   disabled?: boolean;
   required?: boolean;
+  order?: "profile" | "admin";
   joinedAtLabel?: string;
   joinedAtMin?: number;
   joinedAtMax?: number;
@@ -21,6 +22,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   disabled: false,
   required: false,
+  order: "admin",
   joinedAtLabel: "入部年",
   joinedAtMin: 2020,
   joinedAtMax: 9999,
@@ -62,47 +64,57 @@ const updateBirthday = (value: InputValue) => {
 </script>
 
 <template>
-  <UiSelect
-    id="grade"
-    :model-value="props.grade"
-    label="級段位"
-    :options="gradeSelectOptions"
-    :disabled="props.disabled"
-    :required="props.required"
-    @update:model-value="updateGrade" />
+  <div :class="props.order === 'profile' ? 'order-1' : undefined">
+    <UiSelect
+      id="grade"
+      :model-value="props.grade"
+      label="級段位"
+      :options="gradeSelectOptions"
+      :disabled="props.disabled"
+      :required="props.required"
+      @update:model-value="updateGrade" />
+  </div>
 
-  <UiSelect
-    id="year"
-    :model-value="props.year"
-    label="学年"
-    :options="yearSelectOptions"
-    :disabled="props.disabled"
-    :required="props.required"
-    @update:model-value="updateYear" />
+  <div :class="props.order === 'profile' ? 'order-5' : undefined">
+    <UiSelect
+      id="year"
+      :model-value="props.year"
+      label="学年"
+      :options="yearSelectOptions"
+      :disabled="props.disabled"
+      :required="props.required"
+      @update:model-value="updateYear" />
+  </div>
 
-  <Input
-    id="joinedAt"
-    :model-value="props.joinedAt"
-    type="number"
-    :label="props.joinedAtLabel"
-    :min="props.joinedAtMin"
-    :max="props.joinedAtMax"
-    :disabled="props.disabled"
-    @update:model-value="updateJoinedAt" />
+  <div :class="props.order === 'profile' ? 'order-4' : undefined">
+    <Input
+      id="joinedAt"
+      :model-value="props.joinedAt"
+      type="number"
+      :label="props.joinedAtLabel"
+      :min="props.joinedAtMin"
+      :max="props.joinedAtMax"
+      :disabled="props.disabled"
+      @update:model-value="updateJoinedAt" />
+  </div>
 
-  <Input
-    id="getGradeAt"
-    :model-value="props.getGradeAt"
-    type="date"
-    :label="props.getGradeAtLabel"
-    :disabled="props.disabled"
-    @update:model-value="updateGetGradeAt" />
+  <div :class="props.order === 'profile' ? 'order-2' : undefined">
+    <Input
+      id="getGradeAt"
+      :model-value="props.getGradeAt"
+      type="date"
+      :label="props.getGradeAtLabel"
+      :disabled="props.disabled"
+      @update:model-value="updateGetGradeAt" />
+  </div>
 
-  <Input
-    id="birthday"
-    :model-value="props.birthday"
-    type="date"
-    label="誕生日"
-    :disabled="props.disabled"
-    @update:model-value="updateBirthday" />
+  <div :class="props.order === 'profile' ? 'order-3' : undefined">
+    <Input
+      id="birthday"
+      :model-value="props.birthday"
+      type="date"
+      label="誕生日"
+      :disabled="props.disabled"
+      @update:model-value="updateBirthday" />
+  </div>
 </template>

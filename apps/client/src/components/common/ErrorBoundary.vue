@@ -7,7 +7,7 @@
         class="mb-8 mx-auto h-auto w-full select-none" />
       <p class="text-subtext mb-8">予期せぬエラーが発生しました。しばらく時間を置いてから再度お試しください。</p>
       <div
-        v-if="errorMessage"
+        v-if="showErrorDetails && errorMessage"
         class="mb-6 p-4 bg-red-500/10 border-red-500 rounded-lg border"
         data-testid="error-content">
         <p class="text-sm text-red-500 font-mono text-left break-words">
@@ -41,6 +41,7 @@ import { onErrorCaptured, onMounted, onUnmounted, ref } from "vue";
 
 const router = useRouter();
 
+const showErrorDetails = import.meta.env.DEV === true;
 const hasError = ref(false);
 const errorMessage = ref("");
 
@@ -58,7 +59,7 @@ const handleGoHome = () => {
 const handleError = (err: Error, _instance: unknown, info: string) => {
   console.error("ErrorBoundary caught an error:", err, info);
   hasError.value = true;
-  errorMessage.value = err.message || "不明なエラーが発生しました";
+  errorMessage.value = showErrorDetails ? err.message || "不明なエラーが発生しました" : "";
 
   // エラーを伝播させない
   return false;

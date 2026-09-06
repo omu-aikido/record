@@ -3,8 +3,8 @@ import ActivityForm from "@/components/record/ActivityForm.vue";
 import ActivityList from "@/components/record/ActivityList.vue";
 import ConfirmDialog from "@/components/ui/ConfirmDialog.vue";
 import { Show } from "@clerk/vue";
+import UiDialog from "@/components/ui/UiDialog.vue";
 import { computed, ref } from "vue";
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
 import { endOfMonth, format, isSameDay, parseISO, startOfMonth } from "date-fns";
 import { useActivities, useAddActivity, useDeleteActivity } from "@/composable/useActivity";
 
@@ -85,45 +85,47 @@ const selectedDateActivities = computed(() => {
         </div>
       </div>
 
-      <Dialog :open="isModalOpen" class="relative z-50" @close="closeModal">
-        <div class="inset-0 bg-black/50 fixed backdrop-blur-[4px]" aria-hidden="true" />
-        <div class="inset-0 p-4 fixed flex w-screen items-center justify-center">
-          <DialogPanel
-            class="max-w-md bg-surface0 rounded-xl shadow-md p-6 border-overlay0 max-h-[90vh] w-full overflow-y-auto border">
-            <div class="flex-between mb-4">
-              <DialogTitle class="text-lg font-bold text"> 記録を追加・編集 </DialogTitle>
+      <UiDialog
+        :open="isModalOpen"
+        title="記録を追加・編集"
+        content-class="max-w-md bg-surface0 rounded-xl shadow-md p-6 border-overlay0 max-h-[90vh] overflow-y-auto border"
+        @update:open="isModalOpen = $event">
+        <template #title>
+          <div class="flex-between mb-4">
+            <h2 class="text-lg font-bold text">記録を追加・編集</h2>
+            <button
+              type="button"
+              aria-label="閉じる"
+              class="p-1 text-subtext bg-overlay1 cursor-pointer rounded-full border-none bg-transparent transition-colors"
+              @click="closeModal">
+              <div class="i-lucide:x" />
+            </button>
+          </div>
+        </template>
+
+        <ActivityForm :loading="isAddingActivity" :initial-date="selectedDate" @submit="handleSubmit" />
+
+        <div v-if="selectedDateActivities.length > 0" class="mt-8 pt-6 border-overlay0 border-t">
+          <h4 class="text-sm font-bold text-subtext mb-3">この日の記録</h4>
+          <div class="gap-2 flex flex-col">
+            <div
+              v-for="activity in selectedDateActivities"
+              :key="activity.id"
+              class="flex-between p-3 bg-surface0 rounded-lg">
+              <div class="gap-2 flex items-baseline">
+                <span class="text-lg font-bold text">{{ activity.period }}</span>
+                <span class="text-sub">時間</span>
+              </div>
               <button
-                class="p-1 text-subtext bg-overlay1 cursor-pointer rounded-full border-none bg-transparent transition-colors"
-                @click="closeModal">
-                <div class="i-lucide:x" />
+                class="p-2 text-subtext hover:text-red-500 bg-overlay1 cursor-pointer rounded-full border-none bg-transparent transition-colors"
+                title="記録を削除"
+                @click="handleDelete(activity.id)">
+                <div class="i-lucide:trash-2 sq-5" />
               </button>
             </div>
-
-            <ActivityForm :loading="isAddingActivity" :initial-date="selectedDate" @submit="handleSubmit" />
-
-            <div v-if="selectedDateActivities.length > 0" class="mt-8 pt-6 border-overlay0 border-t">
-              <h4 class="text-sm font-bold text-subtext mb-3">この日の記録</h4>
-              <div class="gap-2 flex flex-col">
-                <div
-                  v-for="activity in selectedDateActivities"
-                  :key="activity.id"
-                  class="flex-between p-3 bg-surface0 rounded-lg">
-                  <div class="gap-2 flex items-baseline">
-                    <span class="text-lg font-bold text">{{ activity.period }}</span>
-                    <span class="text-sub">時間</span>
-                  </div>
-                  <button
-                    class="p-2 text-subtext hover:text-red-500 bg-overlay1 cursor-pointer rounded-full border-none bg-transparent transition-colors"
-                    title="記録を削除"
-                    @click="handleDelete(activity.id)">
-                    <div class="i-lucide:trash-2 sq-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </DialogPanel>
+          </div>
         </div>
-      </Dialog>
+      </UiDialog>
 
       <ConfirmDialog
         :open="confirmDialogOpen"

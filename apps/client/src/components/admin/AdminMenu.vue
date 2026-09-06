@@ -1,47 +1,32 @@
 <template>
   <h1 class="text-2xl font-bold mb-2 text">管理メニュー</h1>
-  <TabGroup
-    :selected-index="selectedIndex"
-    as="div"
+  <UiTabs
+    :model-value="selectedTab"
+    :items="tabItems"
     class="border-overlay1 border-b"
     data-testid="admin-menu"
-    @change="handleTabChange">
-    <TabList class="tab-list">
-      <Tab v-slot="{ selected }" as="template">
-        <button :class="['tab-item', selected ? ' text-blue-500' : 'border-transparent']" data-testid="tab-dashboard">
-          トップ
-        </button>
-      </Tab>
-      <Tab v-slot="{ selected }" as="template">
-        <button :class="['tab-item', selected ? ' text-blue-500' : 'border-transparent']" data-testid="tab-accounts">
-          アカウント
-        </button>
-      </Tab>
-    </TabList>
-  </TabGroup>
+    @update:model-value="handleTabChange" />
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { Tab, TabGroup, TabList } from "@headlessui/vue";
+import UiTabs from "@/components/ui/UiTabs.vue";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
 const tabs = [
-  { name: "ダッシュボード", path: "/admin" },
-  { name: "アカウント管理", path: "/admin/accounts" },
+  { label: "トップ", path: "/admin", testId: "tab-dashboard" },
+  { label: "アカウント", path: "/admin/accounts", testId: "tab-accounts" },
 ];
-const selectedIndex = computed(() => {
-  const currentPath = route.path;
-  if (currentPath.startsWith("/admin/users/")) return 1;
-  const index = tabs.findIndex((tab) => tab.path === currentPath);
-  return index === -1 ? 0 : index;
+const tabItems = tabs.map((tab) => ({ label: tab.label, value: tab.path, testId: tab.testId }));
+const selectedTab = computed(() => {
+  if (route.path.startsWith("/admin/users/")) return "/admin/accounts";
+  return tabs.some((tab) => tab.path === route.path) ? route.path : "/admin";
 });
-const handleTabChange = (index: number) => {
-  const tab = tabs[index];
-  if (tab) {
-    router.push(tab.path);
+const handleTabChange = (path: string) => {
+  if (tabs.some((tab) => tab.path === path)) {
+    router.push(path);
   }
 };
 </script>

@@ -6,6 +6,15 @@ export interface Release {
 
 export const releases: readonly Release[] = [
   {
+    date: "2026-09-06",
+    title: "画面操作を改善",
+    changes: [
+      "操作感を改善し、キーボードでも操作できるようにしました。",
+      "テキスト入力欄を見直し、表示を分かりやすくしました。",
+      "一部の操作でエラーが発生したときの動作を改善しました。",
+    ],
+  },
+  {
     date: "2026-08-05",
     title: "サインアップと認証を改善",
     changes: [

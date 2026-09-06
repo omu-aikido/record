@@ -10,12 +10,15 @@ import { useActivities, useAddActivity, useDeleteActivity } from "@/composable/u
 
 // Mutations
 const { mutateAsync: addActivity, isPending: isAddingActivity } = useAddActivity();
-const { mutateAsync: deleteActivity } = useDeleteActivity();
+const { mutateAsync: deleteActivity, isPending: isDeletingActivity } = useDeleteActivity();
 // State
 const currentMonth = ref(new Date());
 const isModalOpen = ref(false);
 const selectedDate = ref(format(new Date(), "yyyy-MM-dd"));
+const activityError = ref<string | null>(null);
+const activityFormResetKey = ref(0);
 const confirmDialogOpen = ref(false);
+const deleteError = ref<string | null>(null);
 const activityToDelete = ref<string | null>(null);
 // Query
 const filters = computed(() => ({
@@ -27,37 +30,53 @@ const activities = computed(() => activitiesRaw.value ?? []);
 const error = computed(() => (queryError.value ? "活動記録の取得に失敗しました" : null));
 const handleDelete = (id: string) => {
   activityToDelete.value = id;
+  deleteError.value = null;
   confirmDialogOpen.value = true;
 };
 const handleConfirmDelete = async () => {
-  if (activityToDelete.value) {
-    try {
-      await deleteActivity([activityToDelete.value]);
-      confirmDialogOpen.value = false;
-      activityToDelete.value = null;
-    } catch (e) {
-      console.error("Failed to delete activity:", e);
-      alert("記録の削除に失敗しました。");
-    }
+  if (!activityToDelete.value) return;
+
+  deleteError.value = null;
+  try {
+    await deleteActivity([activityToDelete.value]);
+    confirmDialogOpen.value = false;
+    activityToDelete.value = null;
+  } catch {
+    deleteError.value = "記録の削除に失敗しました。時間をおいて再試行してください";
   }
+};
+const handleCancelDelete = () => {
+  confirmDialogOpen.value = false;
+  deleteError.value = null;
+  activityToDelete.value = null;
 };
 const handleChangeMonth = (date: Date) => {
   currentMonth.value = date;
 };
 const handleSelectDate = (date: string) => {
   selectedDate.value = date;
+  activityError.value = null;
   isModalOpen.value = true;
 };
 const closeModal = () => {
   isModalOpen.value = false;
+  activityError.value = null;
+};
+const handleModalOpenChange = (open: boolean) => {
+  if (open) {
+    isModalOpen.value = true;
+    return;
+  }
+  closeModal();
 };
 const handleSubmit = async (date: string, period: number) => {
+  activityError.value = null;
   try {
     await addActivity({ date, period });
+    activityFormResetKey.value += 1;
     closeModal();
-  } catch (e) {
-    console.error("Failed to add activity:", e);
-    alert("記録の追加に失敗しました。");
+  } catch {
+    activityError.value = "記録の追加に失敗しました。時間をおいて再試行してください";
   }
 };
 const selectedDateActivities = computed(() => {
@@ -89,7 +108,7 @@ const selectedDateActivities = computed(() => {
         :open="isModalOpen"
         title="記録を追加・編集"
         content-class="max-w-md bg-surface0 rounded-xl shadow-md p-6 border-overlay0 max-h-[90vh] overflow-y-auto border"
-        @update:open="isModalOpen = $event">
+        @update:open="handleModalOpenChange">
         <template #title>
           <div class="flex-between mb-4">
             <h2 class="text-lg font-bold text">記録を追加・編集</h2>
@@ -103,7 +122,12 @@ const selectedDateActivities = computed(() => {
           </div>
         </template>
 
-        <ActivityForm :loading="isAddingActivity" :initial-date="selectedDate" @submit="handleSubmit" />
+        <ActivityForm
+          :loading="isAddingActivity"
+          :initial-date="selectedDate"
+          :error="activityError ?? undefined"
+          :reset-key="activityFormResetKey"
+          @submit="handleSubmit" />
 
         <div v-if="selectedDateActivities.length > 0" class="mt-8 pt-6 border-overlay0 border-t">
           <h4 class="text-sm font-bold text-subtext mb-3">この日の記録</h4>
@@ -133,8 +157,10 @@ const selectedDateActivities = computed(() => {
         description="この記録を削除してもよろしいですか？この操作は取り消せません。"
         confirm-text="削除する"
         cancel-text="キャンセル"
+        :error="deleteError ?? undefined"
+        :loading="isDeletingActivity"
         @confirm="handleConfirmDelete"
-        @cancel="confirmDialogOpen = false" />
+        @cancel="handleCancelDelete" />
     </Show>
   </div>
 </template>

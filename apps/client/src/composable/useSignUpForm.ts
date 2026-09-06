@@ -12,7 +12,7 @@ const formDataSchema = type({
   username: "6<=string<=50 | '' | undefined",
   year: "string",
   grade: "number",
-  joinedAt: "number",
+  joinedAt: "number | null",
   getGradeAt: "string | null",
   birthday: "string",
   legalAccepted: "boolean",
@@ -117,7 +117,7 @@ const handleClerkSignUp = async (
   }
 
   const fullValidation = formDataSchema(formValues);
-  if (fullValidation instanceof ArkErrors) {
+  if (fullValidation instanceof ArkErrors || formValues.joinedAt === null) {
     formErrors.general = "Form is invalid.";
     return false;
   }

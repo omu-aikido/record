@@ -10,7 +10,7 @@
         placeholder="山田"
         :disabled="isSignUpCreated"
         :error="formErrors.lastName"
-        @update:model-value="onUpdate('lastName', $event)" />
+        @update:model-value="onUpdate('lastName', $event ?? '')" />
       <Input
         id="firstName"
         name="firstName"
@@ -20,7 +20,7 @@
         placeholder="太郎"
         :disabled="isSignUpCreated"
         :error="formErrors.firstName"
-        @update:model-value="onUpdate('firstName', $event)" />
+        @update:model-value="onUpdate('firstName', $event ?? '')" />
     </div>
 
     <Input
@@ -33,7 +33,7 @@
       placeholder="aikido_taro"
       :disabled="isSignUpCreated"
       :error="formErrors.username"
-      @update:model-value="onUpdate('username', $event)" />
+      @update:model-value="onUpdate('username', $event ?? '')" />
 
     <div class="pt-2 flex justify-between">
       <button type="button" class="btn-secondary" :disabled="isSignUpCreated" @click="prevStep">戻る</button>

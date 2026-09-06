@@ -8,9 +8,9 @@ import { queryKeys } from "@/lib/queryKeys";
 import RankingCard from "@/components/home/RankingCard.vue";
 import { Show } from "@clerk/vue";
 import { useAddActivity } from "@/composable/useActivity";
+import { useQuery } from "@tanstack/vue-query";
 import { AccountMetadata, isProfileComplete } from "share";
 import { computed, ref } from "vue";
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
 
 // Types
 type ProfileResponse = InferResponseType<typeof hc.user.clerk.profile.$get, 200>;
@@ -18,9 +18,10 @@ type PracticeCountResponse = InferResponseType<typeof hc.user.record.count.$get,
 type RankingResponse = InferResponseType<typeof hc.user.record.ranking.$get, 200>;
 type MenuResponse = InferResponseType<typeof hc.user.clerk.menu.$get, 200>;
 const { mutateAsync: addActivity } = useAddActivity();
-const queryClient = useQueryClient();
 // State
 const activityLoading = ref(false);
+const activityError = ref<string | null>(null);
+const activityFormResetKey = ref(0);
 const iconMap = {
   "clipboard-list": "i-lucide:clipboard-list",
   user: "i-lucide:user",
@@ -123,11 +124,12 @@ const { data: menuData } = useQuery({
 const menuItems = computed(() => menuData.value?.menu ?? []);
 const handleAddActivity = async (date: string, period: number) => {
   activityLoading.value = true;
+  activityError.value = null;
   try {
     await addActivity({ date, period });
-    queryClient.invalidateQueries({ queryKey: queryKeys.user.clerk.profile() });
-    queryClient.invalidateQueries({ queryKey: queryKeys.user.record.count() });
-    queryClient.invalidateQueries({ queryKey: queryKeys.user.record.ranking() });
+    activityFormResetKey.value += 1;
+  } catch {
+    activityError.value = "活動記録の追加に失敗しました。時間をおいて再試行してください";
   } finally {
     activityLoading.value = false;
   }
@@ -180,7 +182,11 @@ const getNavLabelClass = (theme: string) => {
           :current-error="currentRankingError"
           :last-month-error="lastMonthRankingError" />
 
-        <ActivityForm :loading="activityLoading" @submit="handleAddActivity" />
+        <ActivityForm
+          :loading="activityLoading"
+          :error="activityError ?? undefined"
+          :reset-key="activityFormResetKey"
+          @submit="handleAddActivity" />
 
         <hr class="pb-2 border-overlay0 opacity-60" />
 

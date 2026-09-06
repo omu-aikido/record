@@ -11,7 +11,7 @@
       placeholder="name@example.com"
       :disabled="isSignUpCreated"
       :error="formErrors.email"
-      @update:model-value="onUpdate('email', $event)" />
+      @update:model-value="onUpdate('email', $event ?? '')" />
 
     <div class="gap-2 flex flex-col">
       <Input
@@ -25,7 +25,7 @@
         placeholder="10文字以上のパスワード"
         :disabled="isSignUpCreated"
         :error="formErrors.newPassword"
-        @update:model-value="onUpdate('newPassword', $event)">
+        @update:model-value="onUpdate('newPassword', $event ?? '')">
         <template #suffix>
           <button
             type="button"
@@ -77,7 +77,7 @@
         placeholder="パスワードを再入力"
         :disabled="isSignUpCreated"
         :error="passwordConfirmError"
-        @update:model-value="onUpdate('passwordConfirm', $event)">
+        @update:model-value="onUpdate('passwordConfirm', $event ?? '')">
         <template #suffix>
           <button
             type="button"

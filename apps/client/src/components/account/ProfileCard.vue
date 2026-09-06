@@ -64,21 +64,27 @@
     </div>
 
     <form v-else class="stack" @submit.prevent="handleSubmit">
-      <div class="gap-1.5 flex flex-col">
-        <label class="form-label block">級段位</label>
-        <UiSelect v-model="formData.grade" :options="gradeSelectOptions" />
-      </div>
+      <UiSelect
+        id="grade"
+        v-model="formData.grade"
+        label="級段位"
+        :options="gradeSelectOptions"
+        :disabled="isSubmitting"
+        required />
 
-      <Input v-model="formData.getGradeAt" type="date" label="取得日" />
+      <Input v-model="formData.getGradeAt" type="date" label="取得日" :disabled="isSubmitting" />
 
-      <Input v-model="formData.birthday" type="date" label="誕生日" />
+      <Input v-model="formData.birthday" type="date" label="誕生日" :disabled="isSubmitting" />
 
-      <Input v-model="formData.joinedAt" type="number" label="入部年" min="2020" max="9999" />
+      <Input v-model="formData.joinedAt" type="number" label="入部年" min="2020" max="9999" :disabled="isSubmitting" />
 
-      <div class="gap-1.5 flex flex-col">
-        <label class="text-sm font-medium text-subtext block">学年</label>
-        <UiSelect v-model="formData.year" :options="yearSelectOptions" />
-      </div>
+      <UiSelect
+        id="year"
+        v-model="formData.year"
+        label="学年"
+        :options="yearSelectOptions"
+        :disabled="isSubmitting"
+        required />
 
       <p v-if="message" :class="['text-sm font-medium', isError ? 'text-red-500' : 'text-green-500']">
         {{ message }}

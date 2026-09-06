@@ -7,14 +7,18 @@ interface Props {
   description: string;
   confirmText?: string;
   cancelText?: string;
+  error?: string;
+  loading?: boolean;
 }
 interface Emits {
   (e: "confirm"): void;
   (e: "cancel"): void;
 }
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   confirmText: "削除する",
   cancelText: "キャンセル",
+  error: undefined,
+  loading: false,
 });
 const emit = defineEmits<Emits>();
 </script>
@@ -37,13 +41,26 @@ const emit = defineEmits<Emits>();
       <p class="mt-2 text-sub">{{ description }}</p>
     </template>
 
-    <div class="mt-6 gap-3 flex justify-end">
-      <button class="btn-secondary" data-testid="cancel-btn" @click="emit('cancel')">
-        {{ cancelText }}
-      </button>
-      <button class="btn-danger" data-testid="confirm-btn" @click="emit('confirm')">
-        {{ confirmText }}
-      </button>
+    <div class="mt-6 gap-3 flex flex-col">
+      <p v-if="props.error" class="alert-error mt-0" role="alert">{{ props.error }}</p>
+      <div class="gap-3 flex justify-end">
+        <button
+          type="button"
+          class="btn-secondary"
+          :disabled="props.loading"
+          data-testid="cancel-btn"
+          @click="emit('cancel')">
+          {{ props.cancelText }}
+        </button>
+        <button
+          type="button"
+          class="btn-danger"
+          :disabled="props.loading"
+          data-testid="confirm-btn"
+          @click="emit('confirm')">
+          {{ props.loading ? "処理中..." : props.confirmText }}
+        </button>
+      </div>
     </div>
   </UiDialog>
 </template>

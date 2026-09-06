@@ -26,6 +26,7 @@ const iconMap = {
   user: "i-lucide:user",
   settings: "i-lucide:settings",
   calendar: "i-lucide:calendar",
+  "tool-case": "i-lucide:tool-case",
 };
 // Queries
 const { data: profileData } = useQuery({

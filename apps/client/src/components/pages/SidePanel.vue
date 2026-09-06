@@ -52,6 +52,14 @@
                 <div class="i-lucide:calendar" />
                 カレンダー ↗
               </a>
+              <a
+                href="https://omu-aikido.com/apps"
+                class="flex-inline gap-2 text items-center"
+                target="_blank"
+                @click="close">
+                <div class="i-lucide:tool-case" />
+                便利ツール ↗
+              </a>
             </nav>
           </Show>
         </div>

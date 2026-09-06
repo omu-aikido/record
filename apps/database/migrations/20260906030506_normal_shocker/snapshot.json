@@ -1,8 +1,8 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "2e2c088f-7797-45fe-98d0-1c473fde962b",
-  "prevIds": ["00000000-0000-0000-0000-000000000000"],
+  "id": "c8396256-1338-441f-8a28-d998f2e1c37b",
+  "prevIds": ["33c8df2c-4821-4960-b431-dbc5d02d9041"],
   "ddl": [
     {
       "name": "activity",
@@ -52,7 +52,7 @@
       "type": "text",
       "notNull": true,
       "autoincrement": false,
-      "default": "'sql`(CURRENT_TIMESTAMP)`'",
+      "default": null,
       "generated": null,
       "name": "createAt",
       "entityType": "columns",

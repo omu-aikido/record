@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { RankingResponse } from "share";
+import UiStatus from "@/components/ui/UiStatus.vue";
 
 interface Props {
   currentRanking: RankingResponse | null;
@@ -84,10 +85,10 @@ const getRankClass = (rank: number) => {
     </div>
 
     <!-- Error State -->
-    <div v-else-if="currentError || lastMonthError" class="card py-8 text-center">
-      <div v-if="currentError" class="text-sm text-red-500 mb-2">エラー: {{ currentError }}</div>
-      <div v-if="lastMonthError" class="text-sm text-red-500">エラー: {{ lastMonthError }}</div>
-    </div>
+    <UiStatus v-else-if="currentError || lastMonthError" status="error" class="text-center">
+      <div v-if="currentError" class="mb-2">エラー: {{ currentError }}</div>
+      <div v-if="lastMonthError">エラー: {{ lastMonthError }}</div>
+    </UiStatus>
 
     <!-- Main Content -->
     <div v-else class="card">
@@ -118,9 +119,9 @@ const getRankClass = (rank: number) => {
             </div>
           </div>
         </div>
-        <div v-else-if="currentRanking" class="py-4 text-center">
+        <UiStatus v-else-if="currentRanking" status="empty" class="py-4">
           <div class="text-sub">今月の稽古記録がありません</div>
-        </div>
+        </UiStatus>
 
         <!-- Divider -->
         <div class="border-t border-overlay0 opacity-60"></div>
@@ -151,9 +152,9 @@ const getRankClass = (rank: number) => {
             </div>
           </div>
         </div>
-        <div v-else-if="lastMonthRanking" class="py-4 text-center opacity-75">
+        <UiStatus v-else-if="lastMonthRanking" status="empty" class="py-4 opacity-75">
           <div class="text-sub">先月の稽古記録がありません</div>
-        </div>
+        </UiStatus>
       </div>
     </div>
   </div>

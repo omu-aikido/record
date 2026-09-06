@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { PracticeCountData } from "share";
+import UiStatus from "@/components/ui/UiStatus.vue";
 import { buildPromotionProgressFromPracticeCount, translateGrade } from "share";
 
 interface Props {
@@ -78,9 +79,7 @@ const progressComment = computed(() => {
 
 <template>
   <div class="w-full" data-testid="practice-count-graph">
-    <div v-if="error" class="py-8 text-center">
-      <div class="text-sm text-red-500">エラー: {{ error }}</div>
-    </div>
+    <UiStatus v-if="error" status="error" :message="`エラー: ${error}`" class="py-8 text-center" />
 
     <details v-else class="card select-none">
       <summary class="rounded-lg cursor-pointer list-none [&::-webkit-details-marker]:hidden">

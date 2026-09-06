@@ -7,6 +7,7 @@ import PracticeCountGraph from "@/components/home/PracticeCountGraph.vue";
 import { queryKeys } from "@/lib/queryKeys";
 import RankingCard from "@/components/home/RankingCard.vue";
 import { Show } from "@clerk/vue";
+import UiStatus from "@/components/ui/UiStatus.vue";
 import { useAddActivity } from "@/composable/useActivity";
 import { useQuery } from "@tanstack/vue-query";
 import { AccountMetadata, isProfileComplete } from "share";
@@ -165,9 +166,7 @@ const getNavLabelClass = (theme: string) => {
           プロフィール情報に未入力があります。誕生日を含む必要項目を登録してください。
         </RouterLink>
 
-        <div v-if="error" class="bg-red-50 text-red-500 p-4 rounded-lg text-sm dark:bg-red-900/10 text-center">
-          {{ error }}
-        </div>
+        <UiStatus v-if="error" status="error" :message="error" class="text-center" />
 
         <PracticeCountGraph
           :practice-data="practiceData"
@@ -198,6 +197,7 @@ const getNavLabelClass = (theme: string) => {
             :to="item.href.startsWith('http') ? undefined : item.href"
             :href="item.href.startsWith('http') ? item.href : undefined"
             :target="item.href.startsWith('http') ? '_blank' : undefined"
+            :rel="item.href.startsWith('http') ? 'noopener noreferrer' : undefined"
             :class="[
               'group gap-3 card text hover:shadow-md flex cursor-pointer flex-col items-center justify-center no-underline transition-colors transition-shadow',
               getNavItemClass(item.theme),

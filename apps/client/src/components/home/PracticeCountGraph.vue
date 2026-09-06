@@ -79,7 +79,9 @@ const progressComment = computed(() => {
 
 <template>
   <div class="w-full" data-testid="practice-count-graph">
-    <UiStatus v-if="error" status="error" :message="`エラー: ${error}`" class="py-8 text-center" />
+    <UiStatus v-if="error" status="error" class="py-8 text-center">
+      <div class="text-sm text-red-500">エラー: {{ error }}</div>
+    </UiStatus>
 
     <details v-else class="card select-none">
       <summary class="rounded-lg cursor-pointer list-none [&::-webkit-details-marker]:hidden">

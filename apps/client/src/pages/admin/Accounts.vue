@@ -129,21 +129,20 @@
             <tr
               v-for="user in sortedUsers"
               :key="user.id"
-              tabindex="0"
-              role="link"
-              :aria-label="getUserAriaLabel(user)"
               class="border-overlay0 hover:bg-overlay0 cursor-pointer border-b transition-colors last:border-b-0"
-              @click="openUser(user.id)"
-              @keydown.enter.prevent="openUser(user.id)"
-              @keydown.space.prevent="openUser(user.id)">
+              @click="openUser(user.id)">
               <td class="td-base md:px-6">
-                <div class="gap-2 flex items-center">
+                <RouterLink
+                  :to="{ name: 'adminUserDetail', params: { userId: user.id } }"
+                  :aria-label="getUserAriaLabel(user)"
+                  class="gap-2 rounded flex items-center no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  @click.stop>
                   <img :src="user.imageUrl" alt="" class="avatar-sm ml-1" />
-                  <div class="flex flex-col">
+                  <span class="flex flex-col">
                     <span class="font-medium text">{{ user.lastName }} {{ user.firstName }}</span>
                     <small class="text-sub">{{ user.emailAddress }}</small>
-                  </div>
-                </div>
+                  </span>
+                </RouterLink>
               </td>
               <td class="td-base md:px-6 text-center">{{ user.profile.roleLabel }}</td>
               <td class="td-base md:px-6 text-center">{{ user.profile.gradeLabel }}</td>
@@ -221,17 +220,32 @@ import AdminMenu from "@/components/admin/AdminMenu.vue";
 import hc from "@/lib/honoClient";
 import NormSummary from "@/components/admin/NormSummary.vue";
 import { queryKeys } from "@/lib/queryKeys";
-import { useDebouncedRef } from "@/composable/useDebouncedRef";
 import { useQuery } from "@tanstack/vue-query";
-import { useRouter } from "vue-router";
 import { type AdminUserType, formatDateSlash, grade as gradeOptions, Role } from "share";
-import { computed, ref } from "vue";
+import { computed, onUnmounted, ref, watch } from "vue";
+import { RouterLink, useRouter } from "vue-router";
 
 const ALL_GRADES = 999;
 
 const router = useRouter();
 const searchQuery = ref("");
-const debouncedSearchQuery = useDebouncedRef(searchQuery);
+const debouncedSearchQuery = ref(searchQuery.value);
+const SEARCH_DEBOUNCE_MS = 300;
+let searchDebounceTimer: ReturnType<typeof setTimeout> | undefined;
+
+watch(searchQuery, (value) => {
+  if (searchDebounceTimer !== undefined) clearTimeout(searchDebounceTimer);
+
+  searchDebounceTimer = setTimeout(() => {
+    debouncedSearchQuery.value = value;
+    searchDebounceTimer = undefined;
+  }, SEARCH_DEBOUNCE_MS);
+});
+
+onUnmounted(() => {
+  if (searchDebounceTimer !== undefined) clearTimeout(searchDebounceTimer);
+});
+
 const statusFilter = ref<"all" | "met" | "unmet">("all");
 const gradeFilter = ref<number>(ALL_GRADES);
 const sortBy = ref<"role" | "grade" | "year" | "name">("role");

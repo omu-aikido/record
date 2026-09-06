@@ -32,11 +32,15 @@ const activitiesByDate = computed(() => {
   const grouped = new Map<string, Activity[]>();
 
   for (const activity of props.activities) {
-    const activitiesForDate = grouped.get(activity.date);
+    const parsedDate = dateFns.parseISO(activity.date);
+    if (Number.isNaN(parsedDate.getTime())) continue;
+
+    const dateKey = dateFns.format(parsedDate, "yyyy-MM-dd");
+    const activitiesForDate = grouped.get(dateKey);
     if (activitiesForDate) {
       activitiesForDate.push(activity);
     } else {
-      grouped.set(activity.date, [activity]);
+      grouped.set(dateKey, [activity]);
     }
   }
 
@@ -65,7 +69,6 @@ const handleDateSelect = (date: string) => {
 const formatHeader = (date: Date) => {
   return dateFns.format(date, "yyyy年 M月", { locale: ja });
 };
-
 </script>
 
 <template>

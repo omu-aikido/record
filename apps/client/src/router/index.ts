@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, type RouteLocationNormalized } from "vue-router";
 
 import { getPublicMetadataRole, isAdminRole } from "./adminGuard";
 
@@ -136,17 +136,17 @@ export function waitForClerk(
   return checkClerk();
 }
 
-export function getNavigationOnClerkFailure(requiresAuth: boolean, requiresAdmin: boolean): true | { name: "signIn" } {
-  return requiresAuth || requiresAdmin ? { name: "signIn" } : true;
-}
-
 // ナビゲーションガード：Clerkの認証を確認
-router.beforeEach(async (to, _from) => {
+export async function navigationGuard(
+  to: Pick<RouteLocationNormalized, "meta" | "name">,
+  _from: RouteLocationNormalized,
+  waitForClerkFn: () => Promise<ClerkClient> = waitForClerk
+) {
   const requiresAuth = to.meta.requiresAuth === true;
   const requiresAdmin = to.meta.requiresAdmin === true;
 
   try {
-    const clerk = await waitForClerk();
+    const clerk = await waitForClerkFn();
     const isAuthenticated = clerk.user !== null && clerk.user !== undefined;
 
     // 1. 認証が必要だが未ログイン
@@ -176,8 +176,10 @@ router.beforeEach(async (to, _from) => {
     return true;
   } catch (error) {
     console.error("Router guard error:", error);
-    return getNavigationOnClerkFailure(requiresAuth, requiresAdmin);
+    return requiresAuth || requiresAdmin ? { name: "signIn" } : true;
   }
-});
+}
+
+router.beforeEach((to, from) => navigationGuard(to, from));
 
 export default router;

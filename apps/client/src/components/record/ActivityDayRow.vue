@@ -26,6 +26,12 @@ const formatDate = (date: Date) => {
   return dateFns.format(date, "yyyy年M月d日", { locale: ja });
 };
 
+const accessibleLabel = computed(() => {
+  const dateLabel = formatDate(props.date);
+  if (props.activities.length === 0) return `${dateLabel}、記録を追加`;
+  return `${dateLabel}、合計${totalPeriod.value}時間、${props.activities.length}件の記録`;
+});
+
 const getDay = (date: Date) => {
   return dateFns.format(date, "d");
 };
@@ -55,7 +61,7 @@ const isToday = (date: Date) => {
     ]"
     role="button"
     tabindex="0"
-    :aria-label="`${formatDate(date)}を選択`"
+    :aria-label="accessibleLabel"
     data-testid="day-item"
     @click="handleDateClick"
     @keydown.enter.prevent="handleDateClick"

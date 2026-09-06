@@ -2,9 +2,13 @@
   <div class="gap-6 px-3 py-4 pb-12 md:px-6 flex flex-col">
     <AdminMenu />
 
-    <UiStatus v-if="loading" status="loading" />
+    <UiStatus v-if="loading" status="loading" class="loading-container" />
 
-    <UiStatus v-else-if="error" status="error" :message="error" />
+    <UiStatus
+      v-else-if="error"
+      status="error"
+      :message="error"
+      class="bg-red-500/10 text-red-500 p-4 rounded-md border-red-500/20 border" />
 
     <div v-else class="gap-8 flex flex-col">
       <section class="section">
@@ -13,7 +17,7 @@
           <span class="text-sub">{{ thresholdDate }} 以降の記録なし</span>
         </div>
 
-        <UiStatus v-if="inactiveUsers.length === 0" status="empty" class="p-8">
+        <UiStatus v-if="inactiveUsers.length === 0" status="empty" class="p-8 text-subtext text-center">
           該当する部員はいません。全員活動中です！
         </UiStatus>
 

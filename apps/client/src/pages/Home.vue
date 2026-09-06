@@ -166,7 +166,12 @@ const getNavLabelClass = (theme: string) => {
           プロフィール情報に未入力があります。誕生日を含む必要項目を登録してください。
         </RouterLink>
 
-        <UiStatus v-if="error" status="error" :message="error" class="text-center" />
+        <UiStatus
+          v-if="error"
+          status="error"
+          class="bg-red-50 text-red-500 p-4 rounded-lg text-sm dark:bg-red-900/10 text-center">
+          {{ error }}
+        </UiStatus>
 
         <PracticeCountGraph
           :practice-data="practiceData"

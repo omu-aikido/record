@@ -85,9 +85,9 @@ const getRankClass = (rank: number) => {
     </div>
 
     <!-- Error State -->
-    <UiStatus v-else-if="currentError || lastMonthError" status="error" class="text-center">
-      <div v-if="currentError" class="mb-2">エラー: {{ currentError }}</div>
-      <div v-if="lastMonthError">エラー: {{ lastMonthError }}</div>
+    <UiStatus v-else-if="currentError || lastMonthError" status="error" class="card py-8 text-center">
+      <div v-if="currentError" class="text-sm text-red-500 mb-2">エラー: {{ currentError }}</div>
+      <div v-if="lastMonthError" class="text-sm text-red-500">エラー: {{ lastMonthError }}</div>
     </UiStatus>
 
     <!-- Main Content -->
@@ -119,7 +119,7 @@ const getRankClass = (rank: number) => {
             </div>
           </div>
         </div>
-        <UiStatus v-else-if="currentRanking" status="empty" class="py-4">
+        <UiStatus v-else-if="currentRanking" status="empty" class="py-4 text-center">
           <div class="text-sub">今月の稽古記録がありません</div>
         </UiStatus>
 
@@ -152,7 +152,7 @@ const getRankClass = (rank: number) => {
             </div>
           </div>
         </div>
-        <UiStatus v-else-if="lastMonthRanking" status="empty" class="py-4 opacity-75">
+        <UiStatus v-else-if="lastMonthRanking" status="empty" class="py-4 text-center opacity-75">
           <div class="text-sub">先月の稽古記録がありません</div>
         </UiStatus>
       </div>

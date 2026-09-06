@@ -7,7 +7,7 @@
 
       <ProfileCard />
 
-      <UiStatus v-if="errorMessage" status="error" :message="errorMessage" />
+      <UiStatus v-if="errorMessage" status="error" :message="errorMessage" class="alert-error" />
       <div v-if="successMessage" class="alert-success">{{ successMessage }}</div>
       <div class="mt-4 pt-4 border-overlay0 border-t">
         <p class="text-sub">

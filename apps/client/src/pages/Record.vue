@@ -106,12 +106,12 @@ const selectedDateActivities = computed(() => {
 
       <UiDialog
         :open="isModalOpen"
-        title="記録を追加・編集"
+        title="記録を追加・削除"
         content-class="max-w-md bg-surface0 rounded-xl shadow-md p-6 border-overlay0 max-h-[90vh] overflow-y-auto border"
         @update:open="handleModalOpenChange">
         <template #title>
           <div class="flex-between mb-4">
-            <h2 class="text-lg font-bold text">記録を追加・編集</h2>
+            <h2 class="text-lg font-bold text">記録を追加・削除</h2>
             <button
               type="button"
               aria-label="閉じる"

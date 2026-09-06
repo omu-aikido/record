@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Activity } from "share";
+import ActivityDayRow from "@/components/record/ActivityDayRow.vue";
 import { computed } from "vue";
 import { ja } from "date-fns/locale";
 import * as dateFns from "date-fns";
@@ -27,9 +28,27 @@ const daysInMonth = computed(() => {
   return dateFns.eachDayOfInterval({ start, end });
 });
 
-const getActivitiesForDay = (date: Date) => {
-  return props.activities.filter((a) => dateFns.isSameDay(dateFns.parseISO(a.date), date));
-};
+const activitiesByDate = computed(() => {
+  const grouped = new Map<string, Activity[]>();
+
+  for (const activity of props.activities) {
+    const activitiesForDate = grouped.get(activity.date);
+    if (activitiesForDate) {
+      activitiesForDate.push(activity);
+    } else {
+      grouped.set(activity.date, [activity]);
+    }
+  }
+
+  return grouped;
+});
+
+const dayRows = computed(() => {
+  return daysInMonth.value.map((date) => ({
+    date,
+    activities: activitiesByDate.value.get(dateFns.format(date, "yyyy-MM-dd")) ?? [],
+  }));
+});
 
 const handlePrevMonth = () => {
   emit("changeMonth", dateFns.subMonths(props.currentMonth, 1));
@@ -39,38 +58,21 @@ const handleNextMonth = () => {
   emit("changeMonth", dateFns.addMonths(props.currentMonth, 1));
 };
 
-const handleDateClick = (date: Date) => {
-  emit("selectDate", dateFns.format(date, "yyyy-MM-dd"));
+const handleDateSelect = (date: string) => {
+  emit("selectDate", date);
 };
 
 const formatHeader = (date: Date) => {
   return dateFns.format(date, "yyyy年 M月", { locale: ja });
 };
 
-const getDay = (date: Date) => {
-  return dateFns.format(date, "d");
-};
-
-const getWeekday = (date: Date) => {
-  return dateFns.format(date, "E", { locale: ja });
-};
-
-const isSunday = (date: Date) => {
-  return date.getDay() === 0;
-};
-
-const isSaturday = (date: Date) => {
-  return date.getDay() === 6;
-};
-
-const isToday = (date: Date) => {
-  return dateFns.isSameDay(date, new Date());
-};
 </script>
 
 <template>
   <div class="top-0 flex-between p-3 px-4 bg-base sticky z-20">
     <button
+      type="button"
+      aria-label="前の月"
       class="p-1 text-subtext hover:bg-overlay11-active cursor-pointer rounded-full border-none bg-transparent transition-colors"
       data-testid="prev-month-btn"
       @click="handlePrevMonth">
@@ -82,6 +84,8 @@ const isToday = (date: Date) => {
     </h2>
 
     <button
+      type="button"
+      aria-label="次の月"
       class="p-1 text-subtext hover:bg-overlay11-active cursor-pointer rounded-full border-none bg-transparent transition-colors"
       data-testid="next-month-btn"
       @click="handleNextMonth">
@@ -98,52 +102,12 @@ const isToday = (date: Date) => {
     </div>
 
     <div v-else class="flex flex-col">
-      <div
-        v-for="day in daysInMonth"
-        :key="day.toISOString()"
-        :class="[
-          'min-h-16 border-overlay0 relative flex cursor-pointer items-stretch border-b transition-colors',
-          isToday(day) ? 'bg-blue-50/10' : 'hover:bg-surface0',
-        ]"
-        data-testid="day-item"
-        @click="handleDateClick(day)">
-        <div class="stack w-12 p-2 flex-shrink-0 items-center justify-center transition-colors">
-          <span
-            :class="[
-              'text-lg font-bold text leading-none',
-              isSunday(day) ? 'text-red-500' : isSaturday(day) ? 'text-blue-500' : '',
-            ]">
-            {{ getDay(day) }}
-          </span>
-          <span
-            :class="[
-              'text-xs font-medium mt-1 text-subtext leading-none',
-              isSunday(day) ? 'text-red-500' : isSaturday(day) ? 'text-blue-500' : '',
-            ]">
-            {{ getWeekday(day) }}
-          </span>
-        </div>
-
-        <div class="p-2 flex flex-1 flex-col justify-center">
-          <div v-if="getActivitiesForDay(day).length > 0" class="flex-between">
-            <div class="gap-2 flex items-baseline">
-              <span class="text-sub">合計</span>
-              <span class="text-xl font-bold text">
-                {{ getActivitiesForDay(day).reduce((sum, a) => sum + a.period, 0) }}
-              </span>
-              <span class="text-sub">時間</span>
-            </div>
-            <span class="text-sm text-subtext"> {{ getActivitiesForDay(day).length }}件の記録 </span>
-          </div>
-
-          <div v-else class="flex h-full items-center opacity-0 hover:opacity-100">
-            <span class="gap-1 text-overlay0 day-row:hover:opacity-100 inline-flex items-center transition-opacity">
-              <div class="i-lucide:plus" />
-              記録を追加
-            </span>
-          </div>
-        </div>
-      </div>
+      <ActivityDayRow
+        v-for="day in dayRows"
+        :key="day.date.toISOString()"
+        :date="day.date"
+        :activities="day.activities"
+        @select-date="handleDateSelect" />
     </div>
   </div>
 </template>

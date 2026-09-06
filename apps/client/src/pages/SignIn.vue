@@ -44,10 +44,9 @@
                   パスワードを忘れた
                 </a>
               </div>
-              <Input
+              <PasswordInput
                 id="password"
                 v-model="password"
-                type="password"
                 name="password"
                 required
                 autocomplete="current-password" />
@@ -129,6 +128,7 @@ import { useSignIn } from "@/composable/useSignIn";
 
 import Input from "@/components/ui/UiInput.vue";
 import LoadingView from "@/components/signin/LoadingView.vue";
+import PasswordInput from "@/components/ui/UiPasswordInput.vue";
 
 const router = useRouter();
 const route = useRoute();

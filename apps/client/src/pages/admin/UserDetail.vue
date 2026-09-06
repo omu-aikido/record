@@ -30,7 +30,7 @@
                       {{ roleLabels[user.profile?.role as string] || "部員" }}
                     </span>
                     <span class="badge-gray">
-                      {{ gradeLabels[user.profile?.grade as number] || "無級" }}
+                      {{ displayGrade(user.profile?.grade) }}
                     </span>
                   </div>
                 </div>
@@ -38,7 +38,7 @@
                   <span>{{ user.emailAddress }}</span>
                   <template v-if="!isEditing">
                     <span class="sq-1 bg-subtext rounded-full" />
-                    <span>{{ yearLabels[user.profile?.year as string] || user.profile?.year }}</span>
+                    <span>{{ displayYear(user.profile?.year) }}</span>
                     <span class="sq-1 bg-subtext rounded-full" />
                     <span>{{ user.profile?.joinedAt ? `${user.profile.joinedAt}年度入部` : "入部年度未登録" }}</span>
                     <span class="sq-1 bg-subtext rounded-full" />
@@ -78,30 +78,16 @@
                   </option>
                 </select>
               </div>
-              <div class="gap-1 flex flex-col">
-                <label class="form-label">級段位</label>
-                <select v-model.number="formData.grade" class="input-base h-fit">
-                  <option v-for="(label, key) in gradeLabels" :key="key" :value="key">
-                    {{ label }}
-                  </option>
-                </select>
-              </div>
-              <div class="gap-1 flex flex-col">
-                <label class="form-label">学年</label>
-                <select v-model="formData.year" class="input-base h-fit">
-                  <option v-for="(label, key) in yearLabels" :key="key" :value="key">
-                    {{ label }}
-                  </option>
-                </select>
-              </div>
-              <Input
-                v-model.number="formData.joinedAt"
-                type="number"
-                label="入部年度"
-                :min="1950"
-                :max="new Date().getFullYear() + 1" />
-              <Input v-model="formData.getGradeAt" type="date" label="級段位取得日" />
-              <Input v-model="formData.birthday" type="date" label="誕生日" />
+              <ProfileFields
+                v-model:grade="formData.grade"
+                v-model:year="formData.year"
+                v-model:joined-at="formData.joinedAt"
+                v-model:get-grade-at="formData.getGradeAt"
+                v-model:birthday="formData.birthday"
+                joined-at-label="入部年度"
+                :joined-at-min="1950"
+                :joined-at-max="new Date().getFullYear() + 1"
+                get-grade-at-label="級段位取得日" />
             </div>
 
             <div class="gap-2 mt-2 flex justify-end">
@@ -239,50 +225,16 @@
             </div>
           </div>
 
-          <div
-            v-if="showFinalConfirm"
-            class="inset-0 bg-black/50 fixed z-50 flex items-center justify-center backdrop-blur-[4px]">
-            <div class="max-w-md bg-base rounded-lg shadow-xl p-6 stack m-4 w-full">
-              <div class="gap-3 flex items-center">
-                <div class="w-10 h-10 bg-red-500/10 flex items-center justify-center rounded-full">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="sq-5 text-red-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                </div>
-                <h3 class="text-lg font-semibold text">本当に削除しますか？</h3>
-              </div>
-              <p class="text-sub">
-                <strong>{{ user?.lastName }} {{ user?.firstName }}</strong>
-                さんのアカウントとすべての活動記録が削除されます。この操作は元に戻せません。
-              </p>
-              <div class="gap-3 flex justify-end">
-                <button
-                  class="btn-secondary"
-                  @click="
-                    showFinalConfirm = false;
-                    showDeleteConfirm = false;
-                    deleteConfirmName = '';
-                  ">
-                  キャンセル
-                </button>
-                <button class="btn-danger" :disabled="deleting" @click="handleDeleteUser">
-                  {{ deleting ? "削除中..." : "削除する" }}
-                </button>
-              </div>
-              <p v-if="deleteError" class="text-sm text-red-500">
-                {{ deleteError }}
-              </p>
-            </div>
-          </div>
+          <ConfirmDialog
+            :open="showFinalConfirm"
+            title="本当に削除しますか？"
+            :description="`${user?.lastName ?? ''} ${user?.firstName ?? ''}さんのアカウントとすべての活動記録が削除されます。この操作は元に戻せません。`"
+            confirm-text="削除する"
+            cancel-text="キャンセル"
+            :error="deleteError || undefined"
+            :loading="deleting"
+            @confirm="handleDeleteUser"
+            @cancel="cancelFinalDelete" />
         </div>
       </div>
     </div>
@@ -291,12 +243,13 @@
 
 <script setup lang="ts">
 import AdminMenu from "@/components/admin/AdminMenu.vue";
-import { formatDateSlash } from "share";
+import ConfirmDialog from "@/components/ui/ConfirmDialog.vue";
 import hc from "@/lib/honoClient";
-import Input from "@/components/ui/UiInput.vue";
 import NormSummary from "@/components/admin/NormSummary.vue";
+import ProfileFields from "@/components/account/ProfileFields.vue";
 import { queryKeys } from "@/lib/queryKeys";
 import { computed, ref, watch } from "vue";
+import { formatDateSlash, translateGrade, translateYear } from "share";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { useRoute, useRouter } from "vue-router";
 
@@ -313,27 +266,15 @@ const roleLabels: Record<string, string> = {
   chief: "主務",
   member: "部員",
 };
-const gradeLabels: Record<number, string> = {
-  0: "無級",
-  5: "五級",
-  4: "四級",
-  3: "三級",
-  2: "二級",
-  1: "一級",
-  [-1]: "初段",
-  [-2]: "二段",
-  [-3]: "三段",
-  [-4]: "四段",
+const displayGrade = (value: number | null | undefined) => {
+  const label = translateGrade(value ?? 0);
+  return label === "不明" ? "無級" : label;
 };
-const yearLabels: Record<string, string> = {
-  b1: "1回生",
-  b2: "2回生",
-  b3: "3回生",
-  b4: "4回生",
-  m1: "修士1年",
-  m2: "修士2年",
-  d1: "博士1年",
-  d2: "博士2年",
+
+const displayYear = (value: string | null | undefined) => {
+  if (!value) return "";
+  const label = translateYear(value);
+  return label === "不明" ? value : label;
 };
 
 // Reactivity via standard refs
@@ -440,6 +381,12 @@ const cancelEditing = () => {
   updateError.value = "";
 };
 
+const cancelFinalDelete = () => {
+  showFinalConfirm.value = false;
+  showDeleteConfirm.value = false;
+  deleteConfirmName.value = "";
+};
+
 const changePage = (newPage: number) => {
   page.value = newPage;
 };
@@ -524,6 +471,8 @@ const { mutateAsync: deleteUserMutation, isPending: deleting } = useMutation({
 });
 
 const handleDeleteUser = async () => {
+  if (deleting.value) return;
+
   deleteError.value = "";
   try {
     await deleteUserMutation();

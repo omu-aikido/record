@@ -64,25 +64,12 @@
     </div>
 
     <form v-else class="stack" @submit.prevent="handleSubmit">
-      <UiSelect
-        id="grade"
-        v-model="formData.grade"
-        label="級段位"
-        :options="gradeSelectOptions"
-        :disabled="isSubmitting"
-        required />
-
-      <Input v-model="formData.getGradeAt" type="date" label="取得日" :disabled="isSubmitting" />
-
-      <Input v-model="formData.birthday" type="date" label="誕生日" :disabled="isSubmitting" />
-
-      <Input v-model="formData.joinedAt" type="number" label="入部年" min="2020" max="9999" :disabled="isSubmitting" />
-
-      <UiSelect
-        id="year"
-        v-model="formData.year"
-        label="学年"
-        :options="yearSelectOptions"
+      <ProfileFields
+        v-model:grade="formData.grade"
+        v-model:year="formData.year"
+        v-model:joined-at="formData.joinedAt"
+        v-model:get-grade-at="formData.getGradeAt"
+        v-model:birthday="formData.birthday"
         :disabled="isSubmitting"
         required />
 
@@ -103,13 +90,10 @@
 <script setup lang="ts">
 import { ArkErrors } from "arktype";
 import hc from "@/lib/honoClient";
-import Input from "@/components/ui/UiInput.vue";
+import ProfileFields from "@/components/account/ProfileFields.vue";
 import { queryKeys } from "@/lib/queryKeys";
-import UiSelect from "@/components/ui/UiSelect.vue";
-import { AccountMetadata, formatDateSlash, isProfileComplete } from "share";
+import { AccountMetadata, formatDateSlash, isProfileComplete, translateGrade, translateYear } from "share";
 import { computed, reactive, ref, watch } from "vue";
-import { grade, translateGrade } from "share";
-import { translateYear, year } from "share";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 
 interface FormData {
@@ -125,8 +109,6 @@ const queryClient = useQueryClient();
 const isEditing = ref(false);
 const message = ref("");
 const isError = ref(false);
-const gradeSelectOptions = grade.map((option) => ({ label: option.name, value: option.grade }));
-const yearSelectOptions = year.map((option) => ({ label: option.name, value: option.year }));
 
 const formData = reactive<FormData>({
   grade: 0,
@@ -175,8 +157,14 @@ function applyProfileToForm(newProfile: typeof profile.value) {
   formData.birthday = "";
 }
 
-// Sync form data
-watch(profile, (newProfile) => applyProfileToForm(newProfile), { immediate: true });
+// Sync form data without replacing values the user is currently editing.
+watch(
+  profile,
+  (newProfile) => {
+    if (!isEditing.value) applyProfileToForm(newProfile);
+  },
+  { immediate: true }
+);
 
 function updateFormData() {
   applyProfileToForm(profile.value);

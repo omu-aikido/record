@@ -4,6 +4,8 @@
     "apps/*"
   ],
   "scripts": {
+    "env:decrypt": "bun scripts/env.ts decrypt",
+    "env:encrypt": "bun scripts/env.ts encrypt",
     "test": "bun test --isolate"
   },
   "devDependencies": {

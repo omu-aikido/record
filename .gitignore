@@ -21,6 +21,7 @@ apps/server/worker-configuration.d.ts
 *.db*
 
 # env
+.env
 .env.*
 !.env.example
 .dev.vars

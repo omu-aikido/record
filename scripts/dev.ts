@@ -1,5 +1,7 @@
 /// <reference types="bun" />
 
+import { decryptEnvFiles } from "./env";
+
 type DevChildProcess = ReturnType<typeof Bun.spawn>;
 
 const children: DevChildProcess[] = [];
@@ -29,6 +31,8 @@ process.once("SIGTERM", () => {
 });
 
 async function main(): Promise<void> {
+  await decryptEnvFiles();
+
   console.log("Starting database...");
   const database = Bun.spawn({
     cmd: ["bun", "run", "dev"],

@@ -36,14 +36,28 @@ bun run generate
 
 ### 2. 環境変数設定
 
-.env.exampleを参考に。
-`apps/server`,`apps/client`それぞれに必要な変数を記述して配置
+環境変数は age で暗号化した `secrets/*.env.age` から復号します。
+秘密鍵はリポジトリ外に置き、必要なら `AGE_IDENTITY_FILE` で指定してください。開発者を追加する場合は、公開鍵を `secrets/dev.recipients` に1行追加して再暗号化します。
+
+```bash
+bun run env:decrypt
+```
+
+復号先は `.env.example` のとおりです。アプリとE2Eの環境変数をまとめて復号します。
+
+暗号化済みファイルを更新する場合は、まず復号して平文の `.env` を編集してから実行します。
+
+```bash
+bun run env:encrypt
+```
 
 ### 3. 開発サーバー起動
 
 ```bash
 vp run dev
 ```
+
+`vp run dev` は起動時にアプリ用の環境変数を自動で復号します。
 
 ブラウザで http://localhost:5173 を開く
 

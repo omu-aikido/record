@@ -101,10 +101,19 @@ TURSO_DATABASE_URL=libsql://*.turso.io
 TURSO_AUTH_TOKEN=***
 ```
 
-## Lint and Format
+## Verification
 
-**Vite+** (`vp`): Unified toolchain managing Oxlint + Oxfmt. Config in `vite.config.ts`.
+Use the repository's existing Vite+ task definitions for verification.
 
-- Lint: `vp lint .`
-- Format: `vp fmt .`
-- Both: `vp check`
+- Build: `vp build apps/client`
+- Typecheck: `vp run --filter './apps/*' --cache typecheck`
+- Lint: `vp lint apps/client/src`
+- Tests: `bun test --isolate`
+
+Prefer these repository-level commands over invoking `vite`, `vue-tsc`,
+or package-local scripts directly unless debugging the command itself.
+
+A verification is considered clean only when the command succeeds and
+produces no linter warnings introduced by the change.
+
+Lint must complete without warnings in files changed by the task.

@@ -11,7 +11,7 @@
   "devDependencies": {
     "@types/bun": "^1.4.0",
     "knip": "latest",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "vite": "^0.3.0",
     "vite-plus": "^0.3.0",
     "wrangler": "^4.129.0"

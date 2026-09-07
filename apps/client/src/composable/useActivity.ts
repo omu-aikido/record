@@ -2,27 +2,32 @@ import hc from "@/lib/honoClient";
 import type { InferRequestType } from "hono/client";
 import { queryKeys } from "@/lib/queryKeys";
 import { computed, type Ref } from "vue";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { countPracticeDays, type RankingResponse } from "share";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 
 type RecordQuery = InferRequestType<typeof hc.user.record.$get>["query"];
 
 const isActivityListQuery = ({ queryKey }: { queryKey: readonly unknown[] }) =>
   queryKey[0] === "user" && queryKey[1] === "record" && typeof queryKey[2] !== "string";
 
-const patchRankingAfterActivityAdd = (
+export const patchRankingAfterActivityAdd = (
   ranking: RankingResponse | undefined,
   date: string,
   period: number
 ): RankingResponse | undefined => {
-  if (!ranking || !ranking.currentUserRanking) return ranking;
+  if (!ranking) return ranking;
   if (date < ranking.startDate || date > ranking.endDate) return ranking;
 
-  const totalPeriod = ranking.currentUserRanking.totalPeriod + period;
+  const totalPeriod = (ranking.currentUserRanking?.totalPeriod ?? 0) + period;
   return {
     ...ranking,
     currentUserRanking: {
-      ...ranking.currentUserRanking,
+      ...(ranking.currentUserRanking ?? {
+        userName: "あなた",
+        isCurrentUser: true,
+      }),
+      // The rank depends on other users and is replaced by the authoritative refetch.
+      rank: null,
       totalPeriod,
       practiceCount: countPracticeDays(totalPeriod),
     },

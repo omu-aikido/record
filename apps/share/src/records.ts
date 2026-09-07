@@ -52,7 +52,7 @@ export const rankingQuerySchema = type({
 
 // Ranking Types
 export type RankingEntry = {
-  rank: number;
+  rank: number | null;
   userName: string;
   isCurrentUser: boolean;
   totalPeriod: number;

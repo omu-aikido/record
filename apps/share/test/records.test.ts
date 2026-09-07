@@ -176,7 +176,8 @@ describe("createActivitySchema", () => {
   });
 
   test("should reject dates in the future", () => {
-    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+    const tomorrow = new Date(Date.now() + JST_OFFSET_MS + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     expect(isValid(createActivitySchema({ date: tomorrow, period: 1.5 }))).toBe(false);
   });
 

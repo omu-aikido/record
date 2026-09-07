@@ -33,6 +33,15 @@ type WorkerCache = {
   delete(request: Request): Promise<boolean>;
 };
 
+type RankingAnalyticsEvent = "cache_hit" | "cache_miss" | "cache_invalidate" | "db_query";
+
+type RankingAnalyticsValues = {
+  startDate?: string;
+  endDate?: string;
+  count?: number;
+  durationMs?: number;
+};
+
 // Ranking data only changes when activity rows change. Keep it for a long time
 // and explicitly invalidate the affected period keys after mutations.
 const RANKING_CACHE_TTL_SECONDS = 24 * 60 * 60;
@@ -40,6 +49,26 @@ const RANKING_CACHE_TTL_SECONDS = 24 * 60 * 60;
 const getWorkerCache = (): WorkerCache | undefined => {
   const cacheStorage = (globalThis as typeof globalThis & { caches?: { default: WorkerCache } }).caches;
   return cacheStorage?.default;
+};
+
+const getColo = (c: Context<{ Bindings: Env }>): string => c.req.header("cf-ray")?.split("-").at(-1) ?? "unknown";
+
+const writeRankingAnalytics = (
+  c: Context<{ Bindings: Env }>,
+  event: RankingAnalyticsEvent,
+  values: RankingAnalyticsValues = {}
+): void => {
+  try {
+    c.env.ANALYTICS?.writeDataPoint({
+      // blob1=event, blob2=colo, blob3=startDate, blob4=endDate
+      blobs: [event, getColo(c), values.startDate ?? "", values.endDate ?? ""],
+      // double1=count, double2=durationMs
+      doubles: [values.count ?? 1, values.durationMs ?? 0],
+      indexes: ["ranking"],
+    });
+  } catch {
+    // Analytics must never affect request handling or local tests.
+  }
 };
 
 const toCurrentUserRankingEntry = (rank: number, totalPeriod: number): RankingEntry => ({
@@ -189,6 +218,10 @@ export const invalidateRankingCacheForDates = async (
   }
 
   await Promise.allSettled([...keys.values()].map((key) => cache.delete(key)));
+  writeRankingAnalytics(c, "cache_invalidate", {
+    startDate: dates[0] ?? "",
+    count: keys.size,
+  });
 };
 
 export const getRankingData = async (
@@ -203,6 +236,7 @@ export const getRankingData = async (
     try {
       const cachedResponse = await cache.match(cacheKey);
       if (cachedResponse) {
+        writeRankingAnalytics(c, "cache_hit", { startDate, endDate });
         return (await cachedResponse.json()) as RawRankingEntry[];
       }
     } catch {
@@ -211,7 +245,15 @@ export const getRankingData = async (
     }
   }
 
+  writeRankingAnalytics(c, "cache_miss", { startDate, endDate });
+  const queryStartedAt = performance.now();
   const rawData = await getRankingDataFromDb(c, startDate, endDate);
+  writeRankingAnalytics(c, "db_query", {
+    startDate,
+    endDate,
+    count: rawData.length,
+    durationMs: performance.now() - queryStartedAt,
+  });
 
   if (cache) {
     const response = new Response(JSON.stringify(rawData), {

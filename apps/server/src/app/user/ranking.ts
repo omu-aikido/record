@@ -51,7 +51,10 @@ const getWorkerCache = (): WorkerCache | undefined => {
   return cacheStorage?.default;
 };
 
-const getColo = (c: Context<{ Bindings: Env }>): string => c.req.header("cf-ray")?.split("-").at(-1) ?? "unknown";
+const getColo = (c: Context<{ Bindings: Env }>): string => {
+  const parts = c.req.header("cf-ray")?.split("-");
+  return parts?.[parts.length - 1] ?? "unknown";
+};
 
 const writeRankingAnalytics = (
   c: Context<{ Bindings: Env }>,

@@ -76,6 +76,7 @@ export function useAddActivity() {
       await Promise.all([
         queryClient.invalidateQueries({ predicate: isActivityListQuery }),
         queryClient.invalidateQueries({ queryKey: queryKeys.user.record.count(), exact: true }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.user.record.ranking() }),
       ]);
     },
   });
@@ -95,6 +96,7 @@ export function useDeleteActivity() {
       await Promise.all([
         queryClient.invalidateQueries({ predicate: isActivityListQuery }),
         queryClient.invalidateQueries({ queryKey: queryKeys.user.record.count(), exact: true }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.user.record.ranking() }),
       ]);
     },
   });

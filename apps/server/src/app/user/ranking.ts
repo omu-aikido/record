@@ -30,9 +30,12 @@ type CurrentUserTotal = {
 type WorkerCache = {
   match(request: Request): Promise<Response | undefined>;
   put(request: Request, response: Response): Promise<void>;
+  delete(request: Request): Promise<boolean>;
 };
 
-const RANKING_CACHE_TTL_SECONDS = 10;
+// Ranking data only changes when activity rows change. Keep it for a long time
+// and explicitly invalidate the affected period keys after mutations.
+const RANKING_CACHE_TTL_SECONDS = 24 * 60 * 60;
 
 const getWorkerCache = (): WorkerCache | undefined => {
   const cacheStorage = (globalThis as typeof globalThis & { caches?: { default: WorkerCache } }).caches;
@@ -145,7 +148,6 @@ export const calculatePeriodRange = (params: PeriodParams): PeriodRange => {
     };
   }
 
-  // monthly
   const monthStart = new Date(Date.UTC(year, month - 1, 1));
   const monthEnd = new Date(Date.UTC(year, month, 0));
   return {
@@ -156,6 +158,37 @@ export const calculatePeriodRange = (params: PeriodParams): PeriodRange => {
       month: "long",
     }),
   };
+};
+
+export const invalidateRankingCacheForDates = async (
+  c: Context<{ Bindings: Env }>,
+  dates: readonly string[]
+): Promise<void> => {
+  const cache = getWorkerCache();
+  if (!cache || dates.length === 0) return;
+
+  const keys = new Map<string, Request>();
+
+  for (const date of new Set(dates)) {
+    const [yearText, monthText] = date.split("-");
+    const year = Number(yearText);
+    const month = Number(monthText);
+    if (!Number.isInteger(year) || !Number.isInteger(month)) continue;
+
+    const fiscalYear = month >= 4 ? year : year - 1;
+    const ranges = [
+      calculatePeriodRange({ year, month, period: "monthly" }),
+      calculatePeriodRange({ year, month, period: "annual" }),
+      calculatePeriodRange({ year: fiscalYear, month, period: "fiscal" }),
+    ];
+
+    for (const { startDate, endDate } of ranges) {
+      const key = getRankingCacheKey(c, startDate, endDate);
+      keys.set(key.url, key);
+    }
+  }
+
+  await Promise.allSettled([...keys.values()].map((key) => cache.delete(key)));
 };
 
 export const getRankingData = async (
@@ -184,7 +217,7 @@ export const getRankingData = async (
     const response = new Response(JSON.stringify(rawData), {
       headers: {
         "Content-Type": "application/json",
-        "Cache-Control": `public, s-maxage=${RANKING_CACHE_TTL_SECONDS}`,
+        "Cache-Control": `public, max-age=${RANKING_CACHE_TTL_SECONDS}`,
       },
     });
 

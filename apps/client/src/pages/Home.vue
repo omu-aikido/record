@@ -18,6 +18,7 @@ type ProfileResponse = InferResponseType<typeof hc.user.clerk.profile.$get, 200>
 type PracticeCountResponse = InferResponseType<typeof hc.user.record.count.$get, 200>;
 type RankingResponse = InferResponseType<typeof hc.user.record.ranking.$get, 200>;
 type MenuResponse = InferResponseType<typeof hc.user.clerk.menu.$get, 200>;
+const RANKING_STALE_TIME_MS = 10_000;
 const { mutateAsync: addActivity } = useAddActivity();
 // State
 const activityLoading = ref(false);
@@ -81,6 +82,8 @@ const {
     if (!res.ok) throw new Error("Failed to fetch ranking");
     return res.json() as Promise<RankingResponse>;
   },
+  staleTime: RANKING_STALE_TIME_MS,
+  refetchOnWindowFocus: true,
 });
 const rankingData = computed(() => rankingDataRaw.value ?? null);
 const currentRankingError = computed(() => (rankingErrorRaw.value ? "当月ランキングの取得に失敗しました" : null));
@@ -109,6 +112,8 @@ const {
     if (!res.ok) throw new Error("Failed to fetch last month ranking");
     return res.json() as Promise<RankingResponse>;
   },
+  staleTime: RANKING_STALE_TIME_MS,
+  refetchOnWindowFocus: true,
 });
 const lastMonthRankingData = computed(() => lastMonthRankingDataRaw.value ?? null);
 const lastMonthRankingError = computed(() =>

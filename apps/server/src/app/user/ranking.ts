@@ -27,7 +27,17 @@ type CurrentUserTotal = {
   recordCount: number;
 };
 
+type WorkerCache = {
+  match(request: Request): Promise<Response | undefined>;
+  put(request: Request, response: Response): Promise<void>;
+};
+
 const RANKING_CACHE_TTL_SECONDS = 10;
+
+const getWorkerCache = (): WorkerCache | undefined => {
+  const cacheStorage = (globalThis as typeof globalThis & { caches?: { default: WorkerCache } }).caches;
+  return cacheStorage?.default;
+};
 
 const toCurrentUserRankingEntry = (rank: number, totalPeriod: number): RankingEntry => ({
   rank,
@@ -154,11 +164,10 @@ export const getRankingData = async (
   endDate: string
 ): Promise<RawRankingEntry[]> => {
   const cacheKey = getRankingCacheKey(c, startDate, endDate);
-  let cache: Cache | undefined;
+  let cache = getWorkerCache();
 
-  if (typeof caches !== "undefined") {
+  if (cache) {
     try {
-      cache = caches.default;
       const cachedResponse = await cache.match(cacheKey);
       if (cachedResponse) {
         return (await cachedResponse.json()) as RawRankingEntry[];

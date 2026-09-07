@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
 import AppFooter from "./components/pages/AppFooter.vue";
 import AppHeader from "./components/pages/AppHeader.vue";
 import ErrorBoundary from "./components/common/ErrorBoundary.vue";
+import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
 
 const isDev = import.meta.env.DEV;
 </script>

@@ -4,11 +4,15 @@ import * as drizzleOrm from "drizzle-orm";
 import { activity } from "../../db/schema";
 import { dbClient } from "../../db/drizzle";
 import type { RankingEntry } from "share";
+import { ArkErrors, type } from "arktype";
+import { getCurrentUserTotal, getHigherUserCount } from "./rankingTotals";
 
-type RawRankingEntry = {
-  userId: string;
-  totalPeriod: number;
-};
+const RawRankingEntry = type({
+  userId: "string",
+  totalPeriod: "number",
+});
+
+type RawRankingEntryType = typeof RawRankingEntry.infer;
 
 type PeriodParams = {
   year: number;
@@ -20,11 +24,6 @@ type PeriodRange = {
   startDate: string;
   endDate: string;
   periodLabel: string;
-};
-
-type CurrentUserTotal = {
-  totalPeriod: number;
-  recordCount: number;
 };
 
 type WorkerCache = {
@@ -53,7 +52,8 @@ const getWorkerCache = (): WorkerCache | undefined => {
 
 const getColo = (c: Context<{ Bindings: Env }>): string => {
   const parts = c.req.header("cf-ray")?.split("-");
-  return parts?.[parts.length - 1] ?? "unknown";
+  if (!parts) return "unknown";
+  return parts.at(-1) ?? "unknown";
 };
 
 const writeRankingAnalytics = (
@@ -82,60 +82,6 @@ const toCurrentUserRankingEntry = (rank: number, totalPeriod: number): RankingEn
   practiceCount: Math.floor(totalPeriod / 1.5),
 });
 
-const getCurrentUserTotal = async (
-  c: Context<{ Bindings: Env }>,
-  startDate: string,
-  endDate: string,
-  currentUserId: string
-): Promise<CurrentUserTotal> => {
-  const db = dbClient(c.env);
-  const currentUserTotalResult = await db
-    .select({
-      totalPeriod: drizzleOrm.sql<number>`COALESCE(SUM(${activity.period}), 0)`,
-      recordCount: drizzleOrm.sql<number>`COUNT(*)`,
-    })
-    .from(activity)
-    .where(
-      drizzleOrm.and(
-        drizzleOrm.eq(activity.userId, currentUserId),
-        drizzleOrm.gte(activity.date, startDate),
-        drizzleOrm.lte(activity.date, endDate)
-      )
-    );
-
-  return {
-    totalPeriod: currentUserTotalResult[0]?.totalPeriod ?? 0,
-    recordCount: currentUserTotalResult[0]?.recordCount ?? 0,
-  };
-};
-
-const getHigherUserCount = async (
-  c: Context<{ Bindings: Env }>,
-  startDate: string,
-  endDate: string,
-  currentUserTotal: number
-): Promise<number> => {
-  const db = dbClient(c.env);
-  const groupedTotals = db
-    .select({
-      userId: activity.userId,
-      totalPeriod: drizzleOrm.sql<number>`COALESCE(SUM(${activity.period}), 0)`,
-    })
-    .from(activity)
-    .where(drizzleOrm.and(drizzleOrm.gte(activity.date, startDate), drizzleOrm.lte(activity.date, endDate)))
-    .groupBy(activity.userId)
-    .as("grouped_totals");
-
-  const higherUserCountResult = await db
-    .select({
-      count: drizzleOrm.sql<number>`COUNT(*)`,
-    })
-    .from(groupedTotals)
-    .where(drizzleOrm.gt(groupedTotals.totalPeriod, currentUserTotal));
-
-  return higherUserCountResult[0]?.count ?? 0;
-};
-
 const getRankingCacheKey = (c: Context<{ Bindings: Env }>, startDate: string, endDate: string): Request => {
   const url = new URL(c.req.url);
   url.pathname = "/__cache/ranking";
@@ -147,9 +93,9 @@ const getRankingDataFromDb = async (
   c: Context<{ Bindings: Env }>,
   startDate: string,
   endDate: string
-): Promise<RawRankingEntry[]> => {
+): Promise<RawRankingEntryType[]> => {
   const db = dbClient(c.env);
-  return db
+  const result = await db
     .select({
       userId: activity.userId,
       totalPeriod: drizzleOrm.sql<number>`COALESCE(SUM(${activity.period}), 0)`,
@@ -159,6 +105,8 @@ const getRankingDataFromDb = async (
     .groupBy(activity.userId)
     .orderBy(drizzleOrm.desc(drizzleOrm.sql<number>`COALESCE(SUM(${activity.period}), 0)`))
     .limit(50);
+
+  return result;
 };
 
 export const calculatePeriodRange = (params: PeriodParams): PeriodRange => {
@@ -231,7 +179,7 @@ export const getRankingData = async (
   c: Context<{ Bindings: Env }>,
   startDate: string,
   endDate: string
-): Promise<RawRankingEntry[]> => {
+): Promise<RawRankingEntryType[]> => {
   const cacheKey = getRankingCacheKey(c, startDate, endDate);
   let cache = getWorkerCache();
 
@@ -240,7 +188,9 @@ export const getRankingData = async (
       const cachedResponse = await cache.match(cacheKey);
       if (cachedResponse) {
         writeRankingAnalytics(c, "cache_hit", { startDate, endDate });
-        return (await cachedResponse.json()) as RawRankingEntry[];
+        const result = RawRankingEntry.array()(await cachedResponse.json());
+        if (result instanceof ArkErrors) return [];
+        return result;
       }
     } catch {
       // Cache API is best-effort. Local tests and development may not expose it.
@@ -276,7 +226,7 @@ export const getRankingData = async (
   return rawData;
 };
 
-const calculateCompetitionRank = (sortedEntries: RawRankingEntry[], targetUserId: string): number | null => {
+const calculateCompetitionRank = (sortedEntries: RawRankingEntryType[], targetUserId: string): number | null => {
   let currentRank = 1;
   let previousTotalPeriod: number | null = null;
 
@@ -300,7 +250,7 @@ export const getCurrentUserRanking = async (
   startDate: string,
   endDate: string,
   currentUserId: string,
-  topRankingData: RawRankingEntry[]
+  topRankingData: RawRankingEntryType[]
 ): Promise<RankingEntry | null> => {
   const currentUserTopRank = calculateCompetitionRank(topRankingData, currentUserId);
   if (currentUserTopRank !== null) {
@@ -317,7 +267,7 @@ export const getCurrentUserRanking = async (
   return toCurrentUserRankingEntry(higherUserCount + 1, currentUserTotal.totalPeriod);
 };
 
-export const maskRankingData = (rawData: RawRankingEntry[], currentUserId: string): RankingEntry[] => {
+export const maskRankingData = (rawData: RawRankingEntryType[], currentUserId: string): RankingEntry[] => {
   let currentRank = 1;
   let previousTotalPeriod: number | null = null;
 

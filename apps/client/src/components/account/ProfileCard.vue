@@ -33,7 +33,7 @@
       </div>
       <div class="flex-between">
         <h3 class="text-lg font-bold text">プロフィール</h3>
-        <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="isEditing = true">
+        <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="startEditing">
           {{ needsProfileCompletion ? "入力する" : "編集" }}
         </button>
       </div>
@@ -63,27 +63,38 @@
       </div>
     </div>
 
-    <form v-else class="stack" @submit.prevent="handleSubmit">
+    <form v-else class="stack" @submit.prevent.stop="form.handleSubmit">
       <ProfileFields
-        v-model:grade="formData.grade"
-        v-model:year="formData.year"
-        v-model:joined-at="formData.joinedAt"
-        v-model:get-grade-at="formData.getGradeAt"
-        v-model:birthday="formData.birthday"
+        :grade="formValues.grade"
+        :year="formValues.year ?? 'b1'"
+        :joined-at="formValues.joinedAt"
+        :get-grade-at="formValues.getGradeAt ?? ''"
+        :birthday="formValues.birthday ?? ''"
         :disabled="isSubmitting"
         order="profile"
-        required />
+        required
+        @update:grade="(value) => form.setFieldValue('grade', value)"
+        @update:year="setYear"
+        @update:joined-at="(value) => form.setFieldValue('joinedAt', value)"
+        @update:get-grade-at="setGetGradeAt"
+        @update:birthday="setBirthday" />
 
       <p v-if="message" :class="['text-sm font-medium', isError ? 'text-red-500' : 'text-green-500']">
         {{ message }}
       </p>
 
-      <div class="gap-3 pt-2 flex">
-        <button type="submit" class="btn-primary w-full" :disabled="isSubmitting">
-          {{ isSubmitting ? "保存中..." : "保存" }}
-        </button>
-        <button type="button" class="btn-secondary w-full" @click="cancelEdit">キャンセル</button>
-      </div>
+      <form.Subscribe>
+        <template #default="{ canSubmit }">
+          <p v-if="!canSubmit" class="text-sm font-medium text-red-500">入力内容を確認してください</p>
+
+          <div class="gap-3 pt-2 flex">
+            <button type="submit" class="btn-primary w-full" :disabled="isSubmitting || !canSubmit">
+              {{ isSubmitting ? "保存中..." : "保存" }}
+            </button>
+            <button type="button" class="btn-secondary w-full" @click="cancelEdit">キャンセル</button>
+          </div>
+        </template>
+      </form.Subscribe>
     </form>
   </div>
 </template>
@@ -93,31 +104,19 @@ import { ArkErrors } from "arktype";
 import hc from "@/lib/honoClient";
 import ProfileFields from "@/components/account/ProfileFields.vue";
 import { queryKeys } from "@/lib/queryKeys";
+import { useForm } from "@tanstack/vue-form";
 import { AccountMetadata, formatDateSlash, isProfileComplete, translateGrade, translateYear } from "share";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 
-interface FormData {
-  grade: number | null;
-  getGradeAt: string;
-  joinedAt: number | null;
-  year: `b${number}` | `m${number}` | `d${number}`;
-  birthday: string;
-}
+const profileFormSchema = AccountMetadata.omit("role");
+type ProfileFormData = typeof profileFormSchema.infer;
 
 const queryClient = useQueryClient();
 
 const isEditing = ref(false);
 const message = ref("");
 const isError = ref(false);
-
-const formData = reactive<FormData>({
-  grade: 0,
-  getGradeAt: "",
-  joinedAt: null,
-  year: "b1",
-  birthday: "",
-});
 
 // Query - Returns { profile: ... } to match server response shape
 const { data: profileData } = useQuery({
@@ -141,34 +140,14 @@ const { data: profileData } = useQuery({
 const profile = computed(() => profileData.value?.profile ?? null);
 const needsProfileCompletion = computed(() => profileData.value?.needsProfileCompletion ?? true);
 
-function applyProfileToForm(newProfile: typeof profile.value) {
-  if (newProfile) {
-    formData.grade = Number(newProfile.grade) || 0;
-    formData.getGradeAt = newProfile.getGradeAt || "";
-    formData.joinedAt = newProfile.joinedAt ?? new Date().getFullYear();
-    formData.year = (newProfile.year || "b1") as `b${number}` | `m${number}` | `d${number}`;
-    formData.birthday = newProfile.birthday || "";
-    return;
-  }
-
-  formData.grade = 0;
-  formData.getGradeAt = "";
-  formData.joinedAt = new Date().getFullYear();
-  formData.year = "b1";
-  formData.birthday = "";
-}
-
-// Sync form data without replacing values the user is currently editing.
-watch(
-  profile,
-  (newProfile) => {
-    if (!isEditing.value) applyProfileToForm(newProfile);
-  },
-  { immediate: true }
-);
-
-function updateFormData() {
-  applyProfileToForm(profile.value);
+function getDefaultValues(newProfile: typeof profile.value): ProfileFormData {
+  return {
+    grade: newProfile?.grade ?? 0,
+    getGradeAt: newProfile?.getGradeAt ?? "",
+    joinedAt: newProfile?.joinedAt ?? new Date().getFullYear(),
+    year: newProfile?.year || "b1",
+    birthday: newProfile?.birthday ?? "",
+  };
 }
 
 // Mutation
@@ -214,30 +193,54 @@ const { mutateAsync: updateProfile, isPending: isSubmitting } = useMutation({
   },
 });
 
-async function handleSubmit() {
+const form = useForm({
+  defaultValues: getDefaultValues(null),
+  validators: {
+    onChange: profileFormSchema,
+    onSubmit: profileFormSchema,
+  },
+  onSubmit: async ({ value }) => {
+    message.value = "";
+    isError.value = false;
+
+    try {
+      await updateProfile({
+        grade: value.grade ?? 0,
+        getGradeAt: (value.getGradeAt || null) as `${number}-${number}-${number}` | null,
+        joinedAt: value.joinedAt,
+        year: (value.year || "b1") as `b${number}` | `m${number}` | `d${number}`,
+        birthday: (value.birthday || null) as `${number}-${number}-${number}` | null,
+      });
+    } catch {
+      // handled in onError
+    }
+  },
+});
+const formValues = form.useStore((state) => state.values);
+const setYear = (value: string) => form.setFieldValue("year", value as ProfileFormData["year"]);
+const setGetGradeAt = (value: string) => form.setFieldValue("getGradeAt", value as ProfileFormData["getGradeAt"]);
+const setBirthday = (value: string) => form.setFieldValue("birthday", value as ProfileFormData["birthday"]);
+
+// Sync server data without replacing values the user is currently editing.
+watch(
+  profile,
+  (newProfile) => {
+    if (!isEditing.value) form.reset(getDefaultValues(newProfile));
+  },
+  { immediate: true }
+);
+
+function startEditing() {
+  form.reset(getDefaultValues(profile.value));
   message.value = "";
   isError.value = false;
-  try {
-    const getGradeAtValue = (formData.getGradeAt || null) as `${number}-${number}-${number}` | null;
-    const birthdayValue = (formData.birthday || null) as `${number}-${number}-${number}` | null;
-
-    const updateData = {
-      grade: formData.grade ?? 0,
-      getGradeAt: getGradeAtValue,
-      joinedAt: formData.joinedAt,
-      year: formData.year as `b${number}` | `m${number}` | `d${number}`,
-      birthday: birthdayValue,
-    };
-
-    await updateProfile(updateData);
-  } catch {
-    // handled in onError
-  }
+  isEditing.value = true;
 }
 
 function cancelEdit() {
-  updateFormData();
+  form.reset(getDefaultValues(profile.value));
   isEditing.value = false;
   message.value = "";
+  isError.value = false;
 }
 </script>

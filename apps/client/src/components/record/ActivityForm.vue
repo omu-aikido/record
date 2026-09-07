@@ -29,10 +29,19 @@ const getDefaultValues = () => ({
   period: 1.5,
 });
 
+const getErrorMessage = (errors: readonly unknown[]): string | undefined => {
+  const error = errors[0];
+  if (typeof error === "string") return error;
+  if (typeof error === "object" && error !== null && "message" in error && typeof error.message === "string") {
+    return error.message;
+  }
+  return undefined;
+};
+
 const form = useForm({
   defaultValues: getDefaultValues(),
   validators: {
-    onSubmit: createActivitySchema,
+    onChange: createActivitySchema,
   },
   onSubmit: ({ value }) => {
     emit("submit", value.date, value.period);
@@ -58,7 +67,7 @@ watch(
   <div class="p-2">
     <form class="stack" data-testid="activity-form" @submit.prevent.stop="form.handleSubmit">
       <form.Field name="date">
-        <template #default="{ field }">
+        <template #default="{ field, state }">
           <Input
             id="date"
             :model-value="field.state.value"
@@ -66,6 +75,7 @@ watch(
             type="date"
             required
             :disabled="props.loading"
+            :error="state.meta.isTouched ? getErrorMessage(state.meta.errors) : undefined"
             data-testid="date-input"
             @blur="field.handleBlur"
             @update:model-value="(value) => field.handleChange(String(value ?? ''))" />
@@ -73,7 +83,7 @@ watch(
       </form.Field>
 
       <form.Field name="period">
-        <template #default="{ field }">
+        <template #default="{ field, state }">
           <Input
             id="period"
             :model-value="field.state.value"
@@ -84,6 +94,7 @@ watch(
             max="8"
             required
             :disabled="props.loading"
+            :error="state.meta.isTouched ? getErrorMessage(state.meta.errors) : undefined"
             data-testid="period-input"
             @blur="field.handleBlur"
             @update:model-value="(value) => field.handleChange(typeof value === 'number' ? value : 0)" />
@@ -94,7 +105,6 @@ watch(
 
       <form.Subscribe>
         <template #default="{ canSubmit }">
-          <p v-if="!canSubmit && !props.error" class="alert-error" role="alert">入力内容を確認してください</p>
           <button
             type="submit"
             class="btn-primary w-full"

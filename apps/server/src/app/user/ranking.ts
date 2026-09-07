@@ -27,6 +27,8 @@ type CurrentUserTotal = {
   recordCount: number;
 };
 
+const RANKING_CACHE_TTL_SECONDS = 10;
+
 const toCurrentUserRankingEntry = (rank: number, totalPeriod: number): RankingEntry => ({
   rank,
   userName: "あなた",
@@ -89,6 +91,31 @@ const getHigherUserCount = async (
   return higherUserCountResult[0]?.count ?? 0;
 };
 
+const getRankingCacheKey = (c: Context<{ Bindings: Env }>, startDate: string, endDate: string): Request => {
+  const url = new URL(c.req.url);
+  url.pathname = "/__cache/ranking";
+  url.search = new URLSearchParams({ startDate, endDate }).toString();
+  return new Request(url.toString(), { method: "GET" });
+};
+
+const getRankingDataFromDb = async (
+  c: Context<{ Bindings: Env }>,
+  startDate: string,
+  endDate: string
+): Promise<RawRankingEntry[]> => {
+  const db = dbClient(c.env);
+  return db
+    .select({
+      userId: activity.userId,
+      totalPeriod: drizzleOrm.sql<number>`COALESCE(SUM(${activity.period}), 0)`,
+    })
+    .from(activity)
+    .where(drizzleOrm.and(drizzleOrm.gte(activity.date, startDate), drizzleOrm.lte(activity.date, endDate)))
+    .groupBy(activity.userId)
+    .orderBy(drizzleOrm.desc(drizzleOrm.sql<number>`COALESCE(SUM(${activity.period}), 0)`))
+    .limit(50);
+};
+
 export const calculatePeriodRange = (params: PeriodParams): PeriodRange => {
   const { year, month, period } = params;
 
@@ -126,17 +153,38 @@ export const getRankingData = async (
   startDate: string,
   endDate: string
 ): Promise<RawRankingEntry[]> => {
-  const db = dbClient(c.env);
-  const rawData = await db
-    .select({
-      userId: activity.userId,
-      totalPeriod: drizzleOrm.sql<number>`COALESCE(SUM(${activity.period}), 0)`,
-    })
-    .from(activity)
-    .where(drizzleOrm.and(drizzleOrm.gte(activity.date, startDate), drizzleOrm.lte(activity.date, endDate)))
-    .groupBy(activity.userId)
-    .orderBy(drizzleOrm.desc(drizzleOrm.sql<number>`COALESCE(SUM(${activity.period}), 0)`))
-    .limit(50);
+  const cacheKey = getRankingCacheKey(c, startDate, endDate);
+  let cache: Cache | undefined;
+
+  if (typeof caches !== "undefined") {
+    try {
+      cache = caches.default;
+      const cachedResponse = await cache.match(cacheKey);
+      if (cachedResponse) {
+        return (await cachedResponse.json()) as RawRankingEntry[];
+      }
+    } catch {
+      // Cache API is best-effort. Local tests and development may not expose it.
+      cache = undefined;
+    }
+  }
+
+  const rawData = await getRankingDataFromDb(c, startDate, endDate);
+
+  if (cache) {
+    const response = new Response(JSON.stringify(rawData), {
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": `public, s-maxage=${RANKING_CACHE_TTL_SECONDS}`,
+      },
+    });
+
+    try {
+      await cache.put(cacheKey, response);
+    } catch {
+      // A cache write must never make the ranking request fail.
+    }
+  }
 
   return rawData;
 };

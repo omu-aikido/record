@@ -3,8 +3,31 @@ import type { InferRequestType } from "hono/client";
 import { queryKeys } from "@/lib/queryKeys";
 import { computed, type Ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
+import { countPracticeDays, type RankingResponse } from "share";
 
 type RecordQuery = InferRequestType<typeof hc.user.record.$get>["query"];
+
+const isActivityListQuery = ({ queryKey }: { queryKey: readonly unknown[] }) =>
+  queryKey[0] === "user" && queryKey[1] === "record" && typeof queryKey[2] !== "string";
+
+const patchRankingAfterActivityAdd = (
+  ranking: RankingResponse | undefined,
+  date: string,
+  period: number
+): RankingResponse | undefined => {
+  if (!ranking || !ranking.currentUserRanking) return ranking;
+  if (date < ranking.startDate || date > ranking.endDate) return ranking;
+
+  const totalPeriod = ranking.currentUserRanking.totalPeriod + period;
+  return {
+    ...ranking,
+    currentUserRanking: {
+      ...ranking.currentUserRanking,
+      totalPeriod,
+      practiceCount: countPracticeDays(totalPeriod),
+    },
+  };
+};
 
 export function useActivities(filters: Ref<RecordQuery | undefined>) {
   return useQuery({
@@ -33,10 +56,27 @@ export function useAddActivity() {
       }
       return res.json();
     },
+    onMutate: async ({ date, period }) => {
+      const rankingQueryKey = queryKeys.user.record.ranking();
+      await queryClient.cancelQueries({ queryKey: rankingQueryKey });
+
+      const previousRankings = queryClient.getQueriesData<RankingResponse>({ queryKey: rankingQueryKey });
+      queryClient.setQueriesData<RankingResponse>({ queryKey: rankingQueryKey }, (ranking) =>
+        patchRankingAfterActivityAdd(ranking, date, period)
+      );
+
+      return { previousRankings };
+    },
+    onError: (_error, _variables, context) => {
+      for (const [queryKey, ranking] of context?.previousRankings ?? []) {
+        queryClient.setQueryData(queryKey, ranking);
+      }
+    },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["user", "record"] });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.user.record.count() });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.user.record.ranking() });
+      await Promise.all([
+        queryClient.invalidateQueries({ predicate: isActivityListQuery }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.user.record.count(), exact: true }),
+      ]);
     },
   });
 }
@@ -52,9 +92,10 @@ export function useDeleteActivity() {
       return res.json();
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["user", "record"] });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.user.record.count() });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.user.record.ranking() });
+      await Promise.all([
+        queryClient.invalidateQueries({ predicate: isActivityListQuery }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.user.record.count(), exact: true }),
+      ]);
     },
   });
 }

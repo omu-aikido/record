@@ -1,0 +1,2 @@
+CREATE INDEX `activity_user_id_date_period_idx` ON `activity` (`userId`,`date`,`period`);--> statement-breakpoint
+CREATE INDEX `activity_date_user_id_period_idx` ON `activity` (`date`,`userId`,`period`);

@@ -9,7 +9,13 @@ import * as records from "share";
 import { activity } from "../../db/schema";
 import { dbClient } from "../../db/drizzle";
 import { enforceUserRateLimit } from "../../middleware/rateLimit";
-import { calculatePeriodRange, getCurrentUserRanking, getRankingData, maskRankingData } from "./ranking";
+import {
+  calculatePeriodRange,
+  getCurrentUserRanking,
+  getRankingData,
+  invalidateRankingCacheForDates,
+  maskRankingData,
+} from "./ranking";
 import { countPracticeDays, resolvePromotionSince } from "share";
 
 export const record = new Hono<{ Bindings: Env }>()
@@ -77,6 +83,8 @@ export const record = new Hono<{ Bindings: Env }>()
         updatedAt: now,
       });
 
+      await invalidateRankingCacheForDates(c, [body.date]);
+
       return c.json({ success: true }, 201);
     }
   )
@@ -100,10 +108,15 @@ export const record = new Hono<{ Bindings: Env }>()
       const body = c.req.valid("json");
       const db = dbClient(c.env);
 
-      await db
+      const deletedActivities = await db
         .delete(activity)
         .where(drizzleOrm.and(drizzleOrm.inArray(activity.id, body.ids), drizzleOrm.eq(activity.userId, auth.userId)))
         .returning({ date: activity.date });
+
+      await invalidateRankingCacheForDates(
+        c,
+        deletedActivities.map(({ date }) => date)
+      );
 
       return c.json({ success: true }, 200);
     }

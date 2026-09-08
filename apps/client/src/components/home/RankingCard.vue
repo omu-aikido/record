@@ -98,14 +98,19 @@ const getRankClass = (rank: number) => {
           <div class="text-xs font-medium text-subtext mb-1">月間ランキング ({{ currentRanking.period }})</div>
           <div class="flex-between">
             <div class="gap-1.5 flex items-baseline" data-testid="current-rank-display">
-              <span
-                :class="[
-                  'text-4xl font-bold tracking-tight text',
-                  getRankClass(currentRanking.currentUserRanking.rank),
-                ]">
-                {{ currentRanking.currentUserRanking.rank }}
+              <span v-if="currentRanking.currentUserRanking.rank === null" class="text-lg font-bold text-subtext">
+                更新中
               </span>
-              <span class="form-label">/ {{ currentRanking.totalUsers }}</span>
+              <template v-else>
+                <span
+                  :class="[
+                    'text-4xl font-bold tracking-tight text',
+                    getRankClass(currentRanking.currentUserRanking.rank),
+                  ]">
+                  {{ currentRanking.currentUserRanking.rank }}
+                </span>
+                <span class="form-label">/ {{ currentRanking.totalUsers }}</span>
+              </template>
             </div>
             <div class="flex gap-4" data-testid="current-stats-display">
               <div class="text-sm text gap-0.5 flex items-baseline">
@@ -131,14 +136,19 @@ const getRankClass = (rank: number) => {
           <div class="text-xs font-medium text-subtext mb-1">先月の振り返り ({{ lastMonthRanking.period }})</div>
           <div class="flex-between">
             <div class="gap-1.5 flex items-baseline" data-testid="last-month-rank-display">
-              <span
-                :class="[
-                  'text-4xl font-bold tracking-tight text',
-                  getRankClass(lastMonthRanking.currentUserRanking.rank),
-                ]">
-                {{ lastMonthRanking.currentUserRanking.rank }}
+              <span v-if="lastMonthRanking.currentUserRanking.rank === null" class="text-lg font-bold text-subtext">
+                更新中
               </span>
-              <span class="form-label">/ {{ lastMonthRanking.totalUsers }}</span>
+              <template v-else>
+                <span
+                  :class="[
+                    'text-4xl font-bold tracking-tight text',
+                    getRankClass(lastMonthRanking.currentUserRanking.rank),
+                  ]">
+                  {{ lastMonthRanking.currentUserRanking.rank }}
+                </span>
+                <span class="form-label">/ {{ lastMonthRanking.totalUsers }}</span>
+              </template>
             </div>
             <div class="flex gap-4" data-testid="last-month-stats-display">
               <div class="text-sm text gap-0.5 flex items-baseline">

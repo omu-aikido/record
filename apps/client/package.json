@@ -12,6 +12,7 @@
   "dependencies": {
     "@clerk/vue": "^2.5.0",
     "@iconify-json/lucide": "^1.2.129",
+    "@tanstack/vue-form": "^1.33.5",
     "@tanstack/vue-query": "^5.102.8",
     "arktype": "catalog:",
     "date-fns": "^4.4.0",
@@ -23,6 +24,7 @@
     "vue-router": "^5.3.1"
   },
   "devDependencies": {
+    "@tanstack/vue-query-devtools": "^6.1.48",
     "@types/bun": "^1.4.0",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vue/tsconfig": "^0.9.1",

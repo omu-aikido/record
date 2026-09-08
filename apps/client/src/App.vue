@@ -2,6 +2,9 @@
 import AppFooter from "./components/pages/AppFooter.vue";
 import AppHeader from "./components/pages/AppHeader.vue";
 import ErrorBoundary from "./components/common/ErrorBoundary.vue";
+import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
+
+const isDev = import.meta.env.DEV;
 </script>
 
 <template>
@@ -11,5 +14,6 @@ import ErrorBoundary from "./components/common/ErrorBoundary.vue";
       <RouterView />
     </main>
     <AppFooter />
+    <VueQueryDevtools v-if="isDev" />
   </ErrorBoundary>
 </template>

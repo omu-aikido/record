@@ -28,14 +28,12 @@ app.config.errorHandler = (error, _instance, info) => {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // 30 seconds - shorter than server KV cache (1 hour) to ensure fresher data on navigation
-      // This reduces the window where stale profile data (e.g., default 5級 values) can persist
       staleTime: 1000 * 30,
-      gcTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 5,
       retry: 1,
-      refetchOnWindowFocus: true, // Enable refetch on window focus to get fresh data
-      refetchOnMount: true, // Refetch when component mounts if data is stale
-      refetchOnReconnect: true, // Refetch when network reconnects
+      refetchOnWindowFocus: true,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
     },
   },
 });

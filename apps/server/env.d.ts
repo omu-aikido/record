@@ -1,4 +1,4 @@
-import type { RateLimit } from "@cloudflare/workers-types";
+import type { AnalyticsEngineDataset, RateLimit } from "@cloudflare/workers-types";
 
 declare global {
   namespace Cloudflare {
@@ -15,6 +15,7 @@ declare global {
       };
       TURSO_AUTH_TOKEN: string;
       TURSO_DATABASE_URL: string;
+      ANALYTICS: AnalyticsEngineDataset;
       ACCOUNT_MUTATION_RATE_LIMIT: RateLimit;
       ACTIVITY_MUTATION_RATE_LIMIT: RateLimit;
       BULK_DELETE_RATE_LIMIT: RateLimit;

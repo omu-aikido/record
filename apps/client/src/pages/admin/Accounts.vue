@@ -1,7 +1,5 @@
 <template>
-  <div class="gap-6 px-3 py-4 md:px-6 flex flex-col">
-    <AdminMenu />
-
+  <AdminPageLayout>
     <div class="gap-3 flex flex-col sm:flex-row">
       <div class="gap-2 sm:w-auto sm:ml-auto flex w-full">
         <input
@@ -212,11 +210,11 @@
         ユーザーが見つかりませんでした
       </div>
     </div>
-  </div>
+  </AdminPageLayout>
 </template>
 
 <script setup lang="ts">
-import AdminMenu from "@/components/admin/AdminMenu.vue";
+import AdminPageLayout from "@/components/admin/AdminPageLayout.vue";
 import hc from "@/lib/honoClient";
 import NormSummary from "@/components/admin/NormSummary.vue";
 import { queryKeys } from "@/lib/queryKeys";

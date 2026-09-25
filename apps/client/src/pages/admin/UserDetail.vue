@@ -1,6 +1,5 @@
 <template>
-  <div class="gap-6 px-3 py-4 md:px-6 flex flex-col">
-    <AdminMenu />
+  <AdminPageLayout>
     <div class="gap-2 text-sub flex items-center">
       <router-link to="/admin/accounts" class="hover:text-blue-500 hover:underline"> アカウント一覧 </router-link>
       <span class="text-subtext">/</span>
@@ -238,11 +237,11 @@
         </div>
       </div>
     </div>
-  </div>
+  </AdminPageLayout>
 </template>
 
 <script setup lang="ts">
-import AdminMenu from "@/components/admin/AdminMenu.vue";
+import AdminPageLayout from "@/components/admin/AdminPageLayout.vue";
 import ConfirmDialog from "@/components/ui/ConfirmDialog.vue";
 import hc from "@/lib/honoClient";
 import NormSummary from "@/components/admin/NormSummary.vue";

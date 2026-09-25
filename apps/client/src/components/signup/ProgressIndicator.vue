@@ -1,5 +1,5 @@
 <template>
-  <div class="my-4 flex items-center justify-center" data-testid="progress-indicator">
+  <div class="flex items-center justify-center" data-testid="progress-indicator">
     <div
       :class="['text-sm p-2', step === 'basic' ? 'text-blue-500 font-semibold' : 'text-green-500']"
       data-testid="step-basic">

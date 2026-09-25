@@ -4,117 +4,113 @@
   </Show>
 
   <Show when="signed-out">
-    <div class="card max-w-md mx-auto h-full w-full">
-      <div class="p-2">
+    <AuthFlowLayout class="card max-w-md mx-auto h-full w-full">
+      <template #heading>
         <h1 class="heading-1">サインイン</h1>
-      </div>
-      <div class="p-2 pt-0">
-        <div class="gap-6 flex flex-col">
-          <form v-if="needsVerification" @submit.prevent="handleVerifyCode">
-            <Input id="code" v-model="code" label="認証コード" name="code" required placeholder="認証コードを入力" />
-            <p class="text-sub mt-2">{{ email }} に認証コードを送信しました</p>
+      </template>
 
-            <div v-if="error" class="mt-4 text-base text-red-500">
-              <p>{{ error }}</p>
-            </div>
-            <button type="submit" class="btn-primary mt-4 w-full" :disabled="isLoading">
-              {{ isLoading ? "認証中..." : "認証" }}
-            </button>
-          </form>
+      <form v-if="needsVerification" @submit.prevent="handleVerifyCode">
+        <Input id="code" v-model="code" label="認証コード" name="code" required placeholder="認証コードを入力" />
+        <p class="text-sub mt-2">{{ email }} に認証コードを送信しました</p>
 
-          <form v-else @submit.prevent="handleSignIn">
-            <Input
-              id="email"
-              v-model="email"
-              type="email"
-              label="メールアドレス"
-              name="email"
-              required
-              autocomplete="email"
-              placeholder="example@mail.com" />
-
-            <div class="mt-4 user-select-none">
-              <div class="mb-1.5 text-xs flex items-center">
-                <label for="password" class="form-label">パスワード</label>
-                <a
-                  href="https://accounts.omu-aikido.com/sign-in/"
-                  class="text-base text-subtext ml-auto inline-block underline underline-offset-4 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer">
-                  パスワードを忘れた
-                </a>
-              </div>
-              <PasswordInput
-                id="password"
-                v-model="password"
-                name="password"
-                required
-                autocomplete="current-password" />
-            </div>
-
-            <div v-if="error" class="mt-4 text-base text-red-500">
-              <p>{{ error }}</p>
-              <div class="mt-4 text-base text-subtext">
-                サインインに失敗する場合は、
-                <a
-                  href="https://accounts.omu-aikido.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-blue-500 hover:text-blue-600 underline underline-offset-4">
-                  こちら
-                </a>
-                からサインインをお試しください。
-              </div>
-            </div>
-
-            <button type="submit" class="btn-primary mt-6 w-full" :disabled="isLoading">
-              {{ isLoading ? "サインイン中..." : "サインイン" }}
-            </button>
-          </form>
-
-          <button
-            type="button"
-            class="btn text-white w-full bg-[#5865f2] hover:bg-[#4752c4]"
-            :disabled="isLoading"
-            @click="handleSignInWithDiscord">
-            <svg
-              class="sq-5 mr-2"
-              aria-hidden="true"
-              focusable="false"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 256 256">
-              <g>
-                <circle stroke="none" cx="96" cy="144" r="12" fill="currentColor" />
-                <circle stroke="none" cx="160" cy="144" r="12" fill="currentColor" />
-                <path
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="16"
-                  d="M74 80a175 175 0 0 1 54-8 175 175 0 0 1 54 8m0 96a175 175 0 0 1-54 8 175 175 0 0 1-54-8" />
-                <path
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="16"
-                  d="m155 182 12 24a8 8 0 0 0 9 4c25-6 46-16 61-30a8 8 0 0 0 3-8L206 59a8 8 0 0 0-5-5 176 176 0 0 0-30-9 8 8 0 0 0-9 5l-8 24m-53 108-12 24a8 8 0 0 1-9 4c-25-6-46-16-61-30a8 8 0 0 1-3-8L50 59a8 8 0 0 1 5-5 176 176 0 0 1 30-9 8 8 0 0 1 9 5l8 24" />
-              </g>
-            </svg>
-            Discordで認証
-          </button>
+        <div v-if="error" class="mt-4 text-base text-red-500">
+          <p>{{ error }}</p>
         </div>
-        <hr class="my-6" />
-        <div class="mt-4 text-base text-subtext text-center">
+        <button type="submit" class="btn-primary mt-4 w-full" :disabled="isLoading">
+          {{ isLoading ? "認証中..." : "認証" }}
+        </button>
+      </form>
+
+      <form v-else @submit.prevent="handleSignIn">
+        <Input
+          id="email"
+          v-model="email"
+          type="email"
+          label="メールアドレス"
+          name="email"
+          required
+          autocomplete="email"
+          placeholder="example@mail.com" />
+
+        <div class="mt-4 user-select-none">
+          <div class="mb-1.5 text-xs flex items-center">
+            <label for="password" class="form-label">パスワード</label>
+            <a
+              href="https://accounts.omu-aikido.com/sign-in/"
+              class="text-base text-subtext ml-auto inline-block underline underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer">
+              パスワードを忘れた
+            </a>
+          </div>
+          <PasswordInput id="password" v-model="password" name="password" required autocomplete="current-password" />
+        </div>
+
+        <div v-if="error" class="mt-4 text-base text-red-500">
+          <p>{{ error }}</p>
+          <div class="mt-4 text-base text-subtext">
+            サインインに失敗する場合は、
+            <a
+              href="https://accounts.omu-aikido.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-500 hover:text-blue-600 underline underline-offset-4">
+              こちら
+            </a>
+            からサインインをお試しください。
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary mt-6 w-full" :disabled="isLoading">
+          {{ isLoading ? "サインイン中..." : "サインイン" }}
+        </button>
+      </form>
+
+      <template #alternative>
+        <button
+          type="button"
+          class="btn text-white w-full bg-[#5865f2] hover:bg-[#4752c4]"
+          :disabled="isLoading"
+          @click="handleSignInWithDiscord">
+          <svg
+            class="sq-5 mr-2"
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 256 256">
+            <g>
+              <circle stroke="none" cx="96" cy="144" r="12" fill="currentColor" />
+              <circle stroke="none" cx="160" cy="144" r="12" fill="currentColor" />
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="16"
+                d="M74 80a175 175 0 0 1 54-8 175 175 0 0 1 54 8m0 96a175 175 0 0 1-54 8 175 175 0 0 1-54-8" />
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="16"
+                d="m155 182 12 24a8 8 0 0 0 9 4c25-6 46-16 61-30a8 8 0 0 0 3-8L206 59a8 8 0 0 0-5-5 176 176 0 0 0-30-9 8 8 0 0 0-9 5l-8 24m-53 108-12 24a8 8 0 0 1-9 4c-25-6-46-16-61-30a8 8 0 0 1-3-8L50 59a8 8 0 0 1 5-5 176 176 0 0 1 30-9 8 8 0 0 1 9 5l8 24" />
+            </g>
+          </svg>
+          Discordで認証
+        </button>
+      </template>
+
+      <template #continuation>
+        <div class="text-base text-subtext text-center">
           まだアカウントがありませんか?
           <br />
           <RouterLink to="/sign-up" class="text-blue-500 hover:text-blue-600 underline underline-offset-4">
             サインアップ
           </RouterLink>
         </div>
-      </div>
-    </div>
+      </template>
+    </AuthFlowLayout>
   </Show>
 </template>
 
@@ -126,6 +122,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuth } from "@/composable/useAuth";
 import { useSignIn } from "@/composable/useSignIn";
 
+import AuthFlowLayout from "@/components/auth/AuthFlowLayout.vue";
 import Input from "@/components/ui/UiInput.vue";
 import LoadingView from "@/components/signin/LoadingView.vue";
 import PasswordInput from "@/components/ui/UiPasswordInput.vue";

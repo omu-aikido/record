@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { createActivitySchema } from "share";
 import { format } from "date-fns";
+import FormPattern from "@/components/ui/FormPattern.vue";
 import Input from "../../components/ui/UiInput.vue";
 import { useForm } from "@tanstack/vue-form";
 import { watch } from "vue";
@@ -65,56 +66,64 @@ watch(
 
 <template>
   <div class="p-2">
-    <form class="stack" data-testid="activity-form" @submit.prevent.stop="form.handleSubmit">
-      <form.Field name="date">
-        <template #default="{ field, state }">
-          <Input
-            id="date"
-            :model-value="field.state.value"
-            label="日付"
-            type="date"
-            required
-            :disabled="props.loading"
-            :error="state.meta.isTouched ? getErrorMessage(state.meta.errors) : undefined"
-            data-testid="date-input"
-            @blur="field.handleBlur"
-            @update:model-value="(value) => field.handleChange(String(value ?? ''))" />
-        </template>
-      </form.Field>
+    <form data-testid="activity-form" @submit.prevent.stop="form.handleSubmit">
+      <FormPattern>
+        <template #fields>
+          <form.Field name="date">
+            <template #default="{ field, state }">
+              <Input
+                id="date"
+                :model-value="field.state.value"
+                label="日付"
+                type="date"
+                required
+                :disabled="props.loading"
+                :error="state.meta.isTouched ? getErrorMessage(state.meta.errors) : undefined"
+                data-testid="date-input"
+                @blur="field.handleBlur"
+                @update:model-value="(value) => field.handleChange(String(value ?? ''))" />
+            </template>
+          </form.Field>
 
-      <form.Field name="period">
-        <template #default="{ field, state }">
-          <Input
-            id="period"
-            :model-value="field.state.value"
-            label="時間 (時間)"
-            type="number"
-            step="0.5"
-            min="0.5"
-            max="8"
-            required
-            :disabled="props.loading"
-            :error="state.meta.isTouched ? getErrorMessage(state.meta.errors) : undefined"
-            data-testid="period-input"
-            @blur="field.handleBlur"
-            @update:model-value="(value) => field.handleChange(typeof value === 'number' ? value : 0)" />
+          <form.Field name="period">
+            <template #default="{ field, state }">
+              <Input
+                id="period"
+                :model-value="field.state.value"
+                label="時間 (時間)"
+                type="number"
+                step="0.5"
+                min="0.5"
+                max="8"
+                required
+                :disabled="props.loading"
+                :error="state.meta.isTouched ? getErrorMessage(state.meta.errors) : undefined"
+                data-testid="period-input"
+                @blur="field.handleBlur"
+                @update:model-value="(value) => field.handleChange(typeof value === 'number' ? value : 0)" />
+            </template>
+          </form.Field>
         </template>
-      </form.Field>
 
-      <p v-if="props.error" class="alert-error" role="alert">{{ props.error }}</p>
-
-      <form.Subscribe>
-        <template #default="{ canSubmit }">
-          <button
-            type="submit"
-            class="btn-primary w-full"
-            :disabled="props.loading || !canSubmit"
-            :aria-busy="props.loading"
-            data-testid="submit-btn">
-            {{ props.loading ? "保存中..." : "記録を追加" }}
-          </button>
+        <template v-if="props.error" #feedback>
+          <p class="alert-error mt-0" role="alert">{{ props.error }}</p>
         </template>
-      </form.Subscribe>
+
+        <template #primary>
+          <form.Subscribe>
+            <template #default="{ canSubmit }">
+              <button
+                type="submit"
+                class="btn-primary w-full"
+                :disabled="props.loading || !canSubmit"
+                :aria-busy="props.loading"
+                data-testid="submit-btn">
+                {{ props.loading ? "保存中..." : "記録を追加" }}
+              </button>
+            </template>
+          </form.Subscribe>
+        </template>
+      </FormPattern>
     </form>
   </div>
 </template>

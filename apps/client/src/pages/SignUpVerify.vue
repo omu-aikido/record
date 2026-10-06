@@ -1,35 +1,36 @@
 <template>
-  <div class="p-4 flex items-center justify-center">
-    <div class="card max-w-md mx-auto h-full w-full">
-      <div class="p-6 pb-4">
-        <h1 class="heading-1">認証コードの確認</h1>
-        <p class="mt-2 text-base text-subtext">メールアドレスに送信された認証コードを入力してください。</p>
-      </div>
-      <div class="p-6 pt-0">
-        <form class="stack" @submit.prevent="handleVerify">
-          <Input
-            id="code"
-            v-model="code"
-            label="認証コード"
-            name="code"
-            required
-            placeholder="123456"
-            :disabled="isLoading" />
+  <AuthFlowLayout class="card max-w-md mx-auto h-full w-full">
+    <template #heading>
+      <h1 class="heading-1">認証コードの確認</h1>
+    </template>
 
-          <div v-if="error" class="text-base text-red-500">
-            {{ error }}
-          </div>
+    <template #context>
+      <p class="text-base text-subtext">メールアドレスに送信された認証コードを入力してください。</p>
+    </template>
 
-          <button type="submit" class="btn-primary w-full" :disabled="isLoading">
-            {{ isLoading ? "確認中..." : "確認する" }}
-          </button>
-        </form>
+    <form class="stack" @submit.prevent="handleVerify">
+      <Input
+        id="code"
+        v-model="code"
+        label="認証コード"
+        name="code"
+        required
+        placeholder="123456"
+        :disabled="isLoading" />
+
+      <div v-if="error" class="text-base text-red-500">
+        {{ error }}
       </div>
-    </div>
-  </div>
+
+      <button type="submit" class="btn-primary w-full" :disabled="isLoading">
+        {{ isLoading ? "確認中..." : "確認する" }}
+      </button>
+    </form>
+  </AuthFlowLayout>
 </template>
 
 <script setup lang="ts">
+import AuthFlowLayout from "@/components/auth/AuthFlowLayout.vue";
 import Input from "@/components/ui/UiInput.vue";
 import { useClerk } from "@clerk/vue";
 import { useRouter } from "vue-router";

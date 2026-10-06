@@ -1,63 +1,65 @@
 <template>
-  <div class="p-4 flex items-center justify-center">
-    <div class="card max-w-md mx-auto h-full w-full">
-      <div class="p-4 pt-2">
-        <h1 class="heading-1">サインアップ</h1>
-      </div>
-      <div class="p-6 pt-0">
-        <ProgressIndicator :step="step" />
-        <form @submit.prevent="handleSubmit">
-          <template v-if="step === 'basic'">
-            <SignUpStepBasic
-              :form-values="formValues"
-              :form-errors="formErrors"
-              :is-sign-up-created="isSignUpCreated"
-              :handle-next="handleNext"
-              @update:form-value="setFormValue" />
-          </template>
+  <AuthFlowLayout class="card max-w-md mx-auto h-full w-full">
+    <template #heading>
+      <h1 class="heading-1">サインアップ</h1>
+    </template>
 
-          <template v-if="step === 'personal'">
-            <SignUpStepPersonal
-              :form-values="formValues"
-              :form-errors="formErrors"
-              :is-sign-up-created="isSignUpCreated"
-              :handle-next="handleNext"
-              :prev-step="prevStep"
-              @update:form-value="setFormValue" />
-          </template>
+    <template #context>
+      <ProgressIndicator :step="step" />
+    </template>
 
-          <template v-if="step === 'profile'">
-            <SignUpStepProfile
-              :form-values="formValues"
-              :form-errors="formErrors"
-              :is-sign-up-created="isSignUpCreated"
-              :can-submit="!isSignUpCreated"
-              :prev-step="prevStep"
-              @update:form-value="setFormValue" />
-          </template>
-        </form>
+    <form @submit.prevent="handleSubmit">
+      <template v-if="step === 'basic'">
+        <SignUpStepBasic
+          :form-values="formValues"
+          :form-errors="formErrors"
+          :is-sign-up-created="isSignUpCreated"
+          :handle-next="handleNext"
+          @update:form-value="setFormValue" />
+      </template>
 
-        <div v-if="formErrors.general" class="mt-4 text-base text-red-500">
-          {{ formErrors.general }}
-        </div>
-        <div v-if="clerkErrors.length > 0" class="mt-4 text-base text-red-500">
-          <div v-for="(e, i) in clerkErrors" :key="i">
-            {{ e.longMessage ?? e.message }}
-          </div>
-        </div>
+      <template v-if="step === 'personal'">
+        <SignUpStepPersonal
+          :form-values="formValues"
+          :form-errors="formErrors"
+          :is-sign-up-created="isSignUpCreated"
+          :handle-next="handleNext"
+          :prev-step="prevStep"
+          @update:form-value="setFormValue" />
+      </template>
 
-        <hr class="my-6" />
-        <div class="mt-2 text-base text-subtext text-center">
-          既にアカウントをお持ちですか？<br />
-          <RouterLink to="/sign-in" class="text-blue-500 hover:text-blue-600 underline"> こちら </RouterLink>
-          からサインインしてください。
+      <template v-if="step === 'profile'">
+        <SignUpStepProfile
+          :form-values="formValues"
+          :form-errors="formErrors"
+          :is-sign-up-created="isSignUpCreated"
+          :can-submit="!isSignUpCreated"
+          :prev-step="prevStep"
+          @update:form-value="setFormValue" />
+      </template>
+    </form>
+
+    <div v-if="formErrors.general || clerkErrors.length > 0" class="gap-4 text-base text-red-500 flex flex-col">
+      <div v-if="formErrors.general">{{ formErrors.general }}</div>
+      <div v-if="clerkErrors.length > 0">
+        <div v-for="(e, i) in clerkErrors" :key="i">
+          {{ e.longMessage ?? e.message }}
         </div>
       </div>
     </div>
-  </div>
+
+    <template #continuation>
+      <div class="text-base text-subtext text-center">
+        既にアカウントをお持ちですか？<br />
+        <RouterLink to="/sign-in" class="text-blue-500 hover:text-blue-600 underline"> こちら </RouterLink>
+        からサインインしてください。
+      </div>
+    </template>
+  </AuthFlowLayout>
 </template>
 
 <script setup lang="ts">
+import AuthFlowLayout from "@/components/auth/AuthFlowLayout.vue";
 import { onMounted } from "vue";
 import ProgressIndicator from "@/components/signup/ProgressIndicator.vue";
 import SignUpStepBasic from "@/components/signup/SignUpStepBasic.vue";

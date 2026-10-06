@@ -24,46 +24,55 @@
       <button type="button" class="btn-secondary px-3 py-1.5 text-sm" @click="isEditing = true">編集</button>
     </div>
 
-    <form v-else class="stack" @submit.prevent="handleSubmit">
-      <div class="stack flex-1">
-        <div class="gap-4 flex items-start">
-          <div
-            class="w-14 h-14 group relative shrink-0 overflow-hidden rounded-full shadow-[0_0_0_2px_var(--color-overlay0)]">
-            <img :src="safePreviewImageUrl" :alt="user?.firstName || 'Profile'" uno-rounded-img />
-            <label
-              class="inset-0 bg-black/60 absolute flex cursor-pointer flex-col items-center justify-center opacity-60 transition-opacity duration-200 group-hover:opacity-100">
-              <span class="text-white font-medium text-[0.625rem]">変更</span>
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                class="inset-0 absolute h-full w-full cursor-pointer opacity-0"
-                @change="handleImageChange" />
-            </label>
+    <form v-else @submit.prevent="handleSubmit">
+      <FormPattern>
+        <template #fields>
+          <div class="stack">
+            <div class="gap-4 flex items-start">
+              <div
+                class="w-14 h-14 group relative shrink-0 overflow-hidden rounded-full shadow-[0_0_0_2px_var(--color-overlay0)]">
+                <img :src="safePreviewImageUrl" :alt="user?.firstName || 'Profile'" uno-rounded-img />
+                <label
+                  class="inset-0 bg-black/60 absolute flex cursor-pointer flex-col items-center justify-center opacity-60 transition-opacity duration-200 group-hover:opacity-100">
+                  <span class="text-white font-medium text-[0.625rem]">変更</span>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    class="inset-0 absolute h-full w-full cursor-pointer opacity-0"
+                    @change="handleImageChange" />
+                </label>
+              </div>
+              <Input v-model="formData.username" label="ユーザー名" />
+            </div>
+
+            <div class="gap-3 grid grid-cols-2">
+              <Input v-model="formData.lastName" label="姓" />
+              <Input v-model="formData.firstName" label="名" />
+            </div>
           </div>
-          <Input v-model="formData.username" label="ユーザー名" />
-        </div>
+        </template>
 
-        <div class="gap-3 grid grid-cols-2">
-          <Input v-model="formData.lastName" label="姓" />
-          <Input v-model="formData.firstName" label="名" />
-        </div>
-      </div>
+        <template v-if="message" #feedback>
+          <p :class="['text-sm font-medium', isError ? 'text-red-500' : 'text-green-500']">
+            {{ message }}
+          </p>
+        </template>
 
-      <p v-if="message" :class="['text-sm font-medium', isError ? 'text-red-500' : 'text-green-500']">
-        {{ message }}
-      </p>
-
-      <div class="gap-3 pt-2 flex">
-        <button type="submit" class="btn-primary w-full" :disabled="isSubmitting">
-          {{ isSubmitting ? "保存中..." : "保存" }}
-        </button>
-        <button type="button" class="btn-secondary w-full" @click="cancelEdit">キャンセル</button>
-      </div>
+        <template #secondary>
+          <button type="button" class="btn-secondary w-full" @click="cancelEdit">キャンセル</button>
+        </template>
+        <template #primary>
+          <button type="submit" class="btn-primary w-full" :disabled="isSubmitting">
+            {{ isSubmitting ? "保存中..." : "保存" }}
+          </button>
+        </template>
+      </FormPattern>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
+import FormPattern from "@/components/ui/FormPattern.vue";
 import hc from "@/lib/honoClient";
 import Input from "@/components/ui/UiInput.vue";
 import { useUser } from "@clerk/vue";

@@ -63,36 +63,43 @@
       </div>
     </div>
 
-    <form v-else class="stack" @submit.prevent.stop="form.handleSubmit">
-      <ProfileFields
-        :grade="formValues.grade"
-        :year="formValues.year ?? 'b1'"
-        :joined-at="formValues.joinedAt"
-        :get-grade-at="formValues.getGradeAt ?? ''"
-        :birthday="formValues.birthday ?? ''"
-        :disabled="isSubmitting"
-        order="profile"
-        required
-        @update:grade="(value) => form.setFieldValue('grade', value)"
-        @update:year="setYear"
-        @update:joined-at="(value) => form.setFieldValue('joinedAt', value)"
-        @update:get-grade-at="setGetGradeAt"
-        @update:birthday="setBirthday" />
-
-      <p v-if="message" :class="['text-sm font-medium', isError ? 'text-red-500' : 'text-green-500']">
-        {{ message }}
-      </p>
-
+    <form v-else @submit.prevent.stop="form.handleSubmit">
       <form.Subscribe>
         <template #default="{ canSubmit }">
-          <p v-if="!canSubmit" class="text-sm font-medium text-red-500">入力内容を確認してください</p>
+          <FormPattern>
+            <template #fields>
+              <ProfileFields
+                :grade="formValues.grade"
+                :year="formValues.year ?? 'b1'"
+                :joined-at="formValues.joinedAt"
+                :get-grade-at="formValues.getGradeAt ?? ''"
+                :birthday="formValues.birthday ?? ''"
+                :disabled="isSubmitting"
+                order="profile"
+                required
+                @update:grade="(value) => form.setFieldValue('grade', value)"
+                @update:year="setYear"
+                @update:joined-at="(value) => form.setFieldValue('joinedAt', value)"
+                @update:get-grade-at="setGetGradeAt"
+                @update:birthday="setBirthday" />
+            </template>
 
-          <div class="gap-3 pt-2 flex">
-            <button type="submit" class="btn-primary w-full" :disabled="isSubmitting || !canSubmit">
-              {{ isSubmitting ? "保存中..." : "保存" }}
-            </button>
-            <button type="button" class="btn-secondary w-full" @click="cancelEdit">キャンセル</button>
-          </div>
+            <template v-if="message || !canSubmit" #feedback>
+              <p v-if="message" :class="['text-sm font-medium', isError ? 'text-red-500' : 'text-green-500']">
+                {{ message }}
+              </p>
+              <p v-if="!canSubmit" class="text-sm font-medium text-red-500">入力内容を確認してください</p>
+            </template>
+
+            <template #secondary>
+              <button type="button" class="btn-secondary w-full" @click="cancelEdit">キャンセル</button>
+            </template>
+            <template #primary>
+              <button type="submit" class="btn-primary w-full" :disabled="isSubmitting || !canSubmit">
+                {{ isSubmitting ? "保存中..." : "保存" }}
+              </button>
+            </template>
+          </FormPattern>
         </template>
       </form.Subscribe>
     </form>
@@ -101,6 +108,7 @@
 
 <script setup lang="ts">
 import { ArkErrors } from "arktype";
+import FormPattern from "@/components/ui/FormPattern.vue";
 import hc from "@/lib/honoClient";
 import ProfileFields from "@/components/account/ProfileFields.vue";
 import { queryKeys } from "@/lib/queryKeys";

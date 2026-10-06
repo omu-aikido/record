@@ -1,7 +1,5 @@
 <template>
-  <div class="gap-6 px-3 py-4 pb-12 md:px-6 flex flex-col">
-    <AdminMenu />
-
+  <AdminPageLayout class="pb-12">
     <UiStatus v-if="loading" status="loading" class="loading-container" />
 
     <UiStatus
@@ -39,11 +37,11 @@
         </div>
       </section>
     </div>
-  </div>
+  </AdminPageLayout>
 </template>
 
 <script setup lang="ts">
-import AdminMenu from "@/components/admin/AdminMenu.vue";
+import AdminPageLayout from "@/components/admin/AdminPageLayout.vue";
 import { computed } from "vue";
 import hc from "@/lib/honoClient";
 import { queryKeys } from "@/lib/queryKeys";

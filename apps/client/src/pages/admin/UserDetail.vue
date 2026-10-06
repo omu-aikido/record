@@ -1,6 +1,5 @@
 <template>
-  <div class="gap-6 px-3 py-4 md:px-6 flex flex-col">
-    <AdminMenu />
+  <AdminPageLayout>
     <div class="gap-2 text-sub flex items-center">
       <router-link to="/admin/accounts" class="hover:text-blue-500 hover:underline"> アカウント一覧 </router-link>
       <span class="text-subtext">/</span>
@@ -68,34 +67,40 @@
             </button>
           </div>
 
-          <form v-if="isEditing" class="stack card" @submit.prevent="handleUpdateProfile">
-            <div class="gap-4 md:grid-cols-2 grid grid-cols-1">
-              <div class="gap-1 flex flex-col">
-                <label class="form-label">役職</label>
-                <select v-model="formData.role" class="input-base h-fit">
-                  <option v-for="(label, key) in roleLabels" :key="key" :value="key">
-                    {{ label }}
-                  </option>
-                </select>
-              </div>
-              <ProfileFields
-                v-model:grade="formData.grade"
-                v-model:year="formData.year"
-                v-model:joined-at="formData.joinedAt"
-                v-model:get-grade-at="formData.getGradeAt"
-                v-model:birthday="formData.birthday"
-                joined-at-label="入部年度"
-                :joined-at-min="1950"
-                :joined-at-max="new Date().getFullYear() + 1"
-                get-grade-at-label="級段位取得日" />
-            </div>
+          <form v-if="isEditing" class="card" @submit.prevent="handleUpdateProfile">
+            <FormPattern variant="compact">
+              <template #fields>
+                <div class="gap-4 md:grid-cols-2 grid grid-cols-1">
+                  <div class="gap-1 flex flex-col">
+                    <label class="form-label">役職</label>
+                    <select v-model="formData.role" class="input-base h-fit">
+                      <option v-for="(label, key) in roleLabels" :key="key" :value="key">
+                        {{ label }}
+                      </option>
+                    </select>
+                  </div>
+                  <ProfileFields
+                    v-model:grade="formData.grade"
+                    v-model:year="formData.year"
+                    v-model:joined-at="formData.joinedAt"
+                    v-model:get-grade-at="formData.getGradeAt"
+                    v-model:birthday="formData.birthday"
+                    joined-at-label="入部年度"
+                    :joined-at-min="1950"
+                    :joined-at-max="new Date().getFullYear() + 1"
+                    get-grade-at-label="級段位取得日" />
+                </div>
+              </template>
 
-            <div class="gap-2 mt-2 flex justify-end">
-              <button type="button" class="btn-secondary" @click="cancelEditing">キャンセル</button>
-              <button type="submit" class="btn-primary" :disabled="updating">
-                {{ updating ? "更新中..." : "更新" }}
-              </button>
-            </div>
+              <template #secondary>
+                <button type="button" class="btn-secondary" @click="cancelEditing">キャンセル</button>
+              </template>
+              <template #primary>
+                <button type="submit" class="btn-primary" :disabled="updating">
+                  {{ updating ? "更新中..." : "更新" }}
+                </button>
+              </template>
+            </FormPattern>
           </form>
           <div v-if="updateError" class="alert-error">{{ updateError }}</div>
           <div v-if="updateSuccess" class="alert-success">{{ updateSuccess }}</div>
@@ -238,12 +243,13 @@
         </div>
       </div>
     </div>
-  </div>
+  </AdminPageLayout>
 </template>
 
 <script setup lang="ts">
-import AdminMenu from "@/components/admin/AdminMenu.vue";
+import AdminPageLayout from "@/components/admin/AdminPageLayout.vue";
 import ConfirmDialog from "@/components/ui/ConfirmDialog.vue";
+import FormPattern from "@/components/ui/FormPattern.vue";
 import hc from "@/lib/honoClient";
 import NormSummary from "@/components/admin/NormSummary.vue";
 import ProfileFields from "@/components/account/ProfileFields.vue";

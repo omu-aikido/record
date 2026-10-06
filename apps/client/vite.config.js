@@ -1,4 +1,5 @@
 import path from "path"; // pathをインポート
+import thirdPartyLicenses from "./vite-plugin-third-party-licenses.ts";
 import UnoCSS from "unocss/vite";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
@@ -11,6 +12,7 @@ export default defineConfig({
     vueDevTools({
       launchEditor: "zed",
     }),
+    thirdPartyLicenses(),
   ]),
   resolve: {
     alias: {

@@ -68,6 +68,10 @@ export function collectThirdPartyLicenses(moduleIds: Iterable<string>): ThirdPar
   return licenses;
 }
 
+export function formatThirdPartyLicenses(licenses: readonly ThirdPartyLicense[]): string {
+  return `${licenses.map(({ name, version, license }) => `${name}@${version} — ${license}`).join("\n")}\n`;
+}
+
 export default function thirdPartyLicenses(): Plugin {
   return {
     name: "third-party-licenses",
@@ -79,8 +83,8 @@ export default function thirdPartyLicenses(): Plugin {
 
       this.emitFile({
         type: "asset",
-        fileName: "licenses.json",
-        source: `${JSON.stringify(licenses, null, 2)}\n`,
+        fileName: "licenses.txt",
+        source: formatThirdPartyLicenses(licenses),
       });
     },
   };

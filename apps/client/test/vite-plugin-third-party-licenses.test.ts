@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { collectThirdPartyLicenses } from "../vite-plugin-third-party-licenses";
+import { collectThirdPartyLicenses, formatThirdPartyLicenses } from "../vite-plugin-third-party-licenses";
 
 const temporaryDirectories: string[] = [];
 
@@ -31,16 +31,17 @@ describe("third-party-licenses Vite plugin", () => {
       license: { type: "MIT" },
     });
 
-    expect(
-      collectThirdPartyLicenses([
-        vueModule,
-        `${vueModule}?commonjs-proxy`,
-        clerkModule,
-        path.join(directory, "src", "main.js"),
-      ])
-    ).toEqual([
+    const licenses = collectThirdPartyLicenses([
+      vueModule,
+      `${vueModule}?commonjs-proxy`,
+      clerkModule,
+      path.join(directory, "src", "main.js"),
+    ]);
+
+    expect(licenses).toEqual([
       { name: "@clerk/vue", version: "2.0.0", license: "MIT" },
       { name: "vue", version: "3.5.0", license: "MIT" },
     ]);
+    expect(formatThirdPartyLicenses(licenses)).toBe("@clerk/vue@2.0.0 — MIT\nvue@3.5.0 — MIT\n");
   });
 });

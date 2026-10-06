@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@clerk/backend": "^3.22.0",
-    "@clerk/hono": "0.1.76",
+    "@clerk/hono": "0.1.85",
     "@hono/arktype-validator": "^2.0.1",
     "@libsql/client": "^0.18.0",
     "arktype": "catalog:",

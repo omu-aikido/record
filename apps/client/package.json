@@ -10,27 +10,27 @@
     "typecheck": "vue-tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@clerk/vue": "^2.5.0",
-    "@iconify-json/lucide": "^1.2.129",
+    "@clerk/vue": "^2.5.9",
+    "@iconify-json/lucide": "^1.2.139",
     "@tanstack/vue-form": "^1.33.5",
-    "@tanstack/vue-query": "^5.102.8",
+    "@tanstack/vue-query": "^5.104.1",
     "arktype": "catalog:",
     "date-fns": "^4.4.0",
     "hono": "catalog:",
-    "reka-ui": "^2.10.4",
+    "reka-ui": "^2.10.5",
     "share": "workspace:*",
-    "unocss": "^66.10.0",
-    "vue": "^3.5.42",
+    "unocss": "^66.10.5",
+    "vue": "^3.5.43",
     "vue-router": "^5.3.1"
   },
   "devDependencies": {
-    "@tanstack/vue-query-devtools": "^6.1.48",
-    "@types/bun": "^1.4.0",
-    "@vitejs/plugin-vue": "^6.0.8",
+    "@tanstack/vue-query-devtools": "^6.3.1",
+    "@types/bun": "^1.4.2",
+    "@vitejs/plugin-vue": "^6.0.9",
     "@vue/tsconfig": "^0.9.1",
     "vite": "catalog:",
     "vite-plugin-vue-devtools": "^8.2.1",
     "vite-plus": "catalog:",
-    "vue-tsc": "^3.3.11"
+    "vue-tsc": "^3.3.12"
   }
 }

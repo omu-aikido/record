@@ -9,12 +9,12 @@
     "test": "bun test --isolate"
   },
   "devDependencies": {
-    "@types/bun": "^1.4.0",
+    "@types/bun": "^1.4.2",
     "knip": "latest",
     "typescript": "^6.0.3",
-    "vite": "^0.3.0",
-    "vite-plus": "^0.3.0",
-    "wrangler": "^4.129.0"
+    "vite": "^1.0.0",
+    "vite-plus": "^0.3.3",
+    "wrangler": "^4.147.0"
   },
   "overrides": {
     "vite": "catalog:"
@@ -35,9 +35,9 @@
   },
   "packageManager": "bun@1.4.1",
   "catalog": {
-    "arktype": "^2.2.3",
-    "wrangler": "^4.129.0",
-    "hono": "^4.13.5",
+    "arktype": "^2.2.7",
+    "wrangler": "^4.147.0",
+    "hono": "^4.13.13",
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",
     "vite-plus": "latest"
   }

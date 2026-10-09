@@ -13,18 +13,18 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@clerk/backend": "^3.22.0",
-    "@clerk/hono": "0.1.76",
+    "@clerk/backend": "^3.23.0",
+    "@clerk/hono": "0.1.86",
     "@hono/arktype-validator": "^2.0.1",
     "@libsql/client": "^0.18.0",
     "arktype": "catalog:",
     "drizzle-orm": "^1.0.0-rc.5-ab785fc",
     "hono": "catalog:",
     "share": "workspace:*",
-    "svix": "^2.6.1"
+    "svix": "^2.7.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20261004.1",
+    "@cloudflare/workers-types": "^5.20261007.1",
     "@types/node": "^26.6.4",
     "drizzle-kit": "^1.0.0-rc.5-ab785fc",
     "wrangler": "catalog:"
